@@ -11,6 +11,11 @@ export enum CardName {
     TongXin = "同心",
     MeiKai = "梅开",
     HuangQue = "黄雀",
+    XingFei = "星飞",
+    HaiDi = "海底",
+    TangLang = "螳螂",
+    GoldChan = "金蝉",
+    QiTun = "气吞",
 }
 
 export enum CardOrder {
@@ -22,6 +27,11 @@ export enum CardLevel {
     Normal = 1,
     Rare = 2,
     Legend = 3,
+}
+
+export type CardInfo = {
+    name: CardName,
+    level: number,
 }
 
 export abstract class ACard {
@@ -36,14 +46,39 @@ export abstract class ACard {
         this._useNum = 0;
     };
     public effect(me:Human, he: Human) {
-        this._useNum++;
-        console.log(`【卡牌使用】${me.name} 使用 ${this.cardName}`)
+        // console.log(`【卡牌使用】${me.name} 使用 ${this.cardName}`)
         this.onEffect(me, he);
+        if (me.CardList.IsOnStar()) {
+            this.onEffectStar(me, he);
+        }
+        if (this.onGetSecondAct()){
+            if(this._useNum > 0) {
+                this.onEffectSecAct(me, he)
+            }
+            var buff = me.GetBuff(BuffId.HuangQue);
+            if(buff && buff.num > 0) {
+                he.CutHp(buff.num, buff.id);
+            }
+        }
+        this._useNum++;
     }
+    // 卡牌耗蓝
     protected onGetMana(): number {
         return 0;
     }
+    // 是否含后招
+    protected onGetSecondAct(): boolean {
+        return false;
+    }
+    // 卡牌效果
     protected abstract onEffect(me: Human, he: Human);
+    // 后招效果
+    protected onEffectSecAct(me: Human, he: Human){
+    };
+    // 星位效果
+    protected onEffectStar(me: Human, he: Human) {
+    };
+
     protected _lvlVal<T>(normal: T, rare: T, legend: T): T  {
         switch(this._level) {
             case CardLevel.Normal:
@@ -106,15 +141,15 @@ class FeiTaCard extends ACard {
         var buff = new ManaBuff();
         buff.init(me, this._lvlVal(3,3,4));
         me.AddBuff(buff);
-        this._lvlMethod(()=>{
-            if(this._useNum > 1) {
-                me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1));
-            }
-        }, ()=>{
+        if(!this.onGetSecondAct()) {
             me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1));
-        }, ()=>{
-            me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1));
-        })
+        }
+    }
+    protected onGetSecondAct(): boolean {
+        return this._lvlVal(true, false, false)
+    }
+    protected onEffectSecAct(me: Human, he: Human) {
+        me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1));
     }
 }
 
@@ -138,7 +173,9 @@ class MeiKaiCard extends ACard {
         me.AddHp(this._lvlVal(2, 8, 14), this.cardName);
         me.AddBuff(BuffFactory.me.Produce(BuffId.MeiKai, me, 1));
     }
-    
+    protected onGetMana(): number {
+        return 1;
+    }   
 }
 
 class HuangQueCard extends ACard {
@@ -146,7 +183,90 @@ class HuangQueCard extends ACard {
     protected onEffect(me: Human, he: Human) {
         var cardList = me.CardList;
         cardList.SetCardOrder(cardList.cardOrder == CardOrder.L2R ? CardOrder.R2L : CardOrder.L2R);
-        cardList.CostCurCard();
+        me.AddBuff(BuffFactory.me.Produce(BuffId.HuangQue, me, this._lvlVal(7, 10, 13)));
+        cardList.CostCur();
+    }
+
+}
+
+class XingFeiCard extends ACard {
+    cardName: CardName = CardName.XingFei;
+    protected onEffect(me: Human, he: Human) {
+        for (var i = 0;i < 2;i ++) {
+            he.CutHp(this._lvlVal(2,4,6), this.cardName);
+        }
+    }
+    protected onEffectStar(me: Human, he: Human): void {
+        me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1));
+    }
+    protected onGetMana(): number {
+        return 1;
+    }
+}
+
+class HaiDiCard extends ACard {
+    cardName: CardName = CardName.HaiDi;
+    protected onEffect(me: Human, he: Human) {
+        
+    }
+    protected onGetSecondAct(): boolean {
+        return true;
+    }
+    protected onEffectSecAct(me: Human, he: Human): void {
+        he.CutHp(this._lvlVal(12, 18 ,24), this.cardName);
+        me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1));
+    }
+    
+}
+
+export class QiTunCard extends ACard {
+    cardName: CardName = CardName.QiTun;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1))
+    }
+    protected onGetMana(): number {
+        return 2;
+    }
+    protected onGetSecondAct(): boolean {
+        return true;
+    }
+    protected onEffectSecAct(me: Human, he: Human): void {
+        me.AddHp(this._lvlVal(24, 31, 38), this.cardName);
+    }
+}
+
+export class GoldChanCard extends ACard {
+    cardName: CardName = CardName.GoldChan;
+    protected onEffect(me: Human, he: Human) {
+        // console.log("no need to realize Defend");
+        me.AddHp(this._lvlVal(9, 12, 15), this.cardName);
+    }
+    protected onGetMana(): number {
+        return 1;
+    }
+    protected onGetSecondAct(): boolean {
+        return true;
+    }
+    protected onEffectSecAct(me: Human, he: Human): void {
+        me.AddBuff(BuffFactory.me.Produce(BuffId.Protect, me, 1));        
+    }
+}
+
+export class TangLangCard extends ACard {
+    cardName: CardName = CardName.TangLang;
+    protected onEffect(me: Human, he: Human) {
+        for(var i = 0;i < 2;i++){
+            he.CutHp(this._lvlVal(2,3,4), this.cardName);
+        }
+        me.AddHp(this._lvlVal(4, 6, 8), this.cardName);
+    }
+
+    protected onGetSecondAct(): boolean {
+        return true;
+    }
+
+    protected onEffectSecAct(me: Human, he: Human): void {
+        he.CutHp(this._lvlVal(7, 10, 13), this.cardName);
     }
 
 }
@@ -188,24 +308,28 @@ export class CardList {
             this._costed[i] = false;
         }
     }
-
+    
     public GetCur(): ACard {
         return this._item[this._curCardIndex];
+    }
+    
+    public IsOnStar(): boolean {
+        return this._star[this._curCardIndex];
     }
 
     public SetCardOrder(cardOrder: CardOrder) {
         this._cardOrder = cardOrder;
     }
 
-    public CostCurCard() {
+    public CostCur() {
         this._costed[this._curCardIndex] = true;
     }
 
-    public BackCard() {
+    public PosBack() {
         this._ShiftCard(-1);
     }
     
-    public ShiftCard() {
+    public PosShift() {
         this._ShiftCard(1);
     }
 
@@ -231,48 +355,73 @@ export class CardList {
             this._curCardIndex = ajust(cur + sum, size);
             absTime--;
         }
-        console.log("AFTER " + this._curCardIndex);
     }
 
     public toString(): string {
         return this._item.reduce((p,c,i)=> {
             var curMark = i == this._curCardIndex ? ">" : "";
             var costMark = this._costed[i] ? "*" : "";
-            return p + ` ${costMark}${curMark}${c.cardName}`
+            return p + ` ${costMark}${curMark}${c.cardName}${c._level}`
         },"");
     }
 }
 
+
+var AllCardType = [
+    HitCard, DCTuneCard, BeiGongCard, FeiTaCard, TongXinCard,
+    MeiKaiCard, HuangQueCard, XingFeiCard, HaiDiCard, TangLangCard,
+    GoldChanCard, QiTunCard,
+] 
+
 export class CardListFactory {
+    private static _me: CardListFactory;
     public static Size: number = 8;
+    public static get me(): CardListFactory {
+        if(!this._me) {
+            this._me = new CardListFactory();
+        }
+        return this._me;
+    }
+
     private _dict: Object;    
-    constructor() {
+    private constructor() {
         this._dict = {};
-        [
-            HitCard, DCTuneCard, BeiGongCard, FeiTaCard, TongXinCard,
-            MeiKaiCard, HuangQueCard,
-        ].forEach(type => {
+        AllCardType.forEach(type => {
             var card = new type() as ACard;
             this._dict[card.cardName] = type;
         });
     }
-    public Pipe(...arg: any[]): CardList {
-        var ret: ACard[] = [];
-        for (var i = 0; i < CardListFactory.Size; i++) {
+    public SplitCode(code: string): CardInfo[] {
+        var ret: Array<CardInfo> = [];
+        var arg = code == "" ? [] : code.split(" ");
+        for(var i = 0;i < CardListFactory.Size;i++) {
             var index = i * 2;
-            if(arg[index] == undefined || index >= arg.length) {
-                // 空的牌替换普攻
-                var hit = new HitCard();
-                hit.init(1);
-                ret.push(hit);
+            if(index >= arg.length || 
+                arg[index] == undefined || arg[index] == "_") {
+                ret.push({
+                    name: CardName.Hit,
+                    level: 1
+                });
             } else {
-                var cardName = arg[index] as CardName;
-                var cardLevel = arg[index + 1] as number;
-                var card  = new this._dict[cardName]() as ACard;
-                card.init(cardLevel);
-                ret.push(card);
+                ret.push({
+                    name: arg[index] as CardName,
+                    level: parseInt(arg[index + 1])
+                });
             }
         }
+        return ret;
+    }
+    public FormList(infoList: Array<CardInfo>): CardList {
+        var ret: ACard[] = [];
+        infoList.forEach(info => {
+            var cardType = this._dict[info.name];
+            if(!cardType) {
+                throw "unknown card " + info.name;
+            }
+            var card: ACard = new cardType();
+            card.init(info.level);
+            ret.push(card);
+        })
         return new CardList(ret);
     }
 }

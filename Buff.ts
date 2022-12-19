@@ -22,6 +22,8 @@ export enum BuffId {
     Mana = "灵气",
     MoveAgain = "再动",
     MeiKai = "梅开",
+    HuangQue = "黄雀",
+    Protect = "护体",
 }
 
 export abstract class ABuff {
@@ -51,6 +53,15 @@ export abstract class ABuff {
 
 export class MeiKaiBuff extends ABuff {
     id: BuffId = BuffId.MeiKai;
+    getEffectOrder(stage: BES): BO {
+        return BO.First;
+    }
+    effect(stage: BES) {
+    }
+}
+
+export class ProtectBuff extends ABuff {
+    id: BuffId = BuffId.Protect;
     getEffectOrder(stage: BES): BO {
         return BO.First;
     }
@@ -117,6 +128,21 @@ export class MoveAgainBuff extends ABuff {
     }
 }
 
+export class HuangQueBuff extends ABuff {
+    id: BuffId = BuffId.HuangQue;
+    getEffectOrder(stage: BES): BO {
+        return BO.Last;
+    }
+    effect(stage: BES) {
+    }
+
+}
+
+var AllBuffType = [
+    PosionBuff, ManaBuff, DCBuff, MeiKaiBuff, MoveAgainBuff,
+    HuangQueBuff, ProtectBuff,
+]
+
 export class BuffFactory {
     private static _me: BuffFactory;
     public static get me(): BuffFactory {
@@ -129,8 +155,7 @@ export class BuffFactory {
     private _dict: {};
     private constructor() {
         this._dict = {};
-        [PosionBuff, ManaBuff, DCBuff, MeiKaiBuff, MoveAgainBuff,
-        ].forEach((buffType) => {
+        AllBuffType.forEach((buffType) => {
             var buffInstance = new buffType();
             this._dict[buffInstance.id] = buffType;
         })

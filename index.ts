@@ -1,6 +1,7 @@
-import { BES, BuffFactory, BuffId } from "./Buff";
+import { BES, BuffId } from "./Buff";
 import { CardListFactory, CardName as C } from "./Card"
 import { Human } from "./Human";
+import { BestDmgAI } from "./BestDmgAI"
 
 var fs = require('fs')
 var util = require('util')
@@ -30,15 +31,13 @@ class Action {
         var me = this._actor;
         var he = this._target;
         
-        console.log(`【行动开始】${me.name}`)
+        // console.log(`【行动开始】${me.name} ---- ---- ----`)
         me.EffectBuff(BES.RoundStart);
         me.EffectCard(he);
         if (me.CheckBuff(BuffId.MoveAgain, 1)) {
             me.EffectCard(he);
         }
         me.RemoveBuff(BuffId.MoveAgain);
-        console.log(`【行动结束】----- ----- ----- -----`)
-        console.log("")
     }
 }
 
@@ -67,25 +66,48 @@ class Round {
     }
 }
 
+export class FightReport {
+    public meRoundHp: number[];
+    public heRoundHp: number[];
+    constructor(){
+    }
+}
+
 //每场战斗
 class Fight {
     constructor(private _me: Human, private _he: Human) {
 
     }
-    Play() {
+    Play() : FightReport {
         var index = 0;
+        var meRoundHp = [this._me.hp];
+        var heRoundHp = [this._he.hp];
         while (index < 64 && this._me.hp > 0 && this._he.hp > 0) {
             var round = new Round(index, this._me, this._he);
-            console.log("=== ==== ==== ==== ==== ==== ==== ===");
-            console.log(`==== ==== 【【【回合${index + 1}】】】 ==== ====`);
-            console.log("=== ==== ==== ==== ==== ==== ==== ===");
-            console.log("");
+            // console.log("=== ==== ==== ==== ==== ==== ==== ===");
+            // console.log(`==== ==== 【【【回合${index + 1}】】】 ==== ====`);
+            // console.log("=== ==== ==== ==== ==== ==== ==== ===");
+            // console.log("");
             round.effect();
             index++;
+            meRoundHp.push(this._me.hp);
+            heRoundHp.push(this._he.hp);
         }
-        console.log("--- OVER ---")
-        console.log("--- OVER ---")
-        console.log("--- OVER ---")
+        // console.log("--- OVER ---")
+        this._me.reportStatu();
+        this._he.reportStatu();
+        // console.log(" meHpLog " + meRoundHp.reduce((p,cur, index, arr) => {
+        //     return p + `[${index}]${cur}` + (index > 0 ? `(${cur - arr[index - 1]}) `: " ")
+        // },""));
+        // console.log(" heHpLog " + heRoundHp.reduce((p,cur, index, arr) => {
+        //     return p + `[${index}]${cur}` + (index > 0 ? `(${cur - arr[index - 1]}) `: " ")
+        // },""));
+        // console.log("--- OVER ---")
+        
+        var fightReport = new FightReport();
+        fightReport.meRoundHp = meRoundHp;
+        fightReport.heRoundHp = heRoundHp;
+        return fightReport;
     }
 }
 
@@ -93,25 +115,31 @@ function Play(
     meName, meMaxHp, meSpeed, meCCode,
     heName, heMaxHp, heSpeed, heCCode, 
 ) {
-    var cardFactory = new CardListFactory();
-    var heCard = cardFactory.Pipe(...heCCode);
-    var meCard = cardFactory.Pipe(...meCCode);
+    var meCard = CardListFactory.me.FormList(meCCode)
     var me = new Human(meName, meMaxHp, meSpeed);
+    var heCard = CardListFactory.me.FormList(heCCode)
     var he = new Human(heName, heMaxHp, heSpeed);
     var fight = new Fight(me, he);
     me.SetCardList(meCard);
     he.SetCardList(heCard);
-    fight.Play();
+    return fight.Play();
 }
 
+var heCardInfos = CardListFactory.me.SplitCode("");
+var meCardCode = "断肠 2 杯弓 1 飞踏 2 同心 2 梅开 2 杯弓 2 黄雀 1";
+var ai = new BestDmgAI(meCardCode);
+var meCardInfos = ai.Fetch()
+while(meCardInfos){
+    var fr = Play("大熊", 110, 50, meCardInfos,
+    "胖虎", 110, 0, heCardInfos);
+    ai.Record(fr);
+    meCardInfos = ai.Fetch();
+    ai.reportOnHolding();
+}
+ai.reportSumamry();
 
-var heCardCode = [];
-var meCardCode = [
-    C.DCTune, 2, C.BeiGong, 1, C.FeiTa, 2, C.TongXin, 2, 
-    C.MeiKai, 2, C.BeiGong, 2, C.HuangQue, 1];
-//断肠2 杯弓1 飞踏2 同心2 梅开2 杯弓2 黄雀1 普攻
-Play("大熊", 110, 50, meCardCode,
-    "胖虎", 110, 0, heCardCode);
+
+
 
 // Play("大熊", 110, 50, meCardCode,
 //     "小助", 110, 100, heCardCode);

@@ -61,7 +61,7 @@ export class Human {
 
     AddBuff(buff: ABuff) {
         var findRlt = this._BuffList.find(b => b.id == buff.id);
-        console.log(`【Buff增加】${this._name} ${buff.num} 层${buff.id}`);
+        // console.log(`【Buff增加】${this._name} ${buff.num} 层${buff.id}`);
         if(findRlt) {
             findRlt.ModNum(buff.num);
             if(findRlt.num <= 0) {
@@ -115,13 +115,18 @@ export class Human {
 
     public CutHp(hp: number, log: string) {
         if (hp <= 0) throw "invalid arg";
-        console.log(`【${log}】${this._name} 扣血 ${hp}`);
-        this._hp -= hp;
+        
+        if(this.CheckBuff(BuffId.Protect, 1)) {
+            this.AddBuff(BuffFactory.me.Produce(BuffId.Protect, this, -1));
+        } else {
+            // console.log(`【${log}】${this._name} 扣血 ${hp}`);
+            this._hp -= hp;
+        }
     }
 
     public AddHp(hp: number, log: string) {
         if (hp <= 0) throw "invalid arg";
-        console.log(`【${log}】${this._name} 加血 ${hp}`);
+        // console.log(`【${log}】${this._name} 加血 ${hp}`);
         this._hp += hp;
         if (this._hp > this._maxHp) {
             this._hp = this._maxHp;
@@ -160,17 +165,18 @@ export class Human {
 
     //移动到下一张牌
     public ShiftCard() {
-        this._CardList.ShiftCard();
+        this._CardList.PosShift();
     }
 
     //回退到上一张牌
     public BackCard() {
-        this._CardList.BackCard();
+        this._CardList.PosBack();
     }
 
     //#endregion
 
     public reportStatu() {
+        return;
         var buffStatu = this._BuffList.reduce((p,c) => {
             return p + "    " + c.toString() + "\n";
         }, "");
