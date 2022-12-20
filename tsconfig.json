@@ -1,13 +1,13 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "ES5",
+        "module": "Node16",
         "lib": [
             "ES6",
-            "DOM"
+            "DOM",
         ],
+        "outDir": ""
     },
-    "files": [
-        "index.ts"
-    ]
+    "include": [
+        "src/*.ts"
+    ],
 }
