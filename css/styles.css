@@ -1,0 +1,52 @@
+/* styles.css */
+
+/* Add styles here to customize the appearance of your app */
+.CardBox {
+    display: flex;
+}
+
+.Hub {
+    display: none;
+}
+
+.Card {
+    width: 12.5vw;
+}
+
+.Card .cardFace{
+    width: 100%;
+}
+
+.Card .arrow {
+    width: 20%;
+    margin: 10px 40%;
+    opacity: 0;
+}
+
+.cardBtn {
+    width: 100px;
+    height: 50px;
+}
+
+.levelG button {
+    width: 21%;
+    height: 30px;
+    border-color: #fff;
+    border-style: solid;
+}
+
+.levelG .on {
+    border-color: black;
+}
+
+.levelG .one {
+    background-color: rgb(237, 229, 218);
+}
+
+.levelG .two {
+    background-color: rgb(245, 190, 118);
+}
+
+.levelG .three {
+    background-color: rgb(255, 255, 96);
+}

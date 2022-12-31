@@ -1,6 +1,7 @@
-import { ACard, CardList, CardOrder } from "./Card"
+import { ACard } from "./Card"
 import { BES, BO, BuffId, ABuff, ManaBuff, BuffFactory } from "./Buff";
 import { Debug } from "./Debug";
+import CardList from "./CardList";
 
 
 export class Human {

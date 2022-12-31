@@ -5,18 +5,18 @@ import { Human } from "./Human"
 //#region CARD
 
 export enum CardName {
-    Hit = "普攻",
-    DCTune = "断肠",
-    BeiGong = "杯弓",
-    FeiTa = "飞踏",
-    TongXin = "同心",
-    MeiKai = "梅开",
-    HuangQue = "黄雀",
-    XingFei = "星飞",
-    HaiDi = "海底",
-    TangLang = "螳螂",
-    GoldChan = "金蝉",
-    QiTun = "气吞",
+    Hit = "普通攻击",
+    DCTune = "断肠曲",
+    BeiGong = "杯弓蛇影",
+    FeiTa = "飞鸿踏雪",
+    TongXin = "同心曲",
+    MeiKai = "梅开二度",
+    HuangQue = "黄雀在后",
+    XingFei = "星弈·飞",
+    HaiDi = "海底捞月",
+    TangLang = "螳螂捕蝉",
+    GoldChan = "金蝉脱壳",
+    QiTun = "气吞山河",
 }
 
 export enum CardOrder {
@@ -105,14 +105,14 @@ export abstract class ACard {
     }
 }
 
-class HitCard extends ACard {
+export class HitCard extends ACard {
     cardName: CardName = CardName.Hit;
     onEffect(me: Human, he: Human) {
-        he.CutHp(3, "普攻");
+        he.CutHp(3, this.cardName);
     }
 }
 
-class DCTuneCard extends ACard {
+export class DCTuneCard extends ACard {
     cardName: CardName = CardName.DCTune;
     onEffect(me: Human, he: Human) {
         var meBuff = new DCBuff();
@@ -126,18 +126,18 @@ class DCTuneCard extends ACard {
     }    
 }
 
-class BeiGongCard extends ACard {
+export class BeiGongCard extends ACard {
     cardName: CardName = CardName.BeiGong;
     onEffect(me: Human, he: Human) {
         var posionBuff = new PosionBuff();
         posionBuff.init(he, this._lvlVal(2, 3, 4));
         he.AddBuff(posionBuff);
         var buff = he.GetBuff(BuffId.Posion);
-        he.CutHp(buff.num, "杯弓");
+        he.CutHp(buff.num, this.cardName);
     }
 }
 
-class FeiTaCard extends ACard {
+export class FeiTaCard extends ACard {
     cardName: CardName = CardName.FeiTa;
     protected onEffect(me: Human, he: Human) {
         var buff = new ManaBuff();
@@ -155,7 +155,7 @@ class FeiTaCard extends ACard {
     }
 }
 
-class TongXinCard extends ACard {
+export class TongXinCard extends ACard {
     cardName: CardName = CardName.TongXin; 
     protected onEffect(me: Human, he: Human) {
         me.EachBuff((buff) => {
@@ -169,7 +169,7 @@ class TongXinCard extends ACard {
     }
 }
 
-class MeiKaiCard extends ACard {
+export class MeiKaiCard extends ACard {
     cardName: CardName = CardName.MeiKai;
     protected onEffect(me: Human, he: Human) {
         me.AddHp(this._lvlVal(2, 8, 14), this.cardName);
@@ -180,7 +180,7 @@ class MeiKaiCard extends ACard {
     }   
 }
 
-class HuangQueCard extends ACard {
+export class HuangQueCard extends ACard {
     cardName: CardName = CardName.HuangQue;
     protected onEffect(me: Human, he: Human) {
         var cardList = me.CardList;
@@ -191,7 +191,7 @@ class HuangQueCard extends ACard {
 
 }
 
-class XingFeiCard extends ACard {
+export class XingFeiCard extends ACard {
     cardName: CardName = CardName.XingFei;
     protected onEffect(me: Human, he: Human) {
         for (var i = 0;i < 2;i ++) {
@@ -206,7 +206,7 @@ class XingFeiCard extends ACard {
     }
 }
 
-class HaiDiCard extends ACard {
+export class HaiDiCard extends ACard {
     cardName: CardName = CardName.HaiDi;
     protected onEffect(me: Human, he: Human) {
         
@@ -273,159 +273,3 @@ export class TangLangCard extends ACard {
 
 }
 
-export class CardList {
-    // 卡组
-    private _item: ACard[];
-    // 已消耗/持续的牌的位置
-    private _costed: boolean[]; 
-    // 星位
-    private _star: boolean[];
-
-    // 下一张牌
-    private _curCardIndex: number;
-    // 卡牌使用顺序
-    private _cardOrder: CardOrder;
-
-    // 空间
-    public get size(): number {
-        return this._item.length;
-    }
-
-    public get cardOrder(): CardOrder {
-        return this._cardOrder;
-    }
-
-    constructor(item: ACard[]) {
-        this._item = item;
-        this.reset();
-    }
-
-    public reset() {
-        this._costed = [];
-        this._star = [];
-        this._curCardIndex = 0;
-        this._cardOrder = CardOrder.L2R;
-        for(var i = 0;i < this.size;i ++){
-            this._star[i] = i == 2 || i == 5;
-            this._costed[i] = false;
-        }
-    }
-    
-    public GetCur(): ACard {
-        return this._item[this._curCardIndex];
-    }
-    
-    public IsOnStar(): boolean {
-        return this._star[this._curCardIndex];
-    }
-
-    public SetCardOrder(cardOrder: CardOrder) {
-        this._cardOrder = cardOrder;
-    }
-
-    public CostCur() {
-        this._costed[this._curCardIndex] = true;
-    }
-
-    public PosBack() {
-        this._ShiftCard(-1);
-    }
-    
-    public PosShift() {
-        this._ShiftCard(1);
-    }
-
-    // time为负时代表反方向
-    private _ShiftCard(time: number) {
-        const ajust = (num, size) => {
-            if(num >= 0) {
-                return num % size;
-            } else {
-                return ajust(size + num, size);
-            }
-        }
-
-        var absTime = Math.abs(time);
-        var step = (this._cardOrder == CardOrder.L2R ? 1 : -1) * (time > 0 ? 1 : -1);
-        var size = this.size;
-        while(absTime > 0){
-            var cur = this._curCardIndex;
-            var sum = step;
-            while(this._costed[ajust(cur + sum, size)]) {
-                sum += step;
-            }
-            this._curCardIndex = ajust(cur + sum, size);
-            absTime--;
-        }
-    }
-
-    public toString(): string {
-        return this._item.reduce((p,c,i)=> {
-            var curMark = i == this._curCardIndex ? ">" : "";
-            var costMark = this._costed[i] ? "*" : "";
-            return p + ` ${costMark}${curMark}${c.cardName}${c._level}`
-        },"");
-    }
-}
-
-
-var AllCardType = [
-    HitCard, DCTuneCard, BeiGongCard, FeiTaCard, TongXinCard,
-    MeiKaiCard, HuangQueCard, XingFeiCard, HaiDiCard, TangLangCard,
-    GoldChanCard, QiTunCard,
-] 
-
-export class CardListFactory {
-    private static _me: CardListFactory;
-    public static Size: number = 8;
-    public static get me(): CardListFactory {
-        if(!this._me) {
-            this._me = new CardListFactory();
-        }
-        return this._me;
-    }
-
-    private _dict: Object;    
-    private constructor() {
-        this._dict = {};
-        AllCardType.forEach(type => {
-            var card = new type() as ACard;
-            this._dict[card.cardName] = type;
-        });
-    }
-    public SplitCode(code: string): CardInfo[] {
-        var ret: Array<CardInfo> = [];
-        var arg = code == "" ? [] : code.split(" ");
-        for(var i = 0;i < CardListFactory.Size;i++) {
-            var index = i * 2;
-            if(index >= arg.length || 
-                arg[index] == undefined || arg[index] == "_") {
-                ret.push({
-                    name: CardName.Hit,
-                    level: 1
-                });
-            } else {
-                ret.push({
-                    name: arg[index] as CardName,
-                    level: parseInt(arg[index + 1])
-                });
-            }
-        }
-        return ret;
-    }
-    public FormList(infoList: Array<CardInfo>): CardList {
-        var ret: ACard[] = [];
-        infoList.forEach(info => {
-            var cardType = this._dict[info.name];
-            if(!cardType) {
-                throw "unknown card " + info.name;
-            }
-            var card: ACard = new cardType();
-            card.init(info.level);
-            ret.push(card);
-        })
-        return new CardList(ret);
-    }
-}
-
-//#endregion CARD

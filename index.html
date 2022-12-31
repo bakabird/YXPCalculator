@@ -4,16 +4,33 @@
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
-    <link href="./styles.css" rel="stylesheet">
+    <script src="./jquery-3.6.3.min.js"></script>
+    <link href="./css/styles.css" rel="stylesheet">
     <title>Hello World!</title>
   </head>
   <body>
-    <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
+    <div class="CardBox">
+    </div>
+    <div class="CardSearch">
+      <input type="text" placeholder="输入卡牌拼英首字母" value=""/> 
+      <div class="selection"></div>
+    </div>
+    <div class="Hub"> 
+      <div class="Card">
+        <div class="levelG">
+          <Button class="one"></Button>
+          <Button class="two"></Button>
+          <Button class="three"></Button>
+        </div>
+        <img class="cardFace" src="./img/普通攻击_1级.png" alt="">
+        <img class="arrow" src="./ui/Arrow.png" alt="">
+      </div>
+      <button class="cardBtn">
+        普通攻击
+      </button>
+    </div>
 
     <!-- You can also require other files to run in this process -->
-    <script src="./renderer.js"></script>
+    <script src="./Brower/renderer.js"></script>
   </body>
 </html>

@@ -1,5 +1,6 @@
-import { CardInfo, CardListFactory } from "./Card"
-import { FightReport } from "./index"
+import { CardInfo } from "./Card"
+import { CardListFactory } from "./CardListFactory";
+import { FightReport } from "./Miri"
 
 export type Sumamry = Array<{
     fr: FightReport,

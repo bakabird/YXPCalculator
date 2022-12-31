@@ -2,9 +2,8 @@
   "name": "yxpcalculator",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "./main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron ."
   },
   "author": "",
@@ -12,5 +11,11 @@
   "devDependencies": {
     "@types/node": "^18.11.16",
     "electron": "^22.0.0"
+  },
+  "dependencies": {
+    "@types/jquery": "^3.5.14",
+    "fuzzy-search": "^3.2.1",
+    "pinyin": "^3.0.0-alpha.4",
+    "tesseract.js": "^4.0.2"
   }
 }
