@@ -21,6 +21,14 @@ class Eventer {
     }
 }
 
+function readLastKey() {
+    return localStorage.getItem("lastKey");
+}
+
+function saveLastKey(key: string) {
+    localStorage.setItem("lastKey", key);
+}
+
 class CardWrap {
     public eventer: Eventer = new Eventer();
     private _cardFace: JQuery<HTMLImageElement>;
@@ -30,6 +38,13 @@ class CardWrap {
     private _level: number;
     public get node() {
         return this._node;
+    }
+    public get level(): number {
+        return this._level;
+    }
+    public set level(v: number) {
+        this._level = v;
+        this.uptFace();
     }
     public get cardname(): string {
         return this._cardname;
@@ -52,16 +67,15 @@ class CardWrap {
         allLevelBtn.each((index, btn) => {
             const btnIndex = index;
             $(btn).on("click", ()=>{
-                this._level = btnIndex;
-                allLevelBtn.removeClass("on");
-                $(btn).addClass("on");
-                this.uptFace();
+                this.level = btnIndex;
             });
-            if(index == 0) $(btn).addClass("on");
         })
     }
     public uptFace() {
         this._cardFace.attr("src", `./img/${this.cardname}_${this._level + 1}级.png`);
+        this._levelG.children().removeClass("on");
+        $(this._levelG.children().get(this.level)).addClass("on");
+        this.eventer.event("uptFace");
     }
     public oShowArrow() {
         this._arrow.css("opacity", 1);
@@ -77,8 +91,22 @@ class CardListWrap {
     constructor() {
         this._list = [];
     }
+    public get key():string {
+        return this._list.reduce((p,c)=>{
+            return p + c.cardname + "," + c.level + ";"
+        },"")
+    }
+    public set key(v: string) {
+        v.split(";").forEach((part,index) => {
+            if(part == "" || index >= this._list.length) return
+            const [cardName,level] = part.split(",");
+            this._list[index].cardname = cardName;
+            this._list[index].level = parseInt(level);
+        })
+    }
     public add(cardWrap: CardWrap) {
         cardWrap.eventer.add("clickFace", this.onClickFace.bind(this));
+        cardWrap.eventer.add("uptFace", this.onUptFace.bind(this));
         this._list.push(cardWrap);
     }
     public each(walk: (card: CardWrap)=>void) {
@@ -102,6 +130,9 @@ class CardListWrap {
                 i.oHideArrow();
             }
         })
+    }
+    public onUptFace() {
+        saveLastKey(this.key);
     }
 }
 
@@ -191,6 +222,7 @@ var cardItem = $(".Hub .Card");
 var cardBox = $(".CardBox");
 const cardListWrap = new CardListWrap();
 const searchWrap = new CardSearchWrap($(".CardSearch"));
+const lastKey = readLastKey()
 for(var i = 0;i < 8;i++) {
     const item = cardItem.clone(false, false);
     const cardWrap = new CardWrap(item, i);
@@ -201,4 +233,7 @@ cardListWrap.onClickFace(0);
 searchWrap.eventer.add("chooseDown", (name: string)=>{
     cardListWrap.modCard(name);
 })
+if(lastKey) {
+    cardListWrap.key = lastKey;
+}
 
