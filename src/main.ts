@@ -1,6 +1,10 @@
-import { CardListFactory } from "./CardListFactory"
+import CardSearcher from "./CardSearcher";
+import WorkerMsg from "./WorkerMsg";
 
 // Modules to control application life and create native browser window
+const {
+  Worker, isMainThread, parentPort, workerData
+} = require('node:worker_threads');
 const {app, Menu, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 const isMac = process.platform === 'darwin'
@@ -25,6 +29,8 @@ const template = [
     label: 'File',
     submenu: [
       { role: 'toggleDevTools' },
+      { role: 'reload' },
+      { role: 'forceReload' },
       isMac ? { role: 'close' } : { role: 'quit' },
     ]
   },
@@ -68,7 +74,7 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
     }
   })
 
@@ -79,8 +85,48 @@ function createWindow () {
   // mainWindow.webContents.openDevTools()
 }
 
+function CreateReport (_, key:string) {
+  // Create the browser window.
+  const reportWindow = new BrowserWindow({
+    width: 600,
+    height: 800,
+    webPreferences: {
+      nodeIntegrationInWorker: true,
+      preload: path.join(__dirname, 'preload.js'),
+    }
+  })
+  const reportWorker = new Worker("./ReportThread.js", {
+    workerData: {
+      cardKey: key,
+    }
+  });
+  reportWorker.on('message', (workerMsg: WorkerMsg)=>{
+    switch(workerMsg.type) {
+      case "process-over":
+        reportWindow.webContents.send('Miri.ProcessOver', workerMsg.data);
+        break;
+    }
+  });
+  reportWorker.on('error', (err)=>{
+    console.error(err);
+  });
+  reportWorker.on('exit', (code) => {
+    if (code !== 0)
+      new Error(`Worker stopped with exit code ${code}`)
+  });
+
+
+  // and load the index.html of the app.
+  reportWindow.loadFile('report.html')
+  reportWindow.removeMenu();
+
+  // Open the DevTools.
+  // reportWindow.webContents.openDevTools()
+}
+
+
 function SearchCard(_event, inKey: string): Array<string> {
-  return CardListFactory.me.Search(inKey);
+  return CardSearcher.me.Search(inKey);
 }
 
 // This method will be called when Electron has finished
@@ -88,6 +134,7 @@ function SearchCard(_event, inKey: string): Array<string> {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   ipcMain.handle("Miri.SearchCard", SearchCard)
+  ipcMain.on("Main.Report", CreateReport)
   createWindow()
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

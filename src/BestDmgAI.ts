@@ -1,12 +1,7 @@
 import { CardInfo } from "./Card"
 import { CardListFactory } from "./CardListFactory";
-import { FightReport } from "./Miri"
-
-export type Sumamry = Array<{
-    fr: FightReport,
-    index: number,
-    cards: Array<CardInfo>,
-}>
+import { FightReport } from "./FightReport";
+import { Sumamry } from "./Sumamry";
 
 export class BestDmgAI {
     private _baseInfo: Array<CardInfo>;
@@ -56,7 +51,7 @@ export class BestDmgAI {
     private _FetchPossibleCardInfo(possibleIndex: number) {
         return this._allPossible[possibleIndex].map(pos => this._baseInfo[pos]);
     }
-    public reportSumamry(): Sumamry {    
+    public reportSumamry(s: Sumamry) {    
         var tmp = this._allFightReport.map((fr,index) => ({ fr, index }))
         tmp.sort((a,b)=>{
             var tmp = a.fr.heRoundHp.length - b.fr.heRoundHp.length;
@@ -65,16 +60,10 @@ export class BestDmgAI {
             } 
             return a.fr.heRoundHp[a.fr.heRoundHp.length - 1] - b.fr.heRoundHp[b.fr.heRoundHp.length - 1];
         });
-        var sum: Sumamry = tmp.slice(0, 30).map(obj => ({
-                fr: obj.fr,
-                index: obj.index,
-                cards: this._FetchPossibleCardInfo(obj.index),
-            }));
-        for(var i = 0;i < 5;i++){
-            console.log("TOP " + i);
-            console.log(...sum[i].cards.map(info => info.name+info.level));
-            console.log(...sum[i].fr.heRoundHp);
-        }
-        return sum;
+        s.dmgAI = tmp.slice(0, 1).map(obj => ({
+            fr: obj.fr,
+            index: obj.index,
+            cards: this._FetchPossibleCardInfo(obj.index),
+        }));
     }
 }

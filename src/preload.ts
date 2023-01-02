@@ -11,6 +11,12 @@ contextBridge.exposeInMainWorld('electronAPI',{
   searchCard: (key: string) => {
     return ipcRenderer.invoke('Miri.SearchCard', key)
   },
+  createReport: (key: string) => {
+    ipcRenderer.send("Main.Report", key);
+  },
+  onProcessOver: (callback) => {
+    ipcRenderer.on("Miri.ProcessOver", callback);
+  },
 })
 
 window.addEventListener('DOMContentLoaded', () => {

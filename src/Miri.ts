@@ -1,11 +1,10 @@
 import { BES, BuffId } from "./Buff";
 import { CardInfo, CardName as C } from "./Card"
 import { Human } from "./Human";
-import { BestDmgAI, Sumamry } from "./BestDmgAI"
-import { Debug } from "./Debug";
-import * as readline from 'readline';
-import { stdin as input, stdout as output } from 'process';
+import { BestDmgAI } from "./BestDmgAI"
 import { CardListFactory } from "./CardListFactory";
+import { FightReport } from "./FightReport";
+import { Sumamry } from "./Sumamry";
 
 
 //每次行动
@@ -17,14 +16,14 @@ class Action {
     public effect() {
         var me = this._actor;
         var he = this._target;
-
-        Debug.debug(`【行动开始】${me.name} ---- ---- ----`)
+        
+        if(me.hp <= 0) return;
         me.EffectBuff(BES.RoundStart);
         me.EffectCard(he);
         if (me.CheckBuff(BuffId.MoveAgain, 1)) {
             me.EffectCard(he);
         }
-        me.RemoveBuff(BuffId.MoveAgain);
+        me.RemoveBuff(BuffId.MoveAgain, "再动结束");
     }
 }
 
@@ -32,33 +31,28 @@ class Action {
 class Round {
     constructor(private _index: number, private _me: Human, private _he: Human) {
     }
-    effect() {
+    effect(fr: FightReport) {
+        fr.meUseCard.push([]);
         var meAct = new Action(this._me, this._he);
         var heAct = new Action(this._he, this._me);
+        this._me.connectReport(fr, { 
+            cardUse: true, hpChg: true, buffChg: true, cardUseLog: true});
+        this._he.connectReport(fr, { 
+            cardUse: false, hpChg: true, buffChg: true, cardUseLog: true });
         if (this._me.speed > this._he.speed) {
-            this.reportHumanStatu();
             meAct.effect();
-            this.reportHumanStatu();
+            fr.apeendLog(`--- --- ---`)
             heAct.effect();
         } else {
-            this.reportHumanStatu();
             heAct.effect();
-            this.reportHumanStatu();
+            fr.apeendLog(`--- --- ---`)
             meAct.effect();
         }
-    }
-    reportHumanStatu() {
-        this._me.reportStatu();
-        this._he.reportStatu();
+        this._me.disconnectReport();
+        this._he.disconnectReport();
     }
 }
 
-export class FightReport {
-    public meRoundHp: number[];
-    public heRoundHp: number[];
-    constructor() {
-    }
-}
 
 //每场战斗
 class Fight {
@@ -67,84 +61,75 @@ class Fight {
     }
     Play(): FightReport {
         var index = 0;
+        var fightReport = new FightReport();
         var meRoundHp = [this._me.hp];
+        var meRoundMaxHp = [this._me.maxHp];
         var heRoundHp = [this._he.hp];
+        var heRoundMaxHp = [this._he.maxHp];
+        fightReport.meUseCard.push([]);
         while (index < 64 && this._me.hp > 0 && this._he.hp > 0) {
+            fightReport.apeendLog(`\n：：：第${index+1}轮：：：`)
             var round = new Round(index, this._me, this._he);
-            Debug.debug("=== ==== ==== ==== ==== ==== ==== ===");
-            Debug.debug(`==== ==== 【【【回合${index + 1}】】】 ==== ====`);
-            Debug.debug("=== ==== ==== ==== ==== ==== ==== ===");
-            Debug.debug("");
-            round.effect();
+            round.effect(fightReport);
             index++;
             meRoundHp.push(this._me.hp);
+            meRoundMaxHp.push(this._me.maxHp);
             heRoundHp.push(this._he.hp);
+            heRoundMaxHp.push(this._he.maxHp);
         }
-        Debug.debug("--- OVER ---")
-        this._me.reportStatu();
-        this._he.reportStatu();
-        Debug.debug(" meHpLog " + meRoundHp.reduce((p, cur, index, arr) => {
-            return p + `[${index}]${cur}` + (index > 0 ? `(${cur - arr[index - 1]}) ` : " ")
-        }, ""));
-        Debug.debug(" heHpLog " + heRoundHp.reduce((p, cur, index, arr) => {
-            return p + `[${index}]${cur}` + (index > 0 ? `(${cur - arr[index - 1]}) ` : " ")
-        }, ""));
-        Debug.debug("--- OVER ---")
-
-        var fightReport = new FightReport();
         fightReport.meRoundHp = meRoundHp;
+        fightReport.meRoundMaxHp = meRoundMaxHp;
         fightReport.heRoundHp = heRoundHp;
+        fightReport.heRoundMaxHp = heRoundMaxHp;
         return fightReport;
     }
 }
 
-async function ViewSumamry(sumamry: Sumamry) {
-    const rl = readline.createInterface({ input, output });
-    
-    const answer = await new Promise<string>((rso,rje)=> {
-        rl.question("要了解第几套卡组?(输入X退出)", (answer)=>{
-            rso(answer);
-        });
-    }) 
-    rl.close();
-    if (answer == "X") {
-        process.exit();
-    } else {
-        var index = parseInt(answer);
-        var item = sumamry[index];
-        Play(me, item.cards, he, heCardInfos);
-        ViewSumamry(sumamry);
+export class Miri {
+    private _onMsg: (msgType: string, msgData: any)=>void;
+    constructor(public cardCode: string) {
+        
+    }
+
+    private _play(
+        me: Human, meCard: Array<CardInfo>,
+        he: Human, heCard: Array<CardInfo>,
+    ) {
+        var meCardList = CardListFactory.me.FormList(meCard)
+        var heCardList = CardListFactory.me.FormList(heCard)
+        me.Reset();
+        he.Reset();
+        me.SetCardList(meCardList);
+        he.SetCardList(heCardList);
+        var fight = new Fight(me, he);
+        return fight.Play();
+    }
+
+    public onmessage(onMsg: (msgType: string, msgData: any)=>void) {
+        this._onMsg = onMsg;
+    }
+
+    public Go() {
+        var heCardInfos = CardListFactory.me.SplitCode("");
+        var sum: Sumamry = new Sumamry();
+        var he: Human = new Human("胖虎", 110, 0);
+        var me: Human = new Human("大雄", 110, 50);
+        var meCardInfos = CardListFactory.me.SplitCode(this.cardCode);
+        var dmgAI = new BestDmgAI(this.cardCode);
+        sum.cur = {
+            fr: this._play(me, meCardInfos, he, heCardInfos),
+            card: meCardInfos
+        };
+        meCardInfos = dmgAI.Fetch()
+        while (meCardInfos) {
+            var fr = this._play(me, meCardInfos, he, heCardInfos);
+            dmgAI.RecordThenMoveNext(fr);
+            meCardInfos = dmgAI.Fetch();
+        }
+        dmgAI.reportSumamry(sum)
+        this._onMsg("process-over", sum);
     }
 }
 
-function Play(
-    me: Human, meCard: Array<CardInfo>,
-    he: Human, heCard: Array<CardInfo>,
-) {
-    var meCardList = CardListFactory.me.FormList(meCard)
-    var heCardList = CardListFactory.me.FormList(heCard)
-    me.Reset();
-    he.Reset();
-    me.SetCardList(meCardList);
-    he.SetCardList(heCardList);
-    var fight = new Fight(me, he);
-    return fight.Play();
-}
-
-
-var heCardInfos = CardListFactory.me.SplitCode("");
-var meCardCode = "断肠 2 杯弓 1 飞踏 1 同心 1 杯弓 1 杯弓 1 黄雀 1";
-var ai = new BestDmgAI(meCardCode);
-var meCardInfos = ai.Fetch()
-var me: Human = new Human("大雄", 110, 50);
-var he: Human = new Human("胖虎", 110, 0);
-Debug.debugLevel = 1;
-while (meCardInfos) {
-    var fr = Play(me, meCardInfos, he, heCardInfos);
-    ai.RecordThenMoveNext(fr);
-    meCardInfos = ai.Fetch();
-}
-Debug.debugLevel = 0;
-ViewSumamry(ai.reportSumamry());
 
 

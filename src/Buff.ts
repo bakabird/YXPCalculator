@@ -17,13 +17,16 @@ export enum BO {
 }
 
 export enum BuffId {
-    Posion = "毒",
-    DC = "断肠",
     Mana = "灵气",
     MoveAgain = "再动",
+    Shield = "护甲",
+    Posion = "毒",
+    DC = "断肠",
     MeiKai = "梅开",
     HuangQue = "黄雀",
     Protect = "护体",
+    YunJian = "云剑",
+    Pierce = "无视防御",
 }
 
 export abstract class ABuff {
@@ -102,7 +105,7 @@ export class DCBuff extends ABuff {
         if(stage == BES.RoundStart) {
             var Buff = new PosionBuff();
             Buff.init(this._owner, this.num);
-            this._owner.AddBuff(Buff);
+            this._owner.AddBuff(Buff, this.id);
         }
     }
 
@@ -135,12 +138,45 @@ export class HuangQueBuff extends ABuff {
     }
     effect(stage: BES) {
     }
+}
+
+export class YunJianBuff extends ABuff {
+    id: BuffId = BuffId.YunJian;
+    getEffectOrder(stage: BES): BO {
+        return BO.Last;
+    }
+    effect(stage: BES) {
+    }
+}
+
+export class ShieldBuff extends ABuff {
+    id: BuffId = BuffId.Shield;
+    getEffectOrder(stage: BES): BO {
+        return BO.First;
+    }
+    effect(stage: BES) {
+        if(stage == BES.RoundStart) {
+            this._owner.AddBuff(
+                BuffFactory.me.Produce(this.id, this._owner, -Math.ceil(this.num / 2)), "回合削减")
+        }
+    }
+
+}
+
+export class PierceBuff extends ABuff {
+    id: BuffId = BuffId.Pierce;
+    getEffectOrder(stage: BES): BO {
+        return BO.Last;
+    }
+    effect(stage: BES) {
+    }
 
 }
 
 var AllBuffType = [
     PosionBuff, ManaBuff, DCBuff, MeiKaiBuff, MoveAgainBuff,
-    HuangQueBuff, ProtectBuff,
+    HuangQueBuff, ProtectBuff, YunJianBuff, ShieldBuff,
+    PierceBuff, 
 ]
 
 export class BuffFactory {

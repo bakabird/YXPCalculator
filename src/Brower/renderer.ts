@@ -218,10 +218,26 @@ class CardSearchWrap {
     }
 }
 
+
+class BarWrap {
+    constructor(
+        private _node: JQuery<HTMLElement>, 
+        private _cardListWrap: CardListWrap
+    ) {
+        _node.children(".analysis").on("click", ()=>{
+            window.electronAPI.createReport(this._cardListWrap.key);
+        });
+        _node.children(".fix").on("click", ()=>{
+            localStorage.clear();
+        });
+    }
+}
+
 var cardItem = $(".Hub .Card");   
 var cardBox = $(".CardBox");
 const cardListWrap = new CardListWrap();
 const searchWrap = new CardSearchWrap($(".CardSearch"));
+const bar = new BarWrap($(".Bar"), cardListWrap);
 const lastKey = readLastKey()
 for(var i = 0;i < 8;i++) {
     const item = cardItem.clone(false, false);
@@ -236,4 +252,3 @@ searchWrap.eventer.add("chooseDown", (name: string)=>{
 if(lastKey) {
     cardListWrap.key = lastKey;
 }
-

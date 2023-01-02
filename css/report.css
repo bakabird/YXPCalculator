@@ -1,0 +1,26 @@
+.hide {
+    display: none;
+}
+
+.cards {
+    display: flex;
+}
+
+.Card {
+    flex: 1;
+}
+.Card img{
+    width: 100%;
+}
+
+
+
+
+
+
+
+.shortwin {
+    max-height: 320px;
+    overflow-y: scroll;
+}
+

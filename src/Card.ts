@@ -1,5 +1,4 @@
-import { ABuff, BuffFactory, BuffId, DCBuff, ManaBuff, PosionBuff } from "./Buff";
-import { Debug } from "./Debug";
+import { ABuff, BES, BuffFactory, BuffId, DCBuff, ManaBuff, PosionBuff } from "./Buff";
 import { Human } from "./Human"
 
 //#region CARD
@@ -17,6 +16,13 @@ export enum CardName {
     TangLang = "螳螂捕蝉",
     GoldChan = "金蝉脱壳",
     QiTun = "气吞山河",
+    YunTanYun = "云剑·探云",
+    YunFeiCi = "云剑·飞刺",
+    YunHouTu = "云剑·厚土",
+    LightSword = "轻剑",
+    ManaProtectMe = "护身灵气",
+    ManaInside = "灵气灌注",
+
 }
 
 export enum CardOrder {
@@ -35,6 +41,8 @@ export type CardInfo = {
     level: number,
 }
 
+type CardEffect = (me: Human,he: Human)=>void;
+
 export abstract class ACard {
     abstract cardName: CardName;
     _level: CardLevel;
@@ -47,19 +55,31 @@ export abstract class ACard {
         this._useNum = 0;
     };
     public effect(me:Human, he: Human) {
-        Debug.debug(`【卡牌使用】${me.name} 使用 ${this.cardName}`)
+        const secondAct = this.onGetSecondAct();
+        const starAct = this.onGetStarAct();
+        const yunAct = this.onGetYunAct();
         this.onEffect(me, he);
-        if (me.CardList.IsOnStar()) {
-            this.onEffectStar(me, he);
+        if (starAct) {
+            if (me.CardList.IsOnStar()){
+                starAct(me, he);
+            }
         }
-        if (this.onGetSecondAct()){
+        if (secondAct){
             if(this._useNum > 0) {
-                this.onEffectSecAct(me, he)
+                secondAct(me, he);
             }
             var buff = me.GetBuff(BuffId.HuangQue);
             if(buff && buff.num > 0) {
-                he.CutHp(buff.num, buff.id);
+                he.GetHit(buff.num, me, buff.id);
             }
+        }
+        if (yunAct && me.CheckBuff(BuffId.YunJian, 1)) {
+            yunAct(me, he);
+        }
+        if (this.cardName.startsWith("云剑")) {
+            me.AddBuff(BuffFactory.me.Produce(BuffId.YunJian, me, 1), this.cardName);
+        } else {
+            me.RemoveBuff(BuffId.YunJian, "用牌结束");
         }
         this._useNum++;
     }
@@ -67,18 +87,20 @@ export abstract class ACard {
     protected onGetMana(): number {
         return 0;
     }
-    // 是否含后招
-    protected onGetSecondAct(): boolean {
-        return false;
-    }
     // 卡牌效果
     protected abstract onEffect(me: Human, he: Human);
     // 后招效果
-    protected onEffectSecAct(me: Human, he: Human){
-    };
+    protected onGetSecondAct(): CardEffect {
+        return null;
+    }
     // 星位效果
-    protected onEffectStar(me: Human, he: Human) {
-    };
+    protected onGetStarAct(): CardEffect {
+        return null;
+    }
+    // 云剑效果
+    protected onGetYunAct(): CardEffect {
+        return null;
+    }
 
     protected _lvlVal<T>(normal: T, rare: T, legend: T): T  {
         switch(this._level) {
@@ -108,7 +130,7 @@ export abstract class ACard {
 export class HitCard extends ACard {
     cardName: CardName = CardName.Hit;
     onEffect(me: Human, he: Human) {
-        he.CutHp(3, this.cardName);
+        he.GetHit(3, me, this.cardName);
     }
 }
 
@@ -120,8 +142,8 @@ export class DCTuneCard extends ACard {
         var val = this._lvlVal(1,2,3);
         meBuff.init(me, val);
         heBuff.init(he, val);
-        me.AddBuff(meBuff);
-        he.AddBuff(heBuff);
+        me.AddBuff(meBuff, this.cardName);
+        he.AddBuff(heBuff, this.cardName);
         me.CardList.CostCur();
     }    
 }
@@ -131,9 +153,9 @@ export class BeiGongCard extends ACard {
     onEffect(me: Human, he: Human) {
         var posionBuff = new PosionBuff();
         posionBuff.init(he, this._lvlVal(2, 3, 4));
-        he.AddBuff(posionBuff);
+        he.AddBuff(posionBuff, this.cardName);
         var buff = he.GetBuff(BuffId.Posion);
-        he.CutHp(buff.num, this.cardName);
+        buff.effect(BES.RoundStart);
     }
 }
 
@@ -142,16 +164,15 @@ export class FeiTaCard extends ACard {
     protected onEffect(me: Human, he: Human) {
         var buff = new ManaBuff();
         buff.init(me, this._lvlVal(3,3,4));
-        me.AddBuff(buff);
+        me.AddBuff(buff, this.cardName);
         if(!this.onGetSecondAct()) {
-            me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1));
+            me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1), this.cardName);
         }
     }
-    protected onGetSecondAct(): boolean {
-        return this._lvlVal(true, false, false)
-    }
-    protected onEffectSecAct(me: Human, he: Human) {
-        me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1));
+    protected onGetSecondAct(): CardEffect{
+        return this._lvlVal((me: Human, he: Human)=>{
+            me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1), this.cardName);
+        }, null, null)
     }
 }
 
@@ -160,7 +181,7 @@ export class TongXinCard extends ACard {
     protected onEffect(me: Human, he: Human) {
         me.EachBuff((buff) => {
             if(ABuff.IsDebuff(buff.id)){
-                he.AddBuff(BuffFactory.me.Produce(buff.id, he, buff.num));
+                he.AddBuff(BuffFactory.me.Produce(buff.id, he, buff.num), this.cardName);
             }
         })
     }
@@ -173,7 +194,7 @@ export class MeiKaiCard extends ACard {
     cardName: CardName = CardName.MeiKai;
     protected onEffect(me: Human, he: Human) {
         me.AddHp(this._lvlVal(2, 8, 14), this.cardName);
-        me.AddBuff(BuffFactory.me.Produce(BuffId.MeiKai, me, 1));
+        me.AddBuff(BuffFactory.me.Produce(BuffId.MeiKai, me, 1), this.cardName);
     }
     protected onGetMana(): number {
         return 1;
@@ -185,7 +206,7 @@ export class HuangQueCard extends ACard {
     protected onEffect(me: Human, he: Human) {
         var cardList = me.CardList;
         cardList.SetCardOrder(cardList.cardOrder == CardOrder.L2R ? CardOrder.R2L : CardOrder.L2R);
-        me.AddBuff(BuffFactory.me.Produce(BuffId.HuangQue, me, this._lvlVal(7, 10, 13)));
+        me.AddBuff(BuffFactory.me.Produce(BuffId.HuangQue, me, this._lvlVal(7, 10, 13)), this.cardName);
         cardList.CostCur();
     }
 
@@ -195,11 +216,11 @@ export class XingFeiCard extends ACard {
     cardName: CardName = CardName.XingFei;
     protected onEffect(me: Human, he: Human) {
         for (var i = 0;i < 2;i ++) {
-            he.CutHp(this._lvlVal(2,4,6), this.cardName);
+            he.GetHit(this._lvlVal(2,4,6), me, this.cardName);
         }
     }
     protected onEffectStar(me: Human, he: Human): void {
-        me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1));
+        me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1), this.cardName);
     }
     protected onGetMana(): number {
         return 1;
@@ -211,12 +232,11 @@ export class HaiDiCard extends ACard {
     protected onEffect(me: Human, he: Human) {
         
     }
-    protected onGetSecondAct(): boolean {
-        return true;
-    }
-    protected onEffectSecAct(me: Human, he: Human): void {
-        he.CutHp(this._lvlVal(12, 18 ,24), this.cardName);
-        me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1));
+    protected onGetSecondAct() {
+        return (me: Human, he: Human)=>{
+            he.GetHit(this._lvlVal(12, 18 ,24), me, this.cardName);
+            me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1), this.cardName);
+        };
     }
     
 }
@@ -224,16 +244,16 @@ export class HaiDiCard extends ACard {
 export class QiTunCard extends ACard {
     cardName: CardName = CardName.QiTun;
     protected onEffect(me: Human, he: Human) {
-        me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1))
+        me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1), this.cardName)
+        me.AddMaxHp(this._lvlVal(12, 16, 20), this.cardName);
     }
     protected onGetMana(): number {
         return 2;
     }
-    protected onGetSecondAct(): boolean {
-        return true;
-    }
-    protected onEffectSecAct(me: Human, he: Human): void {
-        me.AddHp(this._lvlVal(24, 31, 38), this.cardName);
+    protected onGetSecondAct() {
+        return (me, he) => {
+            me.AddHp(this._lvlVal(24, 31, 38), this.cardName);
+        };
     }
 }
 
@@ -246,11 +266,10 @@ export class GoldChanCard extends ACard {
     protected onGetMana(): number {
         return 1;
     }
-    protected onGetSecondAct(): boolean {
-        return true;
-    }
-    protected onEffectSecAct(me: Human, he: Human): void {
-        me.AddBuff(BuffFactory.me.Produce(BuffId.Protect, me, 1));        
+    protected onGetSecondAct(): CardEffect {
+        return (me: Human, he: Human) => {
+            me.AddBuff(BuffFactory.me.Produce(BuffId.Protect, me, 1), this.cardName);        
+        }
     }
 }
 
@@ -258,18 +277,73 @@ export class TangLangCard extends ACard {
     cardName: CardName = CardName.TangLang;
     protected onEffect(me: Human, he: Human) {
         for(var i = 0;i < 2;i++){
-            he.CutHp(this._lvlVal(2,3,4), this.cardName);
+            he.GetHit(this._lvlVal(2,3,4), me, this.cardName);
         }
         me.AddHp(this._lvlVal(4, 6, 8), this.cardName);
     }
 
-    protected onGetSecondAct(): boolean {
-        return true;
+    protected onGetSecondAct(): CardEffect {
+        return (me: Human,he: Human) => {
+            he.GetHit(this._lvlVal(7, 10, 13), me, this.cardName);
+        }
     }
+}
 
-    protected onEffectSecAct(me: Human, he: Human): void {
-        he.CutHp(this._lvlVal(7, 10, 13), this.cardName);
+export class YunTanYunCard extends ACard {
+    cardName: CardName = CardName.YunTanYun;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(6, 9, 12), me, this.cardName);
+    }
+}
+
+export class YunFeiCiCard extends ACard {
+    cardName: CardName = CardName.YunFeiCi;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(5,6,7), me, this.cardName);
+    }
+    protected onGetYunAct(): CardEffect {
+        return (me: Human, he: Human) => {
+            he.GetHit(this._lvlVal(3,5,7), me, this.cardName);
+        }
+    }
+}
+
+export class YunHouTuCard extends ACard {
+    cardName: CardName = CardName.YunHouTu;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(4,6,8), me, this.cardName)
+    }
+    protected onGetYunAct(): CardEffect {
+        return (me: Human, he:Human)=> {
+            me.AddBuff(BuffFactory.me.Produce(BuffId.Shield, me, this._lvlVal(4,6,8)), this.cardName);
+        }
     }
 
 }
 
+export class LightSwordCard extends ACard {
+    cardName: CardName = CardName.LightSword;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(4, me, this.cardName);
+        me.RecoverMana(this._lvlVal(1, 2, 3));
+    }
+
+}
+
+export class ManaProtectMeCard extends ACard {
+    cardName: CardName = CardName.ManaProtectMe;
+    protected onEffect(me: Human, he: Human) {
+        me.RecoverMana(this._lvlVal(1,2,3));
+        me.AddBuff(BuffFactory.me.Produce(BuffId.Shield, me, 5), this.cardName);
+    }
+
+}
+
+export class ManaInsideCard extends ACard {
+    cardName: CardName = CardName.ManaInside;
+    protected onEffect(me: Human, he: Human) {
+        me.RecoverMana(this._lvlVal(2,3,4));
+        me.AddBuff(BuffFactory.me.Produce(BuffId.Pierce, me, 1), this.cardName);
+    }
+
+}
