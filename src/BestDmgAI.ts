@@ -7,20 +7,25 @@ export class BestDmgAI {
     private _baseInfo: Array<CardInfo>;
     private _cur: number;
     private _allPossible: number[][];
-    private _allFightReport: FightReport[];
+    private _bestFightReport: FightReport;
+    private _cutCount: number;
+    public get best(): FightReport {
+        return this._bestFightReport;
+    }
+    public get cutCount(): number {
+        return this._cutCount;
+    }
     constructor(private _code: string) {
         this._baseInfo = CardListFactory.me.SplitCode(_code);
-        this.reset();
-    }
-    public reset() {
         var count = this._baseInfo.length - 1;
         var arr = [];
         while(count > -1){
             arr[count] = count--;
         }
-        this._allFightReport = [];
+        this._bestFightReport = null;
         this._allPossible = this._AllPossible(arr, CardListFactory.Size);
         this._cur = 0;
+        this._cutCount = 0;
     }
     private _AllPossible(arr: number[],pos: number): number[][] {
         var ret:number[][] = [];
@@ -44,26 +49,34 @@ export class BestDmgAI {
             return this._FetchPossibleCardInfo(this._cur);
         }
     }
+    public CutCheck(fightReport: FightReport) {
+        if(this._bestFightReport) {
+            if (fightReport.heRoundHp.length > this._bestFightReport.heRoundHp.length) {
+                this._cutCount++;
+                return true;
+            }
+        }
+        return false;
+    }
     public RecordThenMoveNext(fightReprot: FightReport) {
-        this._allFightReport[this._cur] = fightReprot
+        const best = this._bestFightReport;
+        const now = fightReprot;
+        if(now) {
+            if (best) {
+                if(best.heRoundHp.length > now.heRoundHp.length) {
+                    this._bestFightReport = now;
+                }  else if(best.heRoundHp.length == now.heRoundHp.length) {
+                    if(best.heRoundHp[best.heRoundHp.length - 1] > now.heRoundHp[now.heRoundHp.length - 1]) {
+                        this._bestFightReport = now;
+                    }
+                }
+            } else {
+                this._bestFightReport = now;
+            }
+        }
         this._cur++;
     }
     private _FetchPossibleCardInfo(possibleIndex: number) {
         return this._allPossible[possibleIndex].map(pos => this._baseInfo[pos]);
-    }
-    public reportSumamry(s: Sumamry) {    
-        var tmp = this._allFightReport.map((fr,index) => ({ fr, index }))
-        tmp.sort((a,b)=>{
-            var tmp = a.fr.heRoundHp.length - b.fr.heRoundHp.length;
-            if(tmp != 0) {
-                return tmp;
-            } 
-            return a.fr.heRoundHp[a.fr.heRoundHp.length - 1] - b.fr.heRoundHp[b.fr.heRoundHp.length - 1];
-        });
-        s.dmgAI = tmp.slice(0, 1).map(obj => ({
-            fr: obj.fr,
-            index: obj.index,
-            cards: this._FetchPossibleCardInfo(obj.index),
-        }));
     }
 }

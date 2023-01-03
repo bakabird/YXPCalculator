@@ -118,7 +118,7 @@ function CreateReport (_, key:string) {
 
   // and load the index.html of the app.
   reportWindow.loadFile('report.html')
-  reportWindow.removeMenu();
+  // reportWindow.removeMenu();
 
   // Open the DevTools.
   // reportWindow.webContents.openDevTools()

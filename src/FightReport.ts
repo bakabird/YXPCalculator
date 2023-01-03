@@ -1,4 +1,4 @@
-import { CardName } from "./Card";
+import { CardInfo, CardName } from "./Card";
 
 export type FROption = {
     hpChg: boolean; 
@@ -8,6 +8,8 @@ export type FROption = {
 }
 
 export class FightReport {
+    public meCards: CardInfo[];
+    public heCards: CardInfo[];
     public meUseCard: CardName[][];
     public meRoundHp: number[];
     public meRoundMaxHp: number[];
@@ -21,6 +23,8 @@ export class FightReport {
         this.log += log + "\n";
     }
     constructor() {
+        this.meCards = [];
+        this.heCards = [];
         this.meUseCard = [];
         this.meRoundHp = [];
         this.meRoundMaxHp = [];

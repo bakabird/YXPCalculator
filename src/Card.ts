@@ -45,10 +45,14 @@ type CardEffect = (me: Human,he: Human)=>void;
 
 export abstract class ACard {
     abstract cardName: CardName;
-    _level: CardLevel;
-    _useNum: number;
+    private _level: CardLevel;
+    private _useNum: number;
     public get mana(): number {
         return this.onGetMana();
+    }
+    // 初始化时被赋予的卡牌等级
+    public get initLevel() {
+        return this._level;
     }
     init(level: CardLevel) {
         this._level = level;
@@ -219,8 +223,10 @@ export class XingFeiCard extends ACard {
             he.GetHit(this._lvlVal(2,4,6), me, this.cardName);
         }
     }
-    protected onEffectStar(me: Human, he: Human): void {
-        me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1), this.cardName);
+    protected onGetStarAct(): CardEffect {
+        return (me: Human, he: Human) => {
+            me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1), this.cardName);
+        }
     }
     protected onGetMana(): number {
         return 1;

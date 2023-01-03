@@ -6,6 +6,7 @@ import { CardListFactory } from "./CardListFactory";
 import { FightReport } from "./FightReport";
 import { Sumamry } from "./Sumamry";
 
+type CutCheck = (fr: FightReport)=>boolean
 
 //每次行动
 class Action {
@@ -59,14 +60,22 @@ class Fight {
     constructor(private _me: Human, private _he: Human) {
 
     }
-    Play(): FightReport {
+    Play(cutCheck: CutCheck): FightReport {
         var index = 0;
         var fightReport = new FightReport();
         var meRoundHp = [this._me.hp];
         var meRoundMaxHp = [this._me.maxHp];
         var heRoundHp = [this._he.hp];
         var heRoundMaxHp = [this._he.maxHp];
+
+        fightReport.meCards = this._me.CardList.cardInfos;
+        fightReport.heCards = this._he.CardList.cardInfos;
+        fightReport.meRoundHp = meRoundHp;
+        fightReport.meRoundMaxHp = meRoundMaxHp;
+        fightReport.heRoundHp = heRoundHp;
+        fightReport.heRoundMaxHp = heRoundMaxHp;
         fightReport.meUseCard.push([]);
+
         while (index < 64 && this._me.hp > 0 && this._he.hp > 0) {
             fightReport.apeendLog(`\n：：：第${index+1}轮：：：`)
             var round = new Round(index, this._me, this._he);
@@ -76,11 +85,10 @@ class Fight {
             meRoundMaxHp.push(this._me.maxHp);
             heRoundHp.push(this._he.hp);
             heRoundMaxHp.push(this._he.maxHp);
+            if(cutCheck(fightReport)){
+                return null
+            }
         }
-        fightReport.meRoundHp = meRoundHp;
-        fightReport.meRoundMaxHp = meRoundMaxHp;
-        fightReport.heRoundHp = heRoundHp;
-        fightReport.heRoundMaxHp = heRoundMaxHp;
         return fightReport;
     }
 }
@@ -94,6 +102,7 @@ export class Miri {
     private _play(
         me: Human, meCard: Array<CardInfo>,
         he: Human, heCard: Array<CardInfo>,
+        cutCheck: CutCheck = ()=>false,
     ) {
         var meCardList = CardListFactory.me.FormList(meCard)
         var heCardList = CardListFactory.me.FormList(heCard)
@@ -102,7 +111,7 @@ export class Miri {
         me.SetCardList(meCardList);
         he.SetCardList(heCardList);
         var fight = new Fight(me, he);
-        return fight.Play();
+        return fight.Play(cutCheck);
     }
 
     public onmessage(onMsg: (msgType: string, msgData: any)=>void) {
@@ -116,17 +125,15 @@ export class Miri {
         var me: Human = new Human("大雄", 110, 50);
         var meCardInfos = CardListFactory.me.SplitCode(this.cardCode);
         var dmgAI = new BestDmgAI(this.cardCode);
-        sum.cur = {
-            fr: this._play(me, meCardInfos, he, heCardInfos),
-            card: meCardInfos
-        };
+        sum.cur = this._play(me, meCardInfos, he, heCardInfos);
         meCardInfos = dmgAI.Fetch()
         while (meCardInfos) {
-            var fr = this._play(me, meCardInfos, he, heCardInfos);
+            var fr = this._play(me, meCardInfos, he, heCardInfos, dmgAI.CutCheck.bind(dmgAI));
             dmgAI.RecordThenMoveNext(fr);
             meCardInfos = dmgAI.Fetch();
         }
-        dmgAI.reportSumamry(sum)
+        console.log(dmgAI.cutCount);
+        sum.dmgAI = dmgAI.best;
         this._onMsg("process-over", sum);
     }
 }

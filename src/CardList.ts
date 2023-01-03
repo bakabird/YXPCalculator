@@ -1,4 +1,4 @@
-import { ACard, CardOrder } from "./Card";
+import { ACard, CardInfo, CardOrder } from "./Card";
 
 export default class CardList {
     // 卡组
@@ -20,6 +20,15 @@ export default class CardList {
 
     public get cardOrder(): CardOrder {
         return this._cardOrder;
+    }
+
+    public get cardInfos(): Array<CardInfo> {
+        return this._item.map(i => {
+            return {
+                name: i.cardName,
+                level: i.initLevel,
+            }
+        })
     }
 
     constructor(item: ACard[]) {
@@ -90,7 +99,7 @@ export default class CardList {
         return this._item.reduce((p,c,i)=> {
             var curMark = i == this._curCardIndex ? ">" : "";
             var costMark = this._costed[i] ? "*" : "";
-            return p + ` ${costMark}${curMark}${c.cardName}${c._level}`
+            return p + ` ${costMark}${curMark}${c.cardName}${c.initLevel}`
         },"");
     }
 }

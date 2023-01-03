@@ -54,14 +54,11 @@ namespace reportRenderer {
         constructor(private _node: JQuery<HTMLElement>) {
             this._blue = $(".Hub .cards");
         }
-        public build(aiRcmd: Array<any>) {
-            console.log(aiRcmd)
-            aiRcmd.forEach(i => {
-                var item = this._blue.clone();
-                var list = new CardListWrap(item);
-                list.build(i.cards);
-                this._node.append(item);
-            });
+        public build(aiRcmd) {
+            var item = this._blue.clone();
+            var list = new CardListWrap(item);
+            list.build(aiRcmd.meCards);
+            this._node.append(item);
         }
     }
     
@@ -71,9 +68,9 @@ namespace reportRenderer {
         var clw = new CardListWrap($(".body .cards"));
         var rdw = new ReportDetailWrap($(".body .curFightReport"))
         var rw = new RecommendWrap($(".rcmd"));
-        clw.build(sumamry.cur.card);
-        rdw.build(sumamry.cur.fr);
-        $(".fightLog").text(sumamry.cur.fr.log);
+        clw.build(sumamry.cur.meCards);
+        rdw.build(sumamry.cur);
+        $(".fightLog").text(sumamry.cur.log);
         rw.build(sumamry.dmgAI);
     });
 }
