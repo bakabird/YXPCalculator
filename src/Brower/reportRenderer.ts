@@ -71,6 +71,6 @@ namespace reportRenderer {
         clw.build(sumamry.cur.meCards);
         rdw.build(sumamry.cur);
         $(".fightLog").text(sumamry.cur.log);
-        rw.build(sumamry.dmgAI);
+        rw.build(sumamry.dmgBest);
     });
 }

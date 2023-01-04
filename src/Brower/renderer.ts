@@ -225,7 +225,8 @@ class BarWrap {
         private _cardListWrap: CardListWrap
     ) {
         _node.children(".analysis").on("click", ()=>{
-            window.electronAPI.createReport(this._cardListWrap.key);
+            const threadNum = parseInt(_node.children("select")[0].value);
+            window.electronAPI.createReport(this._cardListWrap.key, threadNum);
         });
         _node.children(".fix").on("click", ()=>{
             localStorage.clear();

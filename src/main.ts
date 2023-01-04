@@ -85,7 +85,7 @@ function createWindow () {
   // mainWindow.webContents.openDevTools()
 }
 
-function CreateReport (_, key:string) {
+function CreateReport (_, key:string, threadNum: number) {
   // Create the browser window.
   const reportWindow = new BrowserWindow({
     width: 600,
@@ -95,9 +95,10 @@ function CreateReport (_, key:string) {
       preload: path.join(__dirname, 'preload.js'),
     }
   })
-  const reportWorker = new Worker("./ReportThread.js", {
+  const reportWorker = new Worker("./ReportWorker.js", {
     workerData: {
       cardKey: key,
+      threadNum,
     }
   });
   reportWorker.on('message', (workerMsg: WorkerMsg)=>{

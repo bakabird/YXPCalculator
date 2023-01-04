@@ -1,142 +1,141 @@
-import { BES, BuffId } from "./Buff";
-import { CardInfo, CardName as C } from "./Card"
 import { Human } from "./Human";
 import { BestDmgAI } from "./BestDmgAI"
 import { CardListFactory } from "./CardListFactory";
-import { FightReport } from "./FightReport";
 import { Sumamry } from "./Sumamry";
+import { Fight } from "./Fight";
+import WorkerMsg from "./WorkerMsg";
+import { FightReport } from "./FightReport";
+const {
+    Worker, isMainThread, parentPort, workerData
+  } = require('node:worker_threads');
 
-type CutCheck = (fr: FightReport)=>boolean
+// export class Miri {
+//     private _worker: MiriWorker;
+//     private _onMsg: (msgType: string, msgData: any)=>void;
+//     constructor(public cardCode: string) {
+//         this._worker = new MiriWorker("./MiriWorker.js");
+//     }
 
-//每次行动
-class Action {
-    constructor(private _actor: Human, private _target: Human) {
+//     public onmessage(onMsg: (msgType: string, msgData: any)=>void) {
+//         this._onMsg = onMsg;
+//     }
 
+//     public async Go() {
+//         var heCardInfos = CardListFactory.me.SplitCode("");
+//         var sum: Sumamry = new Sumamry();
+//         var he: Human = new Human("胖虎", 110, 0);
+//         var me: Human = new Human("大雄", 110, 50);
+//         var meCardInfos = CardListFactory.me.SplitCode(this.cardCode);
+//         var dmgAI = new BestDmgAI(this.cardCode);
+//         var lock = new SimpleLock();
+//         sum.cur = Fight.BuildRun(me, meCardInfos, he, heCardInfos);;
+//         meCardInfos = dmgAI.Fetch()
+//         this._worker.onComplete = (fr) => {
+//             lock.wait(back => {
+//                 dmgAI.Compare(fr);
+//                 back();
+//             })
+//         }
+//         while (meCardInfos) {
+//             var fr: FightReport;
+//             if(this._worker.isIdle) {
+//                 this._worker.RunTask({
+//                     me, meCardInfos, he, heCardInfos
+//                 });
+//                 dmgAI.MoveNext();
+//             } else {
+//                 fr = Fight.BuildRun(me, meCardInfos, he, heCardInfos, dmgAI.CutCheck.bind(dmgAI))
+//                 await new Promise<void>(rso => {
+//                     lock.wait(back => {
+//                         dmgAI.Compare(fr);
+//                         dmgAI.MoveNext();
+//                         back();
+//                         rso();
+//                     })
+//                 })
+//             }
+//             meCardInfos = dmgAI.Fetch();
+//         }
+//         dmgAI
+//         // console.log(dmgAI.cutCount);
+//         // sum.dmgAI = dmgAI.best;
+//         // this._onMsg("process-over", sum);
+//     }
+
+// }
+
+class SimpleLock {
+    private _isLock: boolean;
+    private _next: Array<(back:Function)=>void>;
+    constructor() {
+        this._next = [];
+        this._isLock = false;
     }
-
-    public effect() {
-        var me = this._actor;
-        var he = this._target;
-        
-        if(me.hp <= 0) return;
-        me.EffectBuff(BES.RoundStart);
-        me.EffectCard(he);
-        if (me.CheckBuff(BuffId.MoveAgain, 1)) {
-            me.EffectCard(he);
-        }
-        me.RemoveBuff(BuffId.MoveAgain, "再动结束");
-    }
-}
-
-//每一轮
-class Round {
-    constructor(private _index: number, private _me: Human, private _he: Human) {
-    }
-    effect(fr: FightReport) {
-        fr.meUseCard.push([]);
-        var meAct = new Action(this._me, this._he);
-        var heAct = new Action(this._he, this._me);
-        this._me.connectReport(fr, { 
-            cardUse: true, hpChg: true, buffChg: true, cardUseLog: true});
-        this._he.connectReport(fr, { 
-            cardUse: false, hpChg: true, buffChg: true, cardUseLog: true });
-        if (this._me.speed > this._he.speed) {
-            meAct.effect();
-            fr.apeendLog(`--- --- ---`)
-            heAct.effect();
+    public wait(callback: (back:Function)=>void) {
+        if(this._isLock) {
+            this._next.push(callback);
         } else {
-            heAct.effect();
-            fr.apeendLog(`--- --- ---`)
-            meAct.effect();
+            callback(this._back.bind(this));
         }
-        this._me.disconnectReport();
-        this._he.disconnectReport();
     }
+    private _back() {
+        if(this._next.length > 0) {
+            const next = this._next.shift();
+            next(this._back.bind(this));
+        }
+    }
+    
 }
 
-
-//每场战斗
-class Fight {
-    constructor(private _me: Human, private _he: Human) {
-
+export class MiriWorker {
+    public onComplete: (fr: FightReport)=>void;
+    public onEnd: ()=>void;
+    private _statu: "working" | "idle" | "over";
+    private _inst: Worker;
+    public get inst(): Worker {
+        return this._inst;
+    };
+    public get isIdle() {
+        return this._statu == "idle"
     }
-    Play(cutCheck: CutCheck): FightReport {
-        var index = 0;
-        var fightReport = new FightReport();
-        var meRoundHp = [this._me.hp];
-        var meRoundMaxHp = [this._me.maxHp];
-        var heRoundHp = [this._he.hp];
-        var heRoundMaxHp = [this._he.maxHp];
-
-        fightReport.meCards = this._me.CardList.cardInfos;
-        fightReport.heCards = this._he.CardList.cardInfos;
-        fightReport.meRoundHp = meRoundHp;
-        fightReport.meRoundMaxHp = meRoundMaxHp;
-        fightReport.heRoundHp = heRoundHp;
-        fightReport.heRoundMaxHp = heRoundMaxHp;
-        fightReport.meUseCard.push([]);
-
-        while (index < 64 && this._me.hp > 0 && this._he.hp > 0) {
-            fightReport.apeendLog(`\n：：：第${index+1}轮：：：`)
-            var round = new Round(index, this._me, this._he);
-            round.effect(fightReport);
-            index++;
-            meRoundHp.push(this._me.hp);
-            meRoundMaxHp.push(this._me.maxHp);
-            heRoundHp.push(this._he.hp);
-            heRoundMaxHp.push(this._he.maxHp);
-            if(cutCheck(fightReport)){
-                return null
+    public get isWorking() {
+        return this._statu == "working"
+    }
+    public get isOver() {
+        return this._statu == "over";
+    }
+    constructor(filepath: string) {
+        this._statu = "idle"
+        const worker = new Worker(filepath, {});
+        worker.on('message', (msg: WorkerMsg)=>{
+            if(msg.type == "complete") {
+                this._statu = "idle";
+                this.onComplete  && this.onComplete(JSON.parse(msg.data));
             }
-        }
-        return fightReport;
+        });
+        worker.on('error', (err) => {
+            console.error(err);
+            throw err;
+        });
+        worker.on('exit', (code) => {
+            if (code !== 0){
+                throw (new Error(`Worker stopped with exit code ${code}`));
+            }
+            this.onEnd && this.onEnd();
+        });
+        this._inst = worker;
+    }
+    public RunTask(taskData) {
+        if(this.isWorking) throw "already working";
+        const msg = new WorkerMsg("task");
+        msg.data = taskData;
+        this._inst.postMessage(msg);
+        this._statu = "working";
+    }
+    public end(): void {
+        if(!this.isIdle) throw "not idle";
+        const msg = new WorkerMsg("over");
+        this._inst.postMessage(msg);
+        this._statu = "over";
     }
 }
-
-export class Miri {
-    private _onMsg: (msgType: string, msgData: any)=>void;
-    constructor(public cardCode: string) {
-        
-    }
-
-    private _play(
-        me: Human, meCard: Array<CardInfo>,
-        he: Human, heCard: Array<CardInfo>,
-        cutCheck: CutCheck = ()=>false,
-    ) {
-        var meCardList = CardListFactory.me.FormList(meCard)
-        var heCardList = CardListFactory.me.FormList(heCard)
-        me.Reset();
-        he.Reset();
-        me.SetCardList(meCardList);
-        he.SetCardList(heCardList);
-        var fight = new Fight(me, he);
-        return fight.Play(cutCheck);
-    }
-
-    public onmessage(onMsg: (msgType: string, msgData: any)=>void) {
-        this._onMsg = onMsg;
-    }
-
-    public Go() {
-        var heCardInfos = CardListFactory.me.SplitCode("");
-        var sum: Sumamry = new Sumamry();
-        var he: Human = new Human("胖虎", 110, 0);
-        var me: Human = new Human("大雄", 110, 50);
-        var meCardInfos = CardListFactory.me.SplitCode(this.cardCode);
-        var dmgAI = new BestDmgAI(this.cardCode);
-        sum.cur = this._play(me, meCardInfos, he, heCardInfos);
-        meCardInfos = dmgAI.Fetch()
-        while (meCardInfos) {
-            var fr = this._play(me, meCardInfos, he, heCardInfos, dmgAI.CutCheck.bind(dmgAI));
-            dmgAI.RecordThenMoveNext(fr);
-            meCardInfos = dmgAI.Fetch();
-        }
-        console.log(dmgAI.cutCount);
-        sum.dmgAI = dmgAI.best;
-        this._onMsg("process-over", sum);
-    }
-}
-
-
-

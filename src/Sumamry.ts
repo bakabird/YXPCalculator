@@ -5,5 +5,5 @@ import { FightReport } from "./FightReport";
 
 export class Sumamry {
     public cur: FightReport;
-    public dmgAI: FightReport;
+    public dmgBest: FightReport;
 };
