@@ -1,12 +1,14 @@
-import { ACard, BeiGongCard, CardInfo, CardName, DCTuneCard, FeiTaCard, GoldChanCard, HaiDiCard, HitCard, HuangQueCard, LightSwordCard, ManaInsideCard, ManaProtectMeCard, MeiKaiCard, QiTunCard, TangLangCard, TongXinCard, XingFeiCard, YunFeiCiCard, YunHouTuCard, YunTanYunCard } from "./Card"
+import { ACard, BeiGongCard, CardInfo, CardName, DCTuneCard, FeiTaCard, FlyingToothSwordCard, GoldChanCard, HaiDiCard, HitCard, HuangQueCard, HugeTigerManaSwordCard, LightSwordCard, ManaInsideCard, ManaProtectMeCard, MeiKaiCard, QiTunCard, ShockThunderSwordCard, SuddenWindSwordCard, SwordBlockCard, SwordChopCard, TangLangCard, TongXinCard, XingFeiCard, YunFeiCiCard, YunHouTuCard, YunTanYunCard } from "./Card"
 import CardList from "./CardList";
 
 var AllCardType = [
     HitCard, DCTuneCard, BeiGongCard, FeiTaCard, TongXinCard,
     MeiKaiCard, HuangQueCard, XingFeiCard, HaiDiCard, TangLangCard,
     GoldChanCard, QiTunCard, YunTanYunCard, YunFeiCiCard, YunHouTuCard,
-    LightSwordCard, ManaProtectMeCard, ManaInsideCard,
-] 
+    LightSwordCard, ManaProtectMeCard, ManaInsideCard, HugeTigerManaSwordCard,
+    ShockThunderSwordCard, SwordChopCard, SwordBlockCard, FlyingToothSwordCard,
+    SuddenWindSwordCard,
+]
 
 export type CardRecord = {
     name: CardName,
@@ -42,7 +44,7 @@ export class CardListFactory {
         var arg = code == "" ? [] : code.split(";");
         for (var i = 0;i < CardListFactory.Size;i++) {
             if(i >= arg.length) {
-                arg[i] = CardName.ManaProtectMe + ",1";
+                // arg[i] = CardName.ManaProtectMe + ",1";
                 arg[i] = CardName.Hit + ",1";
             }
             var parts = arg[i].split(",");

@@ -1,4 +1,4 @@
-import { ABuff, BES, BuffFactory, BuffId, DCBuff, ManaBuff, PosionBuff } from "./Buff";
+import { ABuff, BES, BuffFactory, BuffId, DCBuff, ManaBuff, PosionBuff, SwordMenaingBuff } from "./Buff";
 import { Human } from "./Human"
 
 //#region CARD
@@ -22,7 +22,12 @@ export enum CardName {
     LightSword = "轻剑",
     ManaProtectMe = "护身灵气",
     ManaInside = "灵气灌注",
-
+    HugeTigerManaSword = "巨虎灵剑",
+    ShockThunderSword = "震雷剑",
+    SwordChop = "剑劈",
+    SwordBlock = "剑挡",
+    FlyingToothSword = "飞牙剑",
+    SuddenWindSword = "骤风剑",
 }
 
 export enum CardOrder {
@@ -62,6 +67,8 @@ export abstract class ACard {
         const secondAct = this.onGetSecondAct();
         const starAct = this.onGetStarAct();
         const yunAct = this.onGetYunAct();
+        const hurtAct = this.onGetHurtAct();
+        const oldHeHp = he.hp;
         this.onEffect(me, he);
         if (starAct) {
             if (me.CardList.IsOnStar()){
@@ -80,12 +87,16 @@ export abstract class ACard {
         if (yunAct && me.CheckBuff(BuffId.YunJian, 1)) {
             yunAct(me, he);
         }
+        if (hurtAct && he.hp < oldHeHp) {
+            hurtAct(me, he);
+        }
         if (this.cardName.startsWith("云剑")) {
             me.AddBuff(BuffFactory.me.Produce(BuffId.YunJian, me, 1), this.cardName);
         } else {
             me.RemoveBuff(BuffId.YunJian, "用牌结束");
         }
         this._useNum++;
+        me.EffectBuff(BES.AnyCardEffectOver);
     }
     // 卡牌耗蓝
     protected onGetMana(): number {
@@ -104,6 +115,10 @@ export abstract class ACard {
     // 云剑效果
     protected onGetYunAct(): CardEffect {
         return null;
+    }
+    // 击伤效果
+    protected onGetHurtAct(): CardEffect {
+        return null
     }
 
     protected _lvlVal<T>(normal: T, rare: T, legend: T): T  {
@@ -350,6 +365,71 @@ export class ManaInsideCard extends ACard {
     protected onEffect(me: Human, he: Human) {
         me.RecoverMana(this._lvlVal(2,3,4));
         me.AddBuff(BuffFactory.me.Produce(BuffId.Pierce, me, 1), this.cardName);
+    }
+
+}
+
+export class HugeTigerManaSwordCard extends ACard {
+    cardName: CardName = CardName.HugeTigerManaSword;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(10, 13, 16), me, this.cardName);
+    }
+    protected onGetMana(): number {
+        return 1;
+    }
+}
+
+export class ShockThunderSwordCard extends ACard {
+    cardName: CardName = CardName.ShockThunderSword;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(5,6,7), me, this.cardName);
+    }
+    protected onGetHurtAct(): CardEffect {
+        return (me: Human, he: Human) => {
+            he.GetHit(this._lvlVal(6, 8, 10), me, this.cardName);
+        }
+    }
+    protected onGetMana(): number {
+        return 1;
+    }
+}
+
+export class SwordChopCard extends ACard {
+    cardName: CardName = CardName.SwordChop;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(4,5,6), me, this.cardName);
+        me.AddBuffById(BuffId.SwordMenaing, this._lvlVal(2,3,4), this.cardName);
+    }
+
+}
+
+export class SwordBlockCard extends ACard {
+    cardName: CardName = CardName.SwordBlock;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.Shield, this._lvlVal(4,5,6), this.cardName);
+        me.AddBuffById(BuffId.SwordMenaing, this._lvlVal(2,3,4), this.cardName);
+    }
+
+}
+
+export class FlyingToothSwordCard extends ACard {
+    cardName: CardName = CardName.FlyingToothSword;
+    protected onEffect(me: Human, he: Human) {
+        const smBuff = me.GetBuff(BuffId.SwordMenaing);
+        he.GetHit(this._lvlVal(8, 11, 14), me, this.cardName);
+        if(smBuff) {
+            me.AddBuff(smBuff, this.cardName);
+        }
+    }
+
+}
+
+export class SuddenWindSwordCard extends ACard {
+    cardName: CardName = CardName.SuddenWindSword;
+    protected onEffect(me: Human, he: Human) {
+        for (let index = 0; index < 2; index++) {
+            he.GetHit(this._lvlVal(3,4,6), me, this.cardName);
+        }
     }
 
 }

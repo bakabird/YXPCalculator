@@ -6,6 +6,8 @@ import { Human } from "./Human";
 //BuffEfectStage
 export enum BES {
     RoundStart,
+    BeforeHitOther,
+    AnyCardEffectOver,
 }
 
 export enum BO {
@@ -27,6 +29,7 @@ export enum BuffId {
     Protect = "护体",
     YunJian = "云剑",
     Pierce = "无视防御",
+    SwordMenaing = "剑意",
 }
 
 export abstract class ABuff {
@@ -173,10 +176,29 @@ export class PierceBuff extends ABuff {
 
 }
 
+export class SwordMenaingBuff extends ABuff {
+    private _effectedNum: number = 0;
+    id: BuffId = BuffId.SwordMenaing;
+    getEffectOrder(stage: BES): BO {
+        return BO.Last;
+    }
+    effect(stage: BES) {
+        if(stage == BES.BeforeHitOther) {
+            this._effectedNum = this.num;
+        } else if(stage == BES.AnyCardEffectOver) {
+            if(this._effectedNum > 0) {
+                this._owner.AddBuffById(this.id, -this._effectedNum, "剑意耗尽");
+                this._effectedNum = 0;
+            }
+        }
+    }
+
+}
+
 var AllBuffType = [
     PosionBuff, ManaBuff, DCBuff, MeiKaiBuff, MoveAgainBuff,
     HuangQueBuff, ProtectBuff, YunJianBuff, ShieldBuff,
-    PierceBuff, 
+    PierceBuff, SwordMenaingBuff,
 ]
 
 export class BuffFactory {

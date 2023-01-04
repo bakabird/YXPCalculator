@@ -69,7 +69,7 @@ export class Human {
     AddBuff(buff: ABuff, log: string) {
         var findRlt = this._BuffList.find(b => b.id == buff.id);
         this._frOption.buffChg && this._connectingFr.apeendLog(
-            `【${log}】${this._name} 增加 ${buff.num} 层${buff.id}`);
+            `【${log}】${this._name} ${buff.num > 0 ? '+' : ''}${buff.num} 层${buff.id}`);
         if(findRlt) {
             findRlt.ModNum(buff.num);
             if(findRlt.num <= 0) {
@@ -78,6 +78,10 @@ export class Human {
         } else {
             this._BuffList.push(buff);
         }
+    }
+
+    AddBuffById(buffId: BuffId, num: number, log: string) {
+        this.AddBuff(BuffFactory.me.Produce(buffId, this, num), log);
     }
 
     RemoveBuff(buffId: BuffId, log: string) {
@@ -125,7 +129,12 @@ export class Human {
     public GetHit(hurt: number, from: Human, log: string) {
         if(hurt <= 0) throw "invalid arg";
         const fromPierce = from.GetBuff(BuffId.Pierce);
+        const fromSM = from.GetBuff(BuffId.SwordMenaing);
         const curShield = this.GetBuff(BuffId.Shield);
+        from.EffectBuff(BES.BeforeHitOther);
+        if(fromSM) {
+            hurt += fromSM.num;
+        }
         if(fromPierce) {
             from.AddBuff(BuffFactory.me.Produce(BuffId.Pierce, from, -1), log);
         } else if(curShield && curShield.num > 0) {
