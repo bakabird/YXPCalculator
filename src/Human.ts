@@ -46,11 +46,12 @@ export class Human {
         return manaBuff ? manaBuff.num : 0;
     }
 
-    public RecoverMana(num: number) {
+    public RecoverMana(num: number, log: string = "") {
         if(num == 0) return;
-        var manaBuff = new ManaBuff();
-        manaBuff.init(this, num);
-        this.AddBuff(manaBuff, num > 0 ? "回蓝" : "耗蓝");
+        if (log == "") {
+            log = num > 0 ? "回蓝" : "耗蓝"
+        }
+        this.AddBuffById(BuffId.Mana, num, log);
     }
 
     // 如果消耗失败会自动恢复一点蓝
@@ -125,8 +126,10 @@ export class Human {
         return this._maxHp;
     }
 
-    //受伤
-    public GetHit(hurt: number, from: Human, log: string) {
+    /**
+     * @return {number} how many hp actual hit
+     */
+    public GetHit(hurt: number, from: Human, log: string): number {
         if(hurt <= 0) throw "invalid arg";
         const fromPierce = from.GetBuff(BuffId.Pierce);
         const fromSM = from.GetBuff(BuffId.SwordMenaing);
@@ -145,6 +148,7 @@ export class Human {
         if(hurt > 0) {
             this.CutHp(hurt, log);
         }
+        return Math.max(0, hurt);
     }
 
     //削减生命（不考虑护甲）

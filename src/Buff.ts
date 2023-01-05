@@ -30,6 +30,7 @@ export enum BuffId {
     YunJian = "云剑",
     Pierce = "无视防御",
     SwordMenaing = "剑意",
+    CrazySword = "狂剑",
 }
 
 export abstract class ABuff {
@@ -195,10 +196,20 @@ export class SwordMenaingBuff extends ABuff {
 
 }
 
+export class CrazySwordBuff extends ABuff {
+    id: BuffId = BuffId.CrazySword;
+    getEffectOrder(stage: BES): BO {
+        return BO.Last;
+    }
+    effect(stage: BES) {
+    }
+
+}
+
 var AllBuffType = [
     PosionBuff, ManaBuff, DCBuff, MeiKaiBuff, MoveAgainBuff,
     HuangQueBuff, ProtectBuff, YunJianBuff, ShieldBuff,
-    PierceBuff, SwordMenaingBuff,
+    PierceBuff, SwordMenaingBuff, CrazySwordBuff,
 ]
 
 export class BuffFactory {

@@ -24,10 +24,16 @@
     <div class="CardBox">
     </div>
     <div class="CardSearch">
-      <input type="text" placeholder="输入卡牌拼英首字母搜索" value=""/> 
+      <div class="cardHandle">
+        <input type="text" placeholder="输入卡牌拼英首字母搜索" alt="搜索框" value=""/> 
+        <div class="cardPos">
+          <Button class="moveLeft" alt="左移" title="左移">←</Button>
+          <Button class="moveRight" alt="右移" title="右移">→</Button>
+        </div>
+      </div>
       <div class="selection"></div>
     </div>
-    <p>4.左右移动卡牌</p>
+    <p>直接查看推荐牌的战报</p>
     <p>4.增加对手手牌()</p>
     <p>5.增加所有牌</p>
     <p>----</p>
@@ -36,9 +42,9 @@
     <div class="Hub"> 
       <div class="Card">
         <div class="levelG">
-          <Button class="one"></Button>
-          <Button class="two"></Button>
-          <Button class="three"></Button>
+          <Button class="one" title="一级"></Button>
+          <Button class="two" title="二级"></Button>
+          <Button class="three" title="三级"></Button>
         </div>
         <img class="cardFace" src="./img/普通攻击_1级.png" alt="">
         <img class="arrow" src="./ui/Arrow.png" alt="">

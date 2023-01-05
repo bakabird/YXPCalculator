@@ -28,8 +28,21 @@
 .CardSearch input{
     width: 80%;
     height: 30px;
-    margin: 5px 10% 20px;
+    margin: 5px 2% 20px;
     font-size: 29px;
+}
+
+.cardHandle {
+    display: flex;
+}
+
+.cardPos {
+    width: 16%;
+}
+
+.cardPos button{
+    height: 80%;
+    width: 45%;
 }
 
 .cardBtn {

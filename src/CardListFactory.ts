@@ -1,4 +1,5 @@
-import { ACard, BeiGongCard, CardInfo, CardName, DCTuneCard, FeiTaCard, FlyingToothSwordCard, GoldChanCard, HaiDiCard, HitCard, HuangQueCard, HugeTigerManaSwordCard, LightSwordCard, ManaInsideCard, ManaProtectMeCard, MeiKaiCard, QiTunCard, ShockThunderSwordCard, SuddenWindSwordCard, SwordBlockCard, SwordChopCard, TangLangCard, TongXinCard, XingFeiCard, YunFeiCiCard, YunHouTuCard, YunTanYunCard } from "./Card"
+import { ACard, BeiGongCard, CardInfo, CardName, DCTuneCard, FeiTaCard, FlyingToothSwordCard, GoldChanCard, HaiDiCard, HitCard, HuangQueCard, HugeTigerManaSwordCard, LightSwordCard, ManaInsideCard, ManaProtectMeCard, MeiKaiCard, QiTunCard, ShockThunderSwordCard, SuddenWindSwordCard, SwordBlockCard, SwordChopCard, TangLangCard, TongXinCard, XingFeiCard, YunFeiCiCard, YunHouTuCard, YunHuiShouCard, YunJiYiCard, YunTanYunCard, YunWuFengCard } from "./Card"
+import { CondensationFormulaCard, CrazySword_OnePieceCard, DishaSwordCard, GiantWhaleSwordCard, LingxiSwordArray, QiDrawingSwordCard, ToManaFormulaCard, XingyiSwordCard } from "./Card2";
 import CardList from "./CardList";
 
 var AllCardType = [
@@ -7,7 +8,9 @@ var AllCardType = [
     GoldChanCard, QiTunCard, YunTanYunCard, YunFeiCiCard, YunHouTuCard,
     LightSwordCard, ManaProtectMeCard, ManaInsideCard, HugeTigerManaSwordCard,
     ShockThunderSwordCard, SwordChopCard, SwordBlockCard, FlyingToothSwordCard,
-    SuddenWindSwordCard,
+    SuddenWindSwordCard, YunHuiShouCard, YunJiYiCard, YunWuFengCard,
+    ToManaFormulaCard, QiDrawingSwordCard, CondensationFormulaCard, GiantWhaleSwordCard,
+    LingxiSwordArray, DishaSwordCard, XingyiSwordCard, CrazySword_OnePieceCard,
 ]
 
 export type CardRecord = {
@@ -44,7 +47,8 @@ export class CardListFactory {
         var arg = code == "" ? [] : code.split(";");
         for (var i = 0;i < CardListFactory.Size;i++) {
             if(i >= arg.length) {
-                // arg[i] = CardName.ManaProtectMe + ",1";
+                arg[i] = CardName.ManaProtectMe + ",1";
+                arg[i] = CardName.YunHuiShou + ",2";
                 arg[i] = CardName.Hit + ",1";
             }
             var parts = arg[i].split(",");

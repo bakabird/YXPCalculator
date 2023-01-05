@@ -28,6 +28,18 @@ export enum CardName {
     SwordBlock = "剑挡",
     FlyingToothSword = "飞牙剑",
     SuddenWindSword = "骤风剑",
+    YunHuiShou = "云剑·回守",
+    YunJiYi = "云剑·极意",
+    YunWuFeng = "云剑·无锋",
+    ToManaFormula = "化灵诀",
+    QiDrawingSword = "引气剑",
+    CondensationFormula = "凝意诀",
+    GiantWhaleSword = "巨鲸灵剑",
+    LingxiSwordArray = "灵犀剑阵",
+    DishaSword = "地煞剑",
+    XingyiSword = "形意剑",
+    CrazySword_OnePiece = "狂剑·一式",
+
 }
 
 export enum CardOrder {
@@ -94,6 +106,9 @@ export abstract class ACard {
             me.AddBuff(BuffFactory.me.Produce(BuffId.YunJian, me, 1), this.cardName);
         } else {
             me.RemoveBuff(BuffId.YunJian, "用牌结束");
+        }
+        if(this.cardName.startsWith("狂剑")) {
+            me.AddBuffById(BuffId.CrazySword, 1, "狂!");
         }
         this._useNum++;
         me.EffectBuff(BES.AnyCardEffectOver);
@@ -421,7 +436,9 @@ export class FlyingToothSwordCard extends ACard {
             me.AddBuff(smBuff, this.cardName);
         }
     }
-
+    protected onGetMana(): number {
+        return 1;
+    }
 }
 
 export class SuddenWindSwordCard extends ACard {
@@ -429,6 +446,43 @@ export class SuddenWindSwordCard extends ACard {
     protected onEffect(me: Human, he: Human) {
         for (let index = 0; index < 2; index++) {
             he.GetHit(this._lvlVal(3,4,6), me, this.cardName);
+        }
+    }
+
+}
+
+export class YunHuiShouCard extends ACard {
+    cardName: CardName = CardName.YunHuiShou;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.Shield, this._lvlVal(8, 11, 14), this.cardName);
+    }
+    protected onGetYunAct(): CardEffect {
+        return (me:Human, he: Human) => {
+            me.AddHp(this._lvlVal(3,5,7), this.cardName);
+        }
+    }
+}
+
+export class YunJiYiCard extends ACard {
+    cardName: CardName = CardName.YunJiYi;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(6, 8, 10), me, this.cardName);
+    }
+    protected onGetYunAct(): CardEffect {
+        return (me: Human, he: Human) => {
+            me.AddBuffById(BuffId.SwordMenaing, this._lvlVal(2, 3, 4), this.cardName);
+        }
+    }
+}
+
+export class YunWuFengCard extends ACard {
+    cardName: CardName = CardName.YunWuFeng;
+    protected onEffect(me: Human, he: Human) {
+        
+    }
+    protected onGetYunAct(): CardEffect {
+        return (me: Human,he: Human) => {
+            he.GetHit(this._lvlVal(9,13,17), me, this.cardName);
         }
     }
 

@@ -121,6 +121,26 @@ class CardListWrap {
             this.onClickFace(0);
         }
     }
+    public moveCard(step: number) {
+        const absStep = Math.abs(step);
+        const miniStep = step > 0 ? 1 : -1;
+        let cur = this._curTargetIndex;
+        for(var i = 0;i < absStep;i ++){
+            const tar = (cur + miniStep) >= 0 ? 
+                ((cur + miniStep) % this._list.length) : 
+                (cur + miniStep + this._list.length);
+            const curC = this._list[cur];
+            const tarC = this._list[tar];
+            const tmpN = tarC.cardname;
+            const tmpL = tarC.level;
+            tarC.cardname = curC.cardname;
+            tarC.level = curC.level;
+            curC.cardname = tmpN;
+            curC.level = tmpL
+            cur = tar;
+        }
+        this.onClickFace(cur);
+    }
     public onClickFace(index: number) {
         this._curTargetIndex = index;
         this._list.forEach((i,iIdx) => {
@@ -172,6 +192,8 @@ class CardSearchWrap {
         this._chooseList = []
         this._lastInputStr = "";
         this._input.on("input", this._onInput.bind(this))
+        _node.find(".moveLeft").on("click", this._onMoveLeft.bind(this));
+        _node.find(".moveRight").on("click", this._onMoveRight.bind(this));
     }
     private _onInput() {
         const val = this._input.val().toString();
@@ -192,6 +214,12 @@ class CardSearchWrap {
             }
         }
         this._lastInputStr = this._input.val().toString();
+    }
+    private _onMoveLeft() {
+        this.eventer.event("move", -1);
+    }
+    private _onMoveRight() {
+        this.eventer.event("move", 1);
     }
     private _search(key: string) {
         if(key == "") return;
@@ -250,6 +278,9 @@ cardListWrap.onClickFace(0);
 searchWrap.eventer.add("chooseDown", (name: string)=>{
     cardListWrap.modCard(name);
 })
+searchWrap.eventer.add("move", (step: number)=>{
+    cardListWrap.moveCard(step);
+});
 if(lastKey) {
     cardListWrap.key = lastKey;
 }
