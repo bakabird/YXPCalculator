@@ -82,6 +82,7 @@ export class Human {
     }
 
     AddBuffById(buffId: BuffId, num: number, log: string) {
+        if(num == 0) return;
         this.AddBuff(BuffFactory.me.Produce(buffId, this, num), log);
     }
 
@@ -132,11 +133,16 @@ export class Human {
     public GetHit(hurt: number, from: Human, log: string): number {
         if(hurt <= 0) throw "invalid arg";
         const fromPierce = from.GetBuff(BuffId.Pierce);
+        const fromPower = from.GetBuff(BuffId.Power);
         const fromSM = from.GetBuff(BuffId.SwordMenaing);
+        const fromHS = from.GetBuff(BuffId.HpSteal);
         const curShield = this.GetBuff(BuffId.Shield);
         from.EffectBuff(BES.BeforeHitOther);
         if(fromSM) {
             hurt += fromSM.num;
+        }
+        if(fromPower) {
+            hurt += fromPower.num;
         }
         if(fromPierce) {
             from.AddBuff(BuffFactory.me.Produce(BuffId.Pierce, from, -1), log);
@@ -147,6 +153,12 @@ export class Human {
         } 
         if(hurt > 0) {
             this.CutHp(hurt, log);
+            if(fromHS) {
+                const steal = Math.floor(hurt * fromHS.num / 100);
+                if(steal > 0) {
+                    from.AddHp(steal, fromHS.id);
+                }
+            }
         }
         return Math.max(0, hurt);
     }
@@ -195,12 +207,13 @@ export class Human {
     public EffectCard(_target: Human) {
         var useMeiKai = this.CheckBuff(BuffId.MeiKai, 1);
         var card = this.GetCurCard();
-        if(this.CostMana(card.mana)) {
+        var cardmana = card.getMana(this, _target);
+        if(this.CostMana(cardmana)) {
             this._frOption.cardUseLog && this._connectingFr?.apeendLog(`【卡牌使用】${this.name} 使用 ${card.cardName}`);
             card.effect(this, _target);
             this._frOption.cardUse && this._connectingFr?.appendUse(card.cardName);
             if(useMeiKai) {
-                this.RecoverMana(card.mana);
+                this.RecoverMana(cardmana, BuffId.MeiKai);
                 this._frOption.cardUseLog && this._connectingFr?.apeendLog(`【卡牌使用】${this.name} 使用 ${card.cardName}`);
                 card.effect(this, _target);
                 this._frOption.cardUse && this._connectingFr?.appendUse(card.cardName);

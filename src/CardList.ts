@@ -71,6 +71,16 @@ export default class CardList {
         this._ShiftCard(1);
     }
 
+    public EachCardsL2R(walk: (card: ACard)=>void) {
+        this._item.forEach(walk);
+    }
+
+    public EachCardsR2L(walk: (card:ACard)=>void) {
+        for (let index = this._item.length - 1; index > -1; index--) {
+            walk(this._item[index]);
+        }
+    }
+
     // time为负时代表反方向
     private _ShiftCard(time: number) {
         const ajust = (num, size) => {

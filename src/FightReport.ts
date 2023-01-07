@@ -1,4 +1,6 @@
+import { last } from "./ArrUtil";
 import { CardInfo, CardName } from "./Card";
+import { FightConst } from "./FightConst";
 
 export type FROption = {
     hpChg: boolean; 
@@ -31,5 +33,11 @@ export class FightReport {
         this.heRoundHp = [];
         this.heRoundMaxHp = [];
         this.log = "";
+    }
+    public static checkWin(fr: FightReport): boolean {
+        if(last(fr.meRoundHp) < 0) return false;
+        if(fr.meRoundHp.length == FightConst.MAX_ROUND
+            && last(fr.meRoundHp) <= last(fr.heRoundHp)) return false;
+        return true;
     }
 }

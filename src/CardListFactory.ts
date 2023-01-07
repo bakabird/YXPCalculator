@@ -1,16 +1,32 @@
-import { ACard, BeiGongCard, CardInfo, CardName, DCTuneCard, FeiTaCard, FlyingToothSwordCard, GoldChanCard, HaiDiCard, HitCard, HuangQueCard, HugeTigerManaSwordCard, LightSwordCard, ManaInsideCard, ManaProtectMeCard, MeiKaiCard, QiTunCard, ShockThunderSwordCard, SuddenWindSwordCard, SwordBlockCard, SwordChopCard, TangLangCard, TongXinCard, XingFeiCard, YunFeiCiCard, YunHouTuCard, YunHuiShouCard, YunJiYiCard, YunTanYunCard, YunWuFengCard } from "./Card"
-import { CondensationFormulaCard, CrazySword_OnePieceCard, DishaSwordCard, GiantWhaleSwordCard, LingxiSwordArray, QiDrawingSwordCard, ToManaFormulaCard, XingyiSwordCard } from "./Card2";
+import { ACard, CardInfo, CardName, HitCard,  } from "./Card"
+import { BeiGongCard, FeiTaCard, GoldChanCard, HaiDiCard, HuangQueCard, MeiKaiCard, QiTunCard, TangLangCard, XingFeiCard } from "./QiXingGeCard";
+import { DCTuneCard, TongXinCard } from "./QingCards";
+import { BNLJFormulaCard, BreakingQiSwordCard, ChainSwordArrayCard, CloudDanceFormula, CondensationFormulaCard, CrazyMoveOneCard, CrazyMoveTwoCard, CrazyMoveZeroCard, DarkCrowManaSwordCard, DishaSwordCard, EgretManaSwordCard, FlyingSpiritFlashingShadowSwordCard, FlyingToothSwordCard, GiantKunManaSwordCard, GiantRocManaSwordCard, GiantWhaleSwordCard, HugeTigerManaSwordCard, InspirationSwordCard, LightSwordCard, LingxiSwordArray, LiuyunChaoticSwordCard, ManaGatherMentalSkillCard, ManaInsideCard, ManaProtectMeCard, MirrorFlowerSwordArrayCard, QiDrawingSwordCard, ReflexiveSwordCard, ShockThunderSwordCard, SuddenWindSwordCard, SwordBlockCard, SwordChopCard, SwordMenaingStirringCard, TenThousandWayManaSwordCard, ThreePeakSwordCard, ToManaFormulaCard, WaterMoonSwordArrayCard, XingyiSwordCard, YukongSwordArrayCard, YunFeiCiCard, YunFlashingWindCard, YunHouTuCard, YunHuilingCard, YunHuiShouCard, YunJiYiCard, YunLingboCard, YunMoonShadowCard, YunPointStarCard, YunSoftMentalSkillCard, YunTanYunCard, YunWuFengCard, YunWuliCard, YunYouLongCard } from "./YunLingJianCards";
 import CardList from "./CardList";
 
 var AllCardType = [
-    HitCard, DCTuneCard, BeiGongCard, FeiTaCard, TongXinCard,
-    MeiKaiCard, HuangQueCard, XingFeiCard, HaiDiCard, TangLangCard,
-    GoldChanCard, QiTunCard, YunTanYunCard, YunFeiCiCard, YunHouTuCard,
+    HitCard, 
+
+    DCTuneCard, TongXinCard,
+
+    BeiGongCard, FeiTaCard, MeiKaiCard, HuangQueCard, 
+    XingFeiCard, HaiDiCard, TangLangCard,
+    GoldChanCard, QiTunCard, 
+    
+    YunTanYunCard, YunFeiCiCard, YunHouTuCard,
     LightSwordCard, ManaProtectMeCard, ManaInsideCard, HugeTigerManaSwordCard,
     ShockThunderSwordCard, SwordChopCard, SwordBlockCard, FlyingToothSwordCard,
     SuddenWindSwordCard, YunHuiShouCard, YunJiYiCard, YunWuFengCard,
     ToManaFormulaCard, QiDrawingSwordCard, CondensationFormulaCard, GiantWhaleSwordCard,
-    LingxiSwordArray, DishaSwordCard, XingyiSwordCard, CrazySword_OnePieceCard,
+    LingxiSwordArray, DishaSwordCard, XingyiSwordCard, CrazyMoveOneCard,
+    YunSoftMentalSkillCard, YunWuliCard, YunPointStarCard, YunHuilingCard,
+    CloudDanceFormula, DarkCrowManaSwordCard, BreakingQiSwordCard, GiantWhaleSwordCard,
+    ReflexiveSwordCard, MirrorFlowerSwordArrayCard, ThreePeakSwordCard, GiantRocManaSwordCard,
+    YunFlashingWindCard, YunMoonShadowCard, BNLJFormulaCard, ManaGatherMentalSkillCard,
+    EgretManaSwordCard, GiantKunManaSwordCard, InspirationSwordCard, LiuyunChaoticSwordCard,
+    WaterMoonSwordArrayCard, CrazyMoveTwoCard, YunYouLongCard, YunLingboCard, FlyingSpiritFlashingShadowSwordCard,
+    TenThousandWayManaSwordCard, SwordMenaingStirringCard, YukongSwordArrayCard, ChainSwordArrayCard, CrazyMoveZeroCard,
+
 ]
 
 export type CardRecord = {
@@ -47,9 +63,10 @@ export class CardListFactory {
         var arg = code == "" ? [] : code.split(";");
         for (var i = 0;i < CardListFactory.Size;i++) {
             if(i >= arg.length) {
-                arg[i] = CardName.ManaProtectMe + ",1";
-                arg[i] = CardName.YunHuiShou + ",2";
+                arg[i] = CardName.YunWuFeng + ",1";
                 arg[i] = CardName.Hit + ",1";
+                arg[i] = CardName.ManaProtectMe + ",1";
+                arg[i] = CardName.YunPointStar + ",2";
             }
             var parts = arg[i].split(",");
             ret.push({

@@ -3,6 +3,7 @@ import { FightReport } from "./FightReport";
 import { Round } from "./Round";
 import { CardInfo } from "./Card";
 import { CardListFactory } from "./CardListFactory";
+import { FightConst } from "./FightConst";
 
 export type CutCheck = (fr: FightReport)=>boolean
 
@@ -25,8 +26,8 @@ export class Fight {
         fightReport.heRoundHp = heRoundHp;
         fightReport.heRoundMaxHp = heRoundMaxHp;
         fightReport.meUseCard.push([]);
-
-        while (index < 64 && this._me.hp > 0 && this._he.hp > 0) {
+        
+        while (index < FightConst.MAX_ROUND && this._me.hp > 0 && this._he.hp > 0) {
             fightReport.apeendLog(`\n：：：第${index + 1}轮：：：`);
             var round = new Round(index, this._me, this._he);
             round.effect(fightReport);

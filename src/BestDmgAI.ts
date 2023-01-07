@@ -1,3 +1,5 @@
+import { last } from "./ArrUtil";
+import { FightConst } from "./FightConst";
 import { FightReport } from "./FightReport";
 import { IBestAI } from "./IBestAI";
 
@@ -11,22 +13,26 @@ export class BestDmgAI implements IBestAI {
     public compare(a: FightReport, b: FightReport): FightReport {
         if(!a) return b;
         if(!b) return a;
-        if(a.heRoundHp.length > b.heRoundHp.length) {
-            return b;
-        }  else if(a.heRoundHp.length == b.heRoundHp.length) {
-            if(a.heRoundHp[a.heRoundHp.length - 1] > b.heRoundHp[b.heRoundHp.length - 1]) {
-                return b;
-            } else {
-                return a;
-            }
+        const aWin = FightReport.checkWin(a);
+        const bWin = FightReport.checkWin(b);
+        if(!aWin && !bWin) {
+            return last(a.heRoundHp) < last(b.heRoundHp) ? a : b;
+        }
+        if (!aWin) return b;
+        if (!bWin) return a;
+        // 都赢了
+        if(a.heRoundHp.length == b.heRoundHp.length) {
+            return last(a.heRoundHp) < last(b.heRoundHp) ? a : b;
         } else {
-            return a;
+            return a.heRoundHp.length < b.heRoundHp.length ? a : b;
         }
     }
     public cutCheck(writingFr: FightReport, best: FightReport): boolean {
         if(best) {
-            if (writingFr.heRoundHp.length > best.heRoundHp.length) {
-                return true;
+            if(FightReport.checkWin(best)) {
+                if (writingFr.heRoundHp.length > best.heRoundHp.length) {
+                    return true;
+                }   
             }
         }
         return false;
