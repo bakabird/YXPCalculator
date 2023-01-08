@@ -3,6 +3,155 @@ import { Human } from "./Human";
 import { ACard, CardName, CardEffect, CardOrder, CardState } from "./Card";
 
 
+export class StarMoveCard extends ACard {
+    cardName: CardName = CardName.StarMove;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(5, 8, 8), me, this.cardName);
+        me.MakeStar(1);
+        this._lvlMethod(null, null, ()=> {
+            me.MakeStar(2);
+        })
+    }
+
+}
+
+export class PosStarCard extends ACard {
+    cardName: CardName = CardName.PosStar;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        me.RecoverMana(this._lvlVal(1,2,2), this.cardName);
+        me.AddBuffById(BuffId.Shield, this._lvlVal(2,3,4), this.cardName);
+        me.AddBuffById(BuffId.StarPower, this._lvlVal(1,1,2), this.cardName);
+    }
+
+}
+
+export class XingDangCard extends ACard {
+    cardName: CardName = CardName.XingDang;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(6,8, 10), me, this.cardName);
+    }
+    protected onGetStarAct(): CardEffect {
+        return (me: Human, he: Human) => {
+            me.AddBuffById(BuffId.Shield, this._lvlVal(2,4,6), this.cardName);
+        }
+    }
+}
+
+export class XingJiaCard extends ACard {
+    cardName: CardName = CardName.XingJia;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(6, 7, 8), me, this.cardName);
+    }
+    protected onGetStarAct(): CardEffect {
+        return (me: Human, he: Human)=>{
+            he.GetHit(this._lvlVal(5, 7, 9), me, this.cardName)
+        }
+    }
+    protected onGetMana(me: Human): number {
+        return 1;
+    }
+}
+
+export class GuaZhenCard extends ACard {
+    cardName: CardName = CardName.GuaZhen;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(4, 7, 10), me, this.cardName);
+        me.AddBuffById(BuffId.Gua, 1, this.cardName);
+    }
+
+}
+
+export class GuaKunCard extends ACard {
+    cardName: CardName = CardName.GuaKun;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.Shield, 2, this.cardName);
+        me.AddBuffById(BuffId.Gua, this._lvlVal(2, 3, 4), this.cardName);
+    }
+
+}
+
+export class GuaXunCard extends ACard {
+    cardName: CardName = CardName.GuaXun;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        me.RecoverMana(this._lvlVal(1, 2, 2), this.cardName);
+        me.AddBuffById(BuffId.Gua, this._lvlVal(1,1,2),this.cardName);
+    }
+
+}
+
+export class PalmThunderCard extends ACard {
+    cardName: CardName = CardName.PalmThunder;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(me.Gua(this._lvlVal(2,5,8), this._lvlVal(10, 13, 16)),
+            me, this.cardName);
+    }
+
+}
+
+export class WhiteCraneCard extends ACard {
+    cardName: CardName = CardName.WhiteCrane;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(me.Gua(1, 8), me, this.cardName);
+        me.RecoverMana(this._lvlVal(1, 2, 3), this.cardName);
+    }
+
+}
+
+export class FinchTailCard extends ACard {
+    cardName: CardName = CardName.FinchTail;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(9, 10, 11), me, this.cardName);
+        if(me.Gua(0, 100) >= 90) {
+            he.GetHit(this._lvlVal(5, 7, 9), me, this.cardName);
+        }
+    }
+    protected onGetMana(me: Human): number {
+        return 1;
+    }
+}
+
+export class MustangCard extends ACard {
+    cardName: CardName = CardName.Mustang;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        for(var i = 0;i < 2;i++) {
+            he.GetHit(this._lvlVal(3, 4, 5), me, this.cardName);
+        }
+        me.AddBuffById(BuffId.Shield, me.Gua(1, this._lvlVal(10, 12, 14)), this.cardName);
+    }
+    protected onGetMana(me: Human): number {
+        return 1;
+    }
+}
+
+export class SilkRemain extends ACard {
+    cardName: CardName = CardName.SilkRemain;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        he.GetHit(this._lvlVal(6, 9, 12), me, this.cardName);
+    }
+    protected onGetSecondAct(): CardEffect {
+        return (me: Human, he: Human) => {
+            me.AddHp(this._lvlVal(2, 4, 6), this.cardName);
+        }
+    }
+}
+
+
+
+
+
+
 export class FeiTaCard extends ACard {
     cardState: CardState = CardState.ZhuJi;
     cardName: CardName = CardName.FeiTa;
@@ -182,3 +331,4 @@ export class MeiKaiCard extends ACard {
         return 1;
     }
 }
+

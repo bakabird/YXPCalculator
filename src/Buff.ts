@@ -8,6 +8,7 @@ export enum BES {
     RoundStart,
     BeforeHitOther,
     AnyCardEffectOver,
+    CALL_BY_CODE,
 }
 
 export enum BO {
@@ -41,6 +42,8 @@ export enum BuffId {
     WaterMoon = "水月",
     CrazyMoveZero = "狂零",
     HpSteal = "吸血",
+    StarPower = "星力",
+    Gua = "卦",
 }
 
 export abstract class ABuff {
@@ -344,12 +347,37 @@ export class HpStealBuff extends ABuff {
 
 }
 
+export class StarPowerBuff extends ABuff {
+    id: BuffId = BuffId.StarPower;
+    getEffectOrder(stage: BES): BO {
+        return BO.None;
+    }
+    effect(stage: BES) {
+        
+    }
+
+}
+
+export class GuaBuff extends ABuff {
+    id: BuffId = BuffId.Gua;
+    getEffectOrder(stage: BES): BO {
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if(stage == BES.CALL_BY_CODE) {
+            this._owner.AddBuffById(this.id, -1, "卦象");
+        }
+    }
+
+}
+
 var AllBuffType = [
     PosionBuff, ManaBuff, DCBuff, MeiKaiBuff, MoveAgainBuff,
     HuangQueBuff, ProtectBuff, YunJianBuff, ShieldBuff,
     PierceBuff, SwordMenaingBuff, CrazySwordBuff, YunSoftBuff,
     InternalShieldBuff, PowerBuff, BNLJBuff, ManaGatherBuff,
     ManaGatherSlowBuff, WaterMoonBuff, CrazyMoveZeroBuff, HpStealBuff,
+    StarPowerBuff, GuaBuff,
 ]
 
 export class BuffFactory {

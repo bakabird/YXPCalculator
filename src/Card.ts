@@ -11,7 +11,6 @@ export enum CardName {
     TongXin = "同心曲",
     MeiKai = "梅开二度",
     HuangQue = "黄雀在后",
-    XingFei = "星弈·飞",
     HaiDi = "海底捞月",
     TangLang = "螳螂捕蝉",
     GoldChan = "金蝉脱壳",
@@ -68,6 +67,23 @@ export enum CardName {
     YukongSwordArray = "御空剑阵",
     ChainSwordArray = "连环剑阵",
     CrazyMoveZero = "狂剑·零式",
+    StarMove = "斗转星移",
+    PosStar = "星罗棋布",
+    XingDang = "星弈·挡",
+    XingJia = "星弈·夹",
+    GuaZhen = "震卦",
+    GuaKun = "坤卦",
+    GuaXun = "巽卦",
+    PalmThunder = "掌心雷",
+    WhiteCrane = "白鹤亮翅",
+    FinchTail = "揽雀尾",
+    Mustang = "野马分鬃",
+
+    SilkRemain = "藕断丝连",
+
+
+
+    XingFei = "星弈·飞",
 }
 
 export enum CardOrder {
@@ -124,18 +140,23 @@ export abstract class ACard {
         const yunAct = this.onGetYunAct();
         const hurtAct = this.onGetHurtAct();
         const meCrazyMoveNum = me.GetBuff(BuffId.CrazyMoveZero)?.num ?? 0;
+        const meStarPowerNum = me.GetBuff(BuffId.StarPower)?.num ?? 0;
         const oldHeHp = he.hp;
+        const onStar = me.CardList.IsOnStar();
+        // 前处理
         if(this.isCrazy && meCrazyMoveNum > 0) {
             me.AddBuffById(BuffId.HpSteal, meCrazyMoveNum, BuffId.CrazyMoveZero);
         }
+        if(onStar && meStarPowerNum > 0) {
+            me.AddBuffById(BuffId.Power, meStarPowerNum, BuffId.StarPower);
+        }
+        // 卡牌效果
         this.onEffect(me, he);
         if (this.onGetIsCost() || this.onGetIsKeeping()) {
             me.CardList.CostCur();
         }
-        if (starAct) {
-            if (me.CardList.IsOnStar()){
-                starAct(me, he);
-            }
+        if (starAct && onStar) {
+            starAct(me, he);
         }
         if (secondAct){
             if(this._useNum > 0) {
@@ -152,6 +173,7 @@ export abstract class ACard {
         if (hurtAct && he.hp < oldHeHp) {
             hurtAct(me, he);
         }
+        // 后处理
         if (this.cardName.startsWith("云剑")) {
             const yunSoftBuff = me.GetBuff(BuffId.YunSoft);
             yunSoftBuff && me.AddHp(yunSoftBuff.num, yunSoftBuff.id);
@@ -165,6 +187,10 @@ export abstract class ACard {
                 me.AddBuffById(BuffId.HpSteal, -meCrazyMoveNum, BuffId.CrazyMoveZero);
             }
         }
+        if(onStar && meStarPowerNum > 0) {
+            me.AddBuffById(BuffId.Power, -meStarPowerNum, BuffId.StarPower);
+        }
+        // 结束
         this._useNum++;
         me.EffectBuff(BES.AnyCardEffectOver);
     }
@@ -220,13 +246,13 @@ export abstract class ACard {
     protected _lvlMethod(normal: Function, rare: Function, legend: Function)  {
         switch(this._level) {
             case CardLevel.Normal:
-                normal();
+                normal && normal();
                 break;
             case CardLevel.Rare:
-                rare();
+                rare && rare();
                 break;
             case CardLevel.Legend:
-                legend();
+                legend && legend();
                 break;
         }
     }

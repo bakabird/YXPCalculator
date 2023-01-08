@@ -55,6 +55,19 @@ export default class CardList {
         return this._star[this._curCardIndex];
     }
 
+    /**
+     * @return {boolean} is the pos already a star
+     */
+    public MakeStar(posOffsetCur: number): boolean {
+        const pos = this._PosAjust(this._curCardIndex + posOffsetCur, this.size);
+        if(this._star[pos]) {
+            return true;
+        } else {
+            this._star[pos] = true;
+            return false;
+        }
+    }
+
     public SetCardOrder(cardOrder: CardOrder) {
         this._cardOrder = cardOrder;
     }
@@ -81,26 +94,26 @@ export default class CardList {
         }
     }
 
+    private _PosAjust(num: number, size: number): number {
+        if(num >= 0) {
+            return num % size;
+        } else {
+            return this._PosAjust(size + num, size);
+        }
+    }
+
     // time为负时代表反方向
     private _ShiftCard(time: number) {
-        const ajust = (num, size) => {
-            if(num >= 0) {
-                return num % size;
-            } else {
-                return ajust(size + num, size);
-            }
-        }
-
         var absTime = Math.abs(time);
         var step = (this._cardOrder == CardOrder.L2R ? 1 : -1) * (time > 0 ? 1 : -1);
         var size = this.size;
         while(absTime > 0){
             var cur = this._curCardIndex;
             var sum = step;
-            while(this._costed[ajust(cur + sum, size)]) {
+            while(this._costed[this._PosAjust(cur + sum, size)]) {
                 sum += step;
             }
-            this._curCardIndex = ajust(cur + sum, size);
+            this._curCardIndex = this._PosAjust(cur + sum, size);
             absTime--;
         }
     }

@@ -2,6 +2,7 @@ import { ACard } from "./Card"
 import { BES, BO, BuffId, ABuff, ManaBuff, BuffFactory } from "./Buff";
 import CardList from "./CardList";
 import { FightReport, FROption } from "./FightReport";
+import { FightConst } from "./FightConst";
 
 export class Human {
     //卡牌
@@ -225,6 +226,19 @@ export class Human {
 
     public GetCurCard(): ACard {
         return this._CardList.GetCur();
+    }
+
+    public MakeStar(posOffsetCur: number) {
+        if (this._CardList.MakeStar(posOffsetCur)) {
+            this.RecoverMana(1, "星位激活");
+        }
+    }
+
+    public Gua(min:number, max:number): number {
+        const gua = this.GetBuff(BuffId.Gua);
+        gua?.effect(BES.CALL_BY_CODE);
+        const rdm = gua ? 1 : (FightConst.TRUE_RANDOM ? Math.random() : 0.5);
+        return min + Math.floor((max - min) * rdm);
     }
 
     //移动到下一张牌
