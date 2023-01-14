@@ -259,6 +259,9 @@ class BarWrap {
         _node.children(".fix").on("click", ()=>{
             localStorage.clear();
         });
+        _node.children(".debug").on("click", ()=>{
+            window.electronAPI.doDebug();
+        })
     }
 }
 

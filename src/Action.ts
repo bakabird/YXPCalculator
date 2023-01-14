@@ -11,13 +11,18 @@ export class Action {
         var me = this._actor;
         var he = this._target;
 
-        if (me.hp <= 0)
-            return;
+        if (this.anyDead) return;
         me.EffectBuff(BES.RoundStart);
         me.EffectCard(he);
+        if (this.anyDead) return;
         if (me.CheckBuff(BuffId.MoveAgain, 1)) {
             me.EffectCard(he);
+            if (this.anyDead) return;
         }
-        me.RemoveBuff(BuffId.MoveAgain, "再动结束");
+        me.EffectBuff(BES.RoundEnd);
+    }
+
+    private get anyDead() {
+        return this._actor.isDead || this._target.isDead;
     }
 }

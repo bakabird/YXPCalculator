@@ -4,7 +4,6 @@ import {
   } from 'node:worker_threads';
 import { Fight } from "./Fight";
 import { BestDmgAI } from "./BestDmgAI";
-import { Human } from "./Human";
 
 parentPort.on("message", (msg: WorkerMsg) => {
     if (msg.type == "task") {

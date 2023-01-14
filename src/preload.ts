@@ -17,6 +17,9 @@ contextBridge.exposeInMainWorld('electronAPI',{
   onProcessOver: (callback) => {
     ipcRenderer.on("Miri.ProcessOver", callback);
   },
+  doDebug: () => {
+    ipcRenderer.send("Main.Debug");
+  }
 })
 
 window.addEventListener('DOMContentLoaded', () => {

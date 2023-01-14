@@ -1,7 +1,7 @@
 import { ACard, CardInfo, CardName, HitCard,  } from "./Card"
-import { BeiGongCard, FeiTaCard, FinchTailCard, GoldChanCard, GuaKunCard, GuaXunCard, GuaZhenCard, HaiDiCard, HuangQueCard, MeiKaiCard, MustangCard, PalmThunderCard, PosStarCard, QiTunCard, SilkRemain as SilkRemainCard, StarMoveCard, TangLangCard, WhiteCraneCard, XingDangCard, XingFeiCard, XingJiaCard } from "./QiXingGeCard";
+import { BeiGongCard, CountershockMentalCard, DigRootCard, DoubleThunderCard, DryTreeCard, FallingFlowerCard, FeiTaCard, FinchTailCard, FiveThunderCard, FlowingWaterCard, FlyingStarCard, GoldChanCard, GuaDuiCard, GuaGenCard, GuaKunCard, GuaLiCard, GuaQianCard, GuaXunCard, GuaZhenCard, HaiDiCard, HuangQueCard, ImbuedRainbowCard, LiangyiArrayCard, MeiKaiCard, MindMentalCard, MustangCard, OneFootCard, PalmThunderCard, PosStarCard, PurpleManaCard, QiRecoverCard, QiTunCard, SilkRemain as SilkRemainCard, SixyaoArrayCard, StarAroundMoonCard, StarMoveCard, StarOrbitCard, TangLangCard, ThunderCard, ThunderGuaFormulaCard, TouchWaterCard, WhiteCraneCard, WhiteSnakeCard, WorldCenterMentalCard, XingDaCard, XingDangCard, XingDianCard, XingDuanCard, XingFeiCard, XingHuCard, XingJiaCard, XingLiCard } from "./QiXingGeCard";
 import { DCTuneCard, TongXinCard } from "./QingCards";
-import { BNLJFormulaCard, BreakingQiSwordCard, ChainSwordArrayCard, CloudDanceFormula, CondensationFormulaCard, CrazyMoveOneCard, CrazyMoveTwoCard, CrazyMoveZeroCard, DarkCrowManaSwordCard, DishaSwordCard, EgretManaSwordCard, FlyingSpiritFlashingShadowSwordCard, FlyingToothSwordCard, GiantKunManaSwordCard, GiantRocManaSwordCard, GiantWhaleSwordCard, HugeTigerManaSwordCard, InspirationSwordCard, LightSwordCard, LingxiSwordArray, LiuyunChaoticSwordCard, ManaGatherMentalSkillCard, ManaInsideCard, ManaProtectMeCard, MirrorFlowerSwordArrayCard, QiDrawingSwordCard, ReflexiveSwordCard, ShockThunderSwordCard, SuddenWindSwordCard, SwordBlockCard, SwordChopCard, SwordMenaingStirringCard, TenThousandWayManaSwordCard, ThreePeakSwordCard, ToManaFormulaCard, WaterMoonSwordArrayCard, XingyiSwordCard, YukongSwordArrayCard, YunFeiCiCard, YunFlashingWindCard, YunHouTuCard, YunHuilingCard, YunHuiShouCard, YunJiYiCard, YunLingboCard, YunMoonShadowCard, YunPointStarCard, YunSoftMentalSkillCard, YunTanYunCard, YunWuFengCard, YunWuliCard, YunYouLongCard } from "./YunLingJianCards";
+import { BNLJFormulaCard, BreakingQiSwordCard, ChainSwordArrayCard, CloudDanceFormula, CondensationFormulaCard, CrazyMoveOneCard, CrazyMoveTwoCard, CrazyMoveZeroCard, DarkCrowManaSwordCard, DishaSwordCard, EgretManaSwordCard, FlyingSpiritFlashingShadowSwordCard, FlyingToothSwordCard, GiantKunManaSwordCard, GiantRocManaSwordCard, GiantWhaleSwordCard, HugeTigerManaSwordCard, InspirationSwordCard, LightSwordCard, LingxiSwordArray, LiuyunChaoticSwordCard, ManaGatherMentalCard, ManaInsideCard, ManaProtectMeCard, MirrorFlowerSwordArrayCard, QiDrawingSwordCard, ReflexiveSwordCard, ShockThunderSwordCard, SuddenWindSwordCard, SwordBlockCard, SwordChopCard, SwordMenaingStirringCard, TenThousandWayManaSwordCard, ThreePeakSwordCard, ToManaFormulaCard, WaterMoonSwordArrayCard, XingyiSwordCard, YukongSwordArrayCard, YunFeiCiCard, YunFlashingWindCard, YunHouTuCard, YunHuilingCard, YunHuiShouCard, YunJiYiCard, YunLingboCard, YunMoonShadowCard, YunPointStarCard, YunSoftMentalCard, YunTanYunCard, YunWuFengCard, YunWuliCard, YunYouLongCard } from "./YunLingJianCards";
 import CardList from "./CardList";
 
 var AllCardType = [
@@ -19,14 +19,19 @@ var AllCardType = [
     SuddenWindSwordCard, YunHuiShouCard, YunJiYiCard, YunWuFengCard,
     ToManaFormulaCard, QiDrawingSwordCard, CondensationFormulaCard, GiantWhaleSwordCard,
     LingxiSwordArray, DishaSwordCard, XingyiSwordCard, CrazyMoveOneCard,
-    YunSoftMentalSkillCard, YunWuliCard, YunPointStarCard, YunHuilingCard,
+    YunSoftMentalCard, YunWuliCard, YunPointStarCard, YunHuilingCard,
     CloudDanceFormula, DarkCrowManaSwordCard, BreakingQiSwordCard, GiantWhaleSwordCard,
     ReflexiveSwordCard, MirrorFlowerSwordArrayCard, ThreePeakSwordCard, GiantRocManaSwordCard,
-    YunFlashingWindCard, YunMoonShadowCard, BNLJFormulaCard, ManaGatherMentalSkillCard,
+    YunFlashingWindCard, YunMoonShadowCard, BNLJFormulaCard, ManaGatherMentalCard,
     EgretManaSwordCard, GiantKunManaSwordCard, InspirationSwordCard, LiuyunChaoticSwordCard,
     WaterMoonSwordArrayCard, CrazyMoveTwoCard, YunYouLongCard, YunLingboCard, FlyingSpiritFlashingShadowSwordCard,
     TenThousandWayManaSwordCard, SwordMenaingStirringCard, YukongSwordArrayCard, ChainSwordArrayCard, CrazyMoveZeroCard,
-    StarMoveCard, PosStarCard, XingDangCard, XingJiaCard, GuaZhenCard, GuaKunCard, GuaXunCard, PalmThunderCard, WhiteCraneCard, FinchTailCard, MustangCard, SilkRemainCard
+    StarMoveCard, PosStarCard, XingDangCard, XingJiaCard, GuaZhenCard, GuaKunCard, GuaXunCard, PalmThunderCard, WhiteCraneCard, FinchTailCard, MustangCard, SilkRemainCard,
+    FlyingStarCard, XingDianCard, XingLiCard, GuaGenCard, GuaKunCard, ThunderCard, DigRootCard, OneFootCard, MindMentalCard, FallingFlowerCard, ImbuedRainbowCard, 
+    StarAroundMoonCard, FlowingWaterCard, XingDaCard, GuaDuiCard, WhiteSnakeCard,  ThunderGuaFormulaCard, LiangyiArrayCard, QiRecoverCard, DryTreeCard,
+    XingHuCard, SixyaoArrayCard, GuaLiCard, StarOrbitCard, TouchWaterCard, DoubleThunderCard, CountershockMentalCard,
+    WorldCenterMentalCard, XingDuanCard, GuaQianCard, FiveThunderCard, PurpleManaCard,
+    
 ]
 
 export type CardRecord = {
@@ -65,8 +70,9 @@ export class CardListFactory {
             if(i >= arg.length) {
                 arg[i] = CardName.YunWuFeng + ",1";
                 arg[i] = CardName.ManaProtectMe + ",1";
-                arg[i] = CardName.YunPointStar + ",2";
                 arg[i] = CardName.Hit + ",1";
+                arg[i] = CardName.YunPointStar + ",2";
+                arg[i] = CardName.CrazyMoveTwo + ",2";
             }
             var parts = arg[i].split(",");
             ret.push({

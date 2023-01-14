@@ -1,4 +1,5 @@
 import CardSearcher from "./CardSearcher";
+import { Debug } from "./Debug";
 import WorkerMsg from "./WorkerMsg";
 
 // Modules to control application life and create native browser window
@@ -125,7 +126,6 @@ function CreateReport (_, key:string, threadNum: number) {
   // reportWindow.webContents.openDevTools()
 }
 
-
 function SearchCard(_event, inKey: string): Array<string> {
   return CardSearcher.me.Search(inKey);
 }
@@ -136,6 +136,7 @@ function SearchCard(_event, inKey: string): Array<string> {
 app.whenReady().then(() => {
   ipcMain.handle("Miri.SearchCard", SearchCard)
   ipcMain.on("Main.Report", CreateReport)
+  ipcMain.on("Main.Debug", Debug)
   createWindow()
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

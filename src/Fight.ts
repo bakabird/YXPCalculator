@@ -10,6 +10,8 @@ export type CutCheck = (fr: FightReport)=>boolean
 //每场战斗
 export class Fight {
     constructor(private _me: Human, private _he: Human) {
+        _me.SetFight(this);
+        _he.SetFight(this);
     }
     Play(cutCheck: CutCheck): FightReport {
         var index = 0;
@@ -27,7 +29,7 @@ export class Fight {
         fightReport.heRoundMaxHp = heRoundMaxHp;
         fightReport.meUseCard.push([]);
         
-        while (index < FightConst.MAX_ROUND && this._me.hp > 0 && this._he.hp > 0) {
+        while (index < FightConst.MAX_ROUND && !this._me.isDead && !this._he.isDead) {
             fightReport.apeendLog(`\n：：：第${index + 1}轮：：：`);
             var round = new Round(index, this._me, this._he);
             round.effect(fightReport);
@@ -41,6 +43,11 @@ export class Fight {
             }
         }
         return fightReport;
+    }
+
+    public GetAnother(me: Human): Human {
+        if(me == this._me) return this._he
+        else return this._me;
     }
 
     public static BuildRun(

@@ -287,9 +287,9 @@ export class CrazyMoveOneCard extends ACard {
 
 }
 
-export class YunSoftMentalSkillCard extends ACard {
+export class YunSoftMentalCard extends ACard {
     cardState: CardState = CardState.JinDan;
-    cardName: CardName = CardName.YunSoftMentalSkill;
+    cardName: CardName = CardName.YunSoftMental;
     protected onEffect(me: Human, he: Human) {
         me.AddBuffById(BuffId.YunSoft, this._lvlVal(2,3,4), this.cardName);
     }
@@ -451,9 +451,9 @@ export class YunMoonShadowCard extends ACard {
     }
 }
 
-export class ManaGatherMentalSkillCard extends ACard {
+export class ManaGatherMentalCard extends ACard {
     cardState: CardState = CardState.YuanYing;
-    cardName: CardName = CardName.ManaGatherMentalSkill;
+    cardName: CardName = CardName.ManaGatherMental;
     protected onEffect(me: Human, he: Human) {
         me.RecoverMana(this._lvlVal(1, 1, 3), this.cardName);
         this._lvlMethod(()=>{

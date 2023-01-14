@@ -1,11 +1,13 @@
 
 import { extname } from "path";
 import { Human } from "./Human";
+import { XingDuanCard } from "./QiXingGeCard";
 
 
 //BuffEfectStage
 export enum BES {
     RoundStart,
+    RoundEnd,
     BeforeHitOther,
     AnyCardEffectOver,
     CALL_BY_CODE,
@@ -44,6 +46,12 @@ export enum BuffId {
     HpSteal = "吸血",
     StarPower = "星力",
     Gua = "卦",
+    Weak = "虚弱",
+    Mind = "静气",
+    Flaw = "破绽",
+    Sixyao = "六爻",
+    Countershock = "反震",
+    XingDuan = "星断",
 }
 
 export abstract class ABuff {
@@ -54,6 +62,7 @@ export abstract class ABuff {
         return this._num;
     }
     public ModNum(offset: number) {
+        if(offset == 0) return;
         this._num += offset;
     }
     public init(owner: Human, num: number){
@@ -67,7 +76,7 @@ export abstract class ABuff {
     }
 
     public static IsDebuff(buffId: BuffId) {
-        return [BuffId.Posion].indexOf(buffId) != -1;
+        return [BuffId.Posion, BuffId.Weak, BuffId.Flaw].indexOf(buffId) != -1;
     }
 }
 
@@ -137,14 +146,19 @@ export class ManaBuff extends ABuff {
     effect(stage: BES) {
         
     }
+
 }
 
 export class MoveAgainBuff extends ABuff {
     id: BuffId = BuffId.MoveAgain;
     getEffectOrder(stage: BES): BO {
+        if (stage == BES.RoundEnd) return BO.First;
         return BO.None;
     }
     effect(stage: BES) {
+        if (stage == BES.RoundEnd) {
+            this._owner.RemoveBuff(this.id, "回合结束");
+        }
     }
 }
 
@@ -368,6 +382,84 @@ export class GuaBuff extends ABuff {
             this._owner.AddBuffById(this.id, -1, "卦象");
         }
     }
+}
+
+export class WeakBuff extends ABuff {
+    id: BuffId = BuffId.Weak;
+    getEffectOrder(stage: BES): BO {
+        if(stage == BES.RoundEnd) return BO.First;
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if(stage == BES.RoundEnd) {
+            this._owner.AddBuffById(this.id, -1, "回合结束");
+        }
+    }
+
+}
+
+export class MindBuff extends ABuff {
+    id: BuffId = BuffId.Mind;
+    getEffectOrder(stage: BES): BO {
+        return BO.None;
+    }
+    effect(stage: BES) {
+    }
+
+}
+
+export class FlawBuff extends ABuff {
+    id: BuffId = BuffId.Flaw;
+    getEffectOrder(stage: BES): BO {
+        if(stage == BES.RoundEnd) return BO.First;
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if(stage == BES.RoundEnd) {
+            this._owner.AddBuffById(this.id, -1, "回合结束");
+        }
+    }
+
+}
+
+export class SixyaoBuff extends ABuff {
+    id: BuffId = BuffId.Sixyao;
+    getEffectOrder(stage: BES): BO {
+        return BO.None;
+    }
+    effect(stage: BES) {
+        
+    }
+
+}
+
+export class CountershockBuff extends ABuff {
+    id: BuffId = BuffId.Countershock;
+    getEffectOrder(stage: BES): BO {
+        return BO.None;
+    }
+    effect(stage: BES) {
+        
+    }
+
+}
+
+export class XingDuanBuff extends ABuff {
+    id: BuffId = BuffId.XingDuan;
+    getEffectOrder(stage: BES): BO {
+        if(stage == BES.RoundStart) {
+            return BO.Last;
+        }
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if(stage == BES.RoundStart) {
+            while(this._num--){
+                this._owner.ShiftCard();
+            }
+            this._owner.RemoveBuff(this.id, this.id);
+        }
+    }
 
 }
 
@@ -377,7 +469,8 @@ var AllBuffType = [
     PierceBuff, SwordMenaingBuff, CrazySwordBuff, YunSoftBuff,
     InternalShieldBuff, PowerBuff, BNLJBuff, ManaGatherBuff,
     ManaGatherSlowBuff, WaterMoonBuff, CrazyMoveZeroBuff, HpStealBuff,
-    StarPowerBuff, GuaBuff,
+    StarPowerBuff, GuaBuff, WeakBuff, MindBuff, FlawBuff, SixyaoBuff,
+    CountershockBuff, XingDuanBuff,
 ]
 
 export class BuffFactory {

@@ -35,7 +35,7 @@ export class FightReport {
         this.log = "";
     }
     public static checkWin(fr: FightReport): boolean {
-        if(last(fr.meRoundHp) < 0) return false;
+        if(last(fr.meRoundHp) <= 0) return false;
         if(fr.meRoundHp.length == FightConst.MAX_ROUND
             && last(fr.meRoundHp) <= last(fr.heRoundHp)) return false;
         return true;

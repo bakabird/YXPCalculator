@@ -27,9 +27,13 @@ export class BestDmgAI implements IBestAI {
             return a.heRoundHp.length < b.heRoundHp.length ? a : b;
         }
     }
+    private _firstWin: boolean = false;
     public cutCheck(writingFr: FightReport, best: FightReport): boolean {
         if(best) {
             if(FightReport.checkWin(best)) {
+                if(!this._firstWin) {
+                    this._firstWin = true;
+                }
                 if (writingFr.heRoundHp.length > best.heRoundHp.length) {
                     return true;
                 }   
