@@ -53,6 +53,7 @@ export enum CardName {
     EgretManaSword = "白鹭灵剑",
     GiantKunManaSword = "巨鲲灵剑",
     InspirationSword = "灵感剑",
+    YunCrashSnow = "云剑·崩雪",
     LiuyunChaoticSword = "流云乱剑",
     WaterMoonSwordArray = "水月剑阵",
     CrazyMoveTwo = "狂剑·二式",
@@ -114,6 +115,8 @@ export enum CardName {
     FiveThunder = "五雷轰顶",
     PurpleMana = "紫气东来",
 
+    DecalEcho = "回响阵纹",
+    ZhenMillionFlower = "万花迷魂阵",
 }
 
 export enum CardOrder {
@@ -157,6 +160,10 @@ export abstract class ACard {
     public get isCrazy(): boolean {
         return this.cardName.startsWith("狂剑")
     }
+    // 持续卡?
+    public get isKeeping(): boolean {
+        return this.onGetIsKeeping();
+    }
     init(level: CardLevel) {
         this._level = level;
         this._useNum = 0;
@@ -182,9 +189,6 @@ export abstract class ACard {
         }
         // 卡牌效果
         this.onEffect(me, he);
-        if (this.onGetIsCost() || this.onGetIsKeeping()) {
-            me.CardList.CostCur();
-        }
         if (starAct && onStar) {
             starAct(me, he);
         }
@@ -202,6 +206,11 @@ export abstract class ACard {
         }
         if (hurtAct && he.hp < oldHeHp) {
             hurtAct(me, he);
+        }
+        if (this.onGetIsCost() || this.onGetIsKeeping()) {
+            if(!me.CheckBuff(BuffId.DecalEcho, 1)) {
+                me.CardList.CostCur();
+            }
         }
         // 后处理
         if (this.cardName.startsWith("云剑")) {

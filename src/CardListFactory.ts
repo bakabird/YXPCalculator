@@ -1,8 +1,9 @@
 import { ACard, CardInfo, CardName, HitCard,  } from "./Card"
 import { BeiGongCard, CountershockMentalCard, DigRootCard, DoubleThunderCard, DryTreeCard, FallingFlowerCard, FeiTaCard, FinchTailCard, FiveThunderCard, FlowingWaterCard, FlyingStarCard, GoldChanCard, GuaDuiCard, GuaGenCard, GuaKunCard, GuaLiCard, GuaQianCard, GuaXunCard, GuaZhenCard, HaiDiCard, HuangQueCard, ImbuedRainbowCard, LiangyiArrayCard, MeiKaiCard, MindMentalCard, MustangCard, OneFootCard, PalmThunderCard, PosStarCard, PurpleManaCard, QiRecoverCard, QiTunCard, SilkRemain as SilkRemainCard, SixyaoArrayCard, StarAroundMoonCard, StarMoveCard, StarOrbitCard, TangLangCard, ThunderCard, ThunderGuaFormulaCard, TouchWaterCard, WhiteCraneCard, WhiteSnakeCard, WorldCenterMentalCard, XingDaCard, XingDangCard, XingDianCard, XingDuanCard, XingFeiCard, XingHuCard, XingJiaCard, XingLiCard } from "./QiXingGeCard";
-import { DCTuneCard, TongXinCard } from "./QingCards";
-import { BNLJFormulaCard, BreakingQiSwordCard, ChainSwordArrayCard, CloudDanceFormula, CondensationFormulaCard, CrazyMoveOneCard, CrazyMoveTwoCard, CrazyMoveZeroCard, DarkCrowManaSwordCard, DishaSwordCard, EgretManaSwordCard, FlyingSpiritFlashingShadowSwordCard, FlyingToothSwordCard, GiantKunManaSwordCard, GiantRocManaSwordCard, GiantWhaleSwordCard, HugeTigerManaSwordCard, InspirationSwordCard, LightSwordCard, LingxiSwordArray, LiuyunChaoticSwordCard, ManaGatherMentalCard, ManaInsideCard, ManaProtectMeCard, MirrorFlowerSwordArrayCard, QiDrawingSwordCard, ReflexiveSwordCard, ShockThunderSwordCard, SuddenWindSwordCard, SwordBlockCard, SwordChopCard, SwordMenaingStirringCard, TenThousandWayManaSwordCard, ThreePeakSwordCard, ToManaFormulaCard, WaterMoonSwordArrayCard, XingyiSwordCard, YukongSwordArrayCard, YunFeiCiCard, YunFlashingWindCard, YunHouTuCard, YunHuilingCard, YunHuiShouCard, YunJiYiCard, YunLingboCard, YunMoonShadowCard, YunPointStarCard, YunSoftMentalCard, YunTanYunCard, YunWuFengCard, YunWuliCard, YunYouLongCard } from "./YunLingJianCards";
+import { DCTuneCard, TongXinCard } from "./QinCards";
+import { BNLJFormulaCard, BreakingQiSwordCard, ChainSwordArrayCard, CloudDanceFormula, CondensationFormulaCard, CrazyMoveOneCard, CrazyMoveTwoCard, CrazyMoveZeroCard, DarkCrowManaSwordCard, DishaSwordCard, EgretManaSwordCard, FlyingSpiritFlashingShadowSwordCard, FlyingToothSwordCard, GiantKunManaSwordCard, GiantRocManaSwordCard, GiantWhaleSwordCard, HugeTigerManaSwordCard, InspirationSwordCard, LightSwordCard, LingxiSwordArray, LiuyunChaoticSwordCard, ManaGatherMentalCard, ManaInsideCard, ManaProtectMeCard, MirrorFlowerSwordArrayCard, QiDrawingSwordCard, ReflexiveSwordCard, ShockThunderSwordCard, SuddenWindSwordCard, SwordBlockCard, SwordChopCard, SwordMenaingStirringCard, TenThousandWayManaSwordCard, ThreePeakSwordCard, ToManaFormulaCard, WaterMoonSwordArrayCard, XingyiSwordCard, YukongSwordArrayCard, YunCrashSnowCard, YunFeiCiCard, YunFlashingWindCard, YunHouTuCard, YunHuilingCard, YunHuiShouCard, YunJiYiCard, YunLingboCard, YunMoonShadowCard, YunPointStarCard, YunSoftMentalCard, YunTanYunCard, YunWuFengCard, YunWuliCard, YunYouLongCard } from "./YunLingJianCards";
 import CardList from "./CardList";
+import { DecalEchoCard, ZhenMillionFlower } from "./ZhenCards";
 
 var AllCardType = [
     HitCard, 
@@ -24,14 +25,15 @@ var AllCardType = [
     ReflexiveSwordCard, MirrorFlowerSwordArrayCard, ThreePeakSwordCard, GiantRocManaSwordCard,
     YunFlashingWindCard, YunMoonShadowCard, BNLJFormulaCard, ManaGatherMentalCard,
     EgretManaSwordCard, GiantKunManaSwordCard, InspirationSwordCard, LiuyunChaoticSwordCard,
-    WaterMoonSwordArrayCard, CrazyMoveTwoCard, YunYouLongCard, YunLingboCard, FlyingSpiritFlashingShadowSwordCard,
+    WaterMoonSwordArrayCard, CrazyMoveTwoCard, YunYouLongCard, YunLingboCard, FlyingSpiritFlashingShadowSwordCard, YunCrashSnowCard,
     TenThousandWayManaSwordCard, SwordMenaingStirringCard, YukongSwordArrayCard, ChainSwordArrayCard, CrazyMoveZeroCard,
     StarMoveCard, PosStarCard, XingDangCard, XingJiaCard, GuaZhenCard, GuaKunCard, GuaXunCard, PalmThunderCard, WhiteCraneCard, FinchTailCard, MustangCard, SilkRemainCard,
     FlyingStarCard, XingDianCard, XingLiCard, GuaGenCard, GuaKunCard, ThunderCard, DigRootCard, OneFootCard, MindMentalCard, FallingFlowerCard, ImbuedRainbowCard, 
     StarAroundMoonCard, FlowingWaterCard, XingDaCard, GuaDuiCard, WhiteSnakeCard,  ThunderGuaFormulaCard, LiangyiArrayCard, QiRecoverCard, DryTreeCard,
     XingHuCard, SixyaoArrayCard, GuaLiCard, StarOrbitCard, TouchWaterCard, DoubleThunderCard, CountershockMentalCard,
     WorldCenterMentalCard, XingDuanCard, GuaQianCard, FiveThunderCard, PurpleManaCard,
-    
+
+    DecalEchoCard, ZhenMillionFlower,
 ]
 
 export type CardRecord = {
@@ -86,15 +88,19 @@ export class CardListFactory {
     public FormList(infoList: Array<CardInfo>): CardList {
         var ret: ACard[] = [];
         infoList.forEach(info => {
-            var cardType = this._dict[info.name].Type;
-            if(!cardType) {
-                throw "unknown card " + info.name;
-            }
-            var card: ACard = new cardType();
-            card.init(info.level);
-            ret.push(card);
+            ret.push(this.NewCard(info.name, info.level));
         })
         return new CardList(ret);
+    }
+
+    public NewCard(name: string, level: number): ACard {
+        var cardType = this._dict[name].Type;
+        if (!cardType) {
+            throw "unknown card " + name;
+        }
+        var card: ACard = new cardType();
+        card.init(level);
+        return card;
     }
 
     public EachRecord(walk:(record: CardRecord)=>void) {

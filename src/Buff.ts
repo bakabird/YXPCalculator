@@ -38,6 +38,7 @@ export enum BuffId {
     YunSoft = "柔云",
     InternalShield = "内甲",
     Power = "攻",
+    Depower = "减攻",
     ManaGatherSlow = "慢聚灵",
     ManaGather = "聚灵",
     BNLJ = "百鸟灵剑",
@@ -52,6 +53,8 @@ export enum BuffId {
     Sixyao = "六爻",
     Countershock = "反震",
     XingDuan = "星断",
+    DecalEcho = "回响阵纹",
+    ZhenMillionFlower = "万花迷魂阵",
 }
 
 export abstract class ABuff {
@@ -280,6 +283,16 @@ export class PowerBuff extends ABuff {
 
 }
 
+export class DepowerBuff extends ABuff {
+    id: BuffId = BuffId.Depower;
+    getEffectOrder(stage: BES): BO {
+        return BO.None;
+    }
+    effect(stage: BES) {
+    }
+
+}
+
 export class ManaGatherSlowBuff extends ABuff {
     id: BuffId = BuffId.ManaGatherSlow;
     private _count: number = 0;
@@ -463,6 +476,34 @@ export class XingDuanBuff extends ABuff {
 
 }
 
+export class DecalEchoBuff extends ABuff {
+    id: BuffId = BuffId.DecalEcho;
+    getEffectOrder(stage: BES): BO {
+        return BO.None;
+    }
+    effect(stage: BES) {
+    }
+
+}
+
+export class ZhenMillionFlowerBuff extends ABuff {
+    id: BuffId = BuffId.ZhenMillionFlower;
+    getEffectOrder(stage: BES): BO {
+        if(stage == BES.RoundEnd) {
+            return BO.First;
+        }
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if(stage == BES.RoundEnd) {
+            this._owner.GetAnother().AddBuffById(BuffId.Depower, 1, this.id)
+            this._owner.AddBuffById(this.id, -1, "消耗");
+        }
+    }
+
+}
+    
+
 var AllBuffType = [
     PosionBuff, ManaBuff, DCBuff, MeiKaiBuff, MoveAgainBuff,
     HuangQueBuff, ProtectBuff, YunJianBuff, ShieldBuff,
@@ -470,7 +511,8 @@ var AllBuffType = [
     InternalShieldBuff, PowerBuff, BNLJBuff, ManaGatherBuff,
     ManaGatherSlowBuff, WaterMoonBuff, CrazyMoveZeroBuff, HpStealBuff,
     StarPowerBuff, GuaBuff, WeakBuff, MindBuff, FlawBuff, SixyaoBuff,
-    CountershockBuff, XingDuanBuff,
+    CountershockBuff, XingDuanBuff, DecalEchoBuff, ZhenMillionFlowerBuff,
+    DepowerBuff,
 ]
 
 export class BuffFactory {

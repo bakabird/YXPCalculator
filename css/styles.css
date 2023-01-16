@@ -14,12 +14,13 @@
 }
 
 .Card .cardFace{
+    height: 21vw;
     width: 100%;
 }
 
 .Card .arrow {
-    width: 20%;
-    margin: 0px 40%;
+    width: 17%;
+    margin: 0px 41.5%;
     opacity: 0;
 }
 
@@ -28,7 +29,7 @@
 .CardSearch input{
     width: 80%;
     height: 30px;
-    margin: 5px 2% 20px;
+    margin: 6px 1% 6px;
     font-size: 29px;
 }
 
@@ -38,10 +39,11 @@
 
 .cardPos {
     width: 16%;
+    margin: 6px 1% 6px;
 }
 
 .cardPos button{
-    height: 80%;
+    height: 100%;
     width: 45%;
 }
 
@@ -82,4 +84,40 @@
 
 .levelG .three {
     background-color: rgb(255, 255, 35);
+}
+
+
+.CardBoxTitle {
+    display: flex;
+    color: #fff;
+    margin: 3px auto;
+}
+
+.selfCardBoxTitle {
+    background-color: #104578;
+}
+
+.enemyCardBoxTitle {
+    background-color: #6c3636;
+    flex-direction: row-reverse;
+}
+
+.CardBoxTitle h3 {
+    font-size: 15px;
+    margin: 0px 0px;
+    padding: 0px 10px;
+}
+
+.enemyCardBoxTitle .cleanEnemyBox {
+    font-size: 12px;
+    border: none;
+    padding: 0px 10px;
+    margin: 0px 0px;
+    background: #361c13;
+    color: #d9cece;
+}
+
+.enemyCardBoxTitle .cleanEnemyBox:hover {
+    background: #e3d8ce;
+    color: #580000;
 }

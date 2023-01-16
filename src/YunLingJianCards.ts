@@ -556,6 +556,29 @@ export class CrazyMoveTwoCard extends ACard {
 
 }
 
+export class YunCrashSnowCard extends ACard {
+    cardName: CardName = CardName.YunCrashSnow;
+    cardState: CardState = CardState.YuanYing;
+    protected onEffect(me: Human, he: Human) {
+        if(!me.CheckBuff(BuffId.YunJian,1)) {
+            he.GetHit(2, me, this.cardName)
+        }
+    }
+    protected onGetYunAct(): CardEffect {
+        return (me: Human, he: Human) => {
+            if (me.CheckBuff(BuffId.YunJian, 1)) {
+                he.GetHit(
+                    2 + this._lvlVal(4,5,6) * me.GetBuff(BuffId.YunJian).num,
+                    me, this.cardName
+                );
+            }
+        }
+    }
+}
+
+
+
+
 export class YunYouLongCard extends ACard {
     cardState: CardState = CardState.HuaShen;
     cardName: CardName = CardName.YunYouLong;

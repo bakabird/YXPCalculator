@@ -72,8 +72,8 @@ Menu.setApplicationMenu(menu)
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 700,
+    height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     }
@@ -86,7 +86,7 @@ function createWindow () {
   // mainWindow.webContents.openDevTools()
 }
 
-function CreateReport (_, key:string, threadNum: number) {
+function CreateReport (_, key:string, eKey: string, threadNum: number) {
   // Create the browser window.
   const reportWindow = new BrowserWindow({
     width: 600,
@@ -99,6 +99,7 @@ function CreateReport (_, key:string, threadNum: number) {
   const reportWorker = new Worker("./ReportWorker.js", {
     workerData: {
       cardKey: key,
+      eCardKey: eKey,
       threadNum,
     }
   });

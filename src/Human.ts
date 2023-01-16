@@ -68,6 +68,10 @@ export class Human {
         this._fight = fight;
     }
 
+    public GetAnother(): Human {
+        return this._fight.GetAnother(this);
+    }
+
     public RecoverMana(num: number, log: string = "") {
         if(num == 0) return;
         if (log == "") {
@@ -112,7 +116,7 @@ export class Human {
             }
         } else if(buffId == BuffId.Gua) {
             if(chg > 0 && this.CheckBuff(BuffId.Sixyao, 1)) {
-                this._fight.GetAnother(this).SimpleGetHit(this.GetBuff(BuffId.Sixyao).num * chg, BuffId.Sixyao);
+                this.GetAnother().SimpleGetHit(this.GetBuff(BuffId.Sixyao).num * chg, BuffId.Sixyao);
             }
         }
     }
@@ -176,6 +180,7 @@ export class Human {
         const fromWeak = from.GetBuff(BuffId.Weak);
         const fromPierce = from.GetBuff(BuffId.Pierce);
         const fromPower = from.GetBuff(BuffId.Power);
+        const fromDepower = from.GetBuff(BuffId.Depower);
         const fromSM = from.GetBuff(BuffId.SwordMenaing);
         const fromHS = from.GetBuff(BuffId.HpSteal);
         const meCS = this.GetBuff(BuffId.Countershock);
@@ -187,6 +192,9 @@ export class Human {
         }
         if(fromPower) {
             hurt += fromPower.num;
+        }
+        if(fromDepower) {
+            hurt = Math.max(1, hurt - fromDepower.num);
         }
         if(fromWeak) {
             hurt = Math.max(1, Math.floor(hurt * 0.6));
@@ -299,7 +307,6 @@ export class Human {
             this._frOption.cardUse && this._connectingFr?.appendUse(card.cardName);
             if(this.isDead) return;
             if(useMeiKai) {
-                this.RecoverMana(cardmana, BuffId.MeiKai);
                 this._frOption.cardUseLog && this._connectingFr?.apeendLog(`【卡牌使用】${this.name} 使用 ${card.cardName}`);
                 card.effect(this, _target);
                 this._frOption.cardUse && this._connectingFr?.appendUse(card.cardName);

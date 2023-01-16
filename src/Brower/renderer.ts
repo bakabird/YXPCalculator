@@ -21,12 +21,12 @@ class Eventer {
     }
 }
 
-function readLastKey() {
-    return localStorage.getItem("lastKey");
+function readKey(key: string) {
+    return localStorage.getItem(key);
 }
 
-function saveLastKey(key: string) {
-    localStorage.setItem("lastKey", key);
+function saveKey(key: string, val: string) {
+    localStorage.setItem(key, val);
 }
 
 class CardWrap {
@@ -86,9 +86,12 @@ class CardWrap {
 }
 
 class CardListWrap {
+    public eventer: Eventer = new Eventer();
+    private _blue: JQuery<HTMLElement>;
     private _list: Array<CardWrap>;
     private _curTargetIndex: number = -1;
-    constructor() {
+    constructor(private _node: JQuery<HTMLElement>, private _localKey: string) {
+        this._blue = $(".Hub .Card");
         this._list = [];
     }
     public get key():string {
@@ -97,12 +100,27 @@ class CardListWrap {
         },"")
     }
     public set key(v: string) {
+        if(v == null) {
+            this.each(c => {
+                c.cardname = "普通攻击";
+                c.level = 0;
+            })
+            return;
+        }
         v.split(";").forEach((part,index) => {
             if(part == "" || index >= this._list.length) return
             const [cardName,level] = part.split(",");
             this._list[index].cardname = cardName;
             this._list[index].level = parseInt(level);
         })
+    }
+    public init() {
+        for(var i = 0;i < 8;i++) {
+            const item = this._blue.clone(false, false);
+            const cardWrap = new CardWrap(item, i);
+            this.add(cardWrap);
+            this._node.append(item);
+        }
     }
     public add(cardWrap: CardWrap) {
         cardWrap.eventer.add("clickFace", this.onClickFace.bind(this));
@@ -150,9 +168,19 @@ class CardListWrap {
                 i.oHideArrow();
             }
         })
+        this.eventer.event("clickFace", this);
+    }
+    public unclick() {
+        this._curTargetIndex = -1;
+        this._list.forEach(i => i.oHideArrow());
+    }
+    public read() {
+        if(readKey(this._localKey)){
+            this.key = readKey(this._localKey);
+        }
     }
     public onUptFace() {
-        saveLastKey(this.key);
+        saveKey(this._localKey, this.key);
     }
 }
 
@@ -250,11 +278,12 @@ class CardSearchWrap {
 class BarWrap {
     constructor(
         private _node: JQuery<HTMLElement>, 
-        private _cardListWrap: CardListWrap
+        private _fCardListWrap: CardListWrap,
+        private _eCardListWrap: CardListWrap,
     ) {
         _node.children(".analysis").on("click", ()=>{
             const threadNum = parseInt(_node.children("select")[0].value);
-            window.electronAPI.createReport(this._cardListWrap.key, threadNum);
+            window.electronAPI.createReport(this._fCardListWrap.key, this._eCardListWrap.key, threadNum);
         });
         _node.children(".fix").on("click", ()=>{
             localStorage.clear();
@@ -265,25 +294,40 @@ class BarWrap {
     }
 }
 
-var cardItem = $(".Hub .Card");   
-var cardBox = $(".CardBox");
-const cardListWrap = new CardListWrap();
-const searchWrap = new CardSearchWrap($(".CardSearch"));
-const bar = new BarWrap($(".Bar"), cardListWrap);
-const lastKey = readLastKey()
-for(var i = 0;i < 8;i++) {
-    const item = cardItem.clone(false, false);
-    const cardWrap = new CardWrap(item, i);
-    cardListWrap.add(cardWrap);
-    cardBox.append(item);
+class ECardBoxTitle {
+    constructor(
+        _node: JQuery<HTMLElement>,
+        _eCardListWrap: CardListWrap,
+    ) {
+        _node.children(".cleanEnemyBox").on("click", ()=>{
+            _eCardListWrap.key = null;
+        })
+    }
 }
+
+const cardListWrap = new CardListWrap($(".FCardBox"), "fCardKey");
+const eCardListWrap = new CardListWrap($(".ECardBox"), "eCardKey");
+const searchWrap = new CardSearchWrap($(".CardSearch"));
+const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap);
+new ECardBoxTitle($(".enemyCardBoxTitle"), eCardListWrap);
+let activeWrap: CardListWrap;
+const onClickFace = (wrap: CardListWrap) => {
+    if(activeWrap != wrap) {
+        activeWrap?.unclick();
+        activeWrap = wrap;
+    }
+}
+
+cardListWrap.init();
+eCardListWrap.init();
+eCardListWrap.eventer.add("clickFace", onClickFace);
+cardListWrap.eventer.add("clickFace", onClickFace);
 cardListWrap.onClickFace(0);
 searchWrap.eventer.add("chooseDown", (name: string)=>{
-    cardListWrap.modCard(name);
-})
-searchWrap.eventer.add("move", (step: number)=>{
-    cardListWrap.moveCard(step);
+    activeWrap.modCard(name);
 });
-if(lastKey) {
-    cardListWrap.key = lastKey;
-}
+searchWrap.eventer.add("move", (step: number)=>{
+    activeWrap.moveCard(step);
+});
+cardListWrap.read();
+eCardListWrap.read();

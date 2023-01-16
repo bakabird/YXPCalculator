@@ -11,8 +11,8 @@ contextBridge.exposeInMainWorld('electronAPI',{
   searchCard: (key: string) => {
     return ipcRenderer.invoke('Miri.SearchCard', key)
   },
-  createReport: (key: string, threadNum: number) => {
-    ipcRenderer.send("Main.Report", key, threadNum);
+  createReport: (key: string, eKey: string, threadNum: number) => {
+    ipcRenderer.send("Main.Report", key, eKey, threadNum);
   },
   onProcessOver: (callback) => {
     ipcRenderer.on("Miri.ProcessOver", callback);

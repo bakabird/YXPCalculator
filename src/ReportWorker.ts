@@ -14,12 +14,13 @@ const {
   } = require('node:worker_threads');
 
 const cardKey = workerData.cardKey;
+const eCardKey = workerData.eCardKey;
 const threadNum = workerData.threadNum;
 const possibleSet = new PossibleCardSet(cardKey);
 const sum: Sumamry = new Sumamry();
-const heManArg = ["胖虎", 110, 0];
+const heManArg = ["胖虎", 110, 100];
 const meManArg = ["大雄", 110, 50];
-const heCardInfos = CardListFactory.me.SplitCode("");
+const heCardInfos = CardListFactory.me.SplitCode(eCardKey);
 const allMiri: Array<MiriWorker> = [];
 
 function buildFightTurn(miri: MiriWorker) {
