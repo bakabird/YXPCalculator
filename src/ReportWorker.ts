@@ -1,9 +1,7 @@
 import { BestDmgAI } from "./BestDmgAI";
-import { CardInfo } from "./Card";
 import { CardListFactory } from "./CardListFactory";
 import { Fight } from "./Fight";
 import { FightReport } from "./FightReport";
-import { Human } from "./Human";
 import { MiriWorker } from "./Miri";
 import PossibleCardSet from "./PossibleCardSet";
 import { Sumamry } from "./Sumamry";

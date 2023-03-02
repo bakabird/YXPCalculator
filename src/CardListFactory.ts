@@ -70,11 +70,7 @@ export class CardListFactory {
         var arg = code == "" ? [] : code.split(";");
         for (var i = 0;i < CardListFactory.Size;i++) {
             if(i >= arg.length) {
-                arg[i] = CardName.YunWuFeng + ",1";
-                arg[i] = CardName.ManaProtectMe + ",1";
                 arg[i] = CardName.Hit + ",1";
-                arg[i] = CardName.YunPointStar + ",2";
-                arg[i] = CardName.CrazyMoveTwo + ",2";
             }
             var parts = arg[i].split(",");
             ret.push({
