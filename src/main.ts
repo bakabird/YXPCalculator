@@ -1,12 +1,14 @@
 import CardSearcher from "./CardSearcher";
 import { Debug } from "./Debug";
+import { FightReport } from "./FightReport";
+import { Sumamry } from "./Sumamry";
 import WorkerMsg from "./WorkerMsg";
 
 // Modules to control application life and create native browser window
 const {
   Worker, isMainThread, parentPort, workerData
 } = require('node:worker_threads');
-const {app, Menu, BrowserWindow, ipcMain} = require('electron')
+const { app, Menu, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const isMac = process.platform === 'darwin'
 
@@ -69,7 +71,7 @@ const template = [
 const menu = Menu.buildFromTemplate(template)
 Menu.setApplicationMenu(menu)
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 700,
@@ -86,7 +88,7 @@ function createWindow () {
   // mainWindow.webContents.openDevTools()
 }
 
-function CreateReport (_, key:string, eKey: string, threadNum: number) {
+function CreateReport(_, key: string, eKey: string, threadNum: number) {
   // Create the browser window.
   const reportWindow = new BrowserWindow({
     width: 600,
@@ -103,14 +105,14 @@ function CreateReport (_, key:string, eKey: string, threadNum: number) {
       threadNum,
     }
   });
-  reportWorker.on('message', (workerMsg: WorkerMsg)=>{
-    switch(workerMsg.type) {
+  reportWorker.on('message', (workerMsg: WorkerMsg) => {
+    switch (workerMsg.type) {
       case "process-over":
         reportWindow.webContents.send('Miri.ProcessOver', workerMsg.data);
         break;
     }
   });
-  reportWorker.on('error', (err)=>{
+  reportWorker.on('error', (err) => {
     console.error(err);
   });
   reportWorker.on('exit', (code) => {
@@ -127,6 +129,28 @@ function CreateReport (_, key:string, eKey: string, threadNum: number) {
   // reportWindow.webContents.openDevTools()
 }
 
+function ViewReport(_, fightReport: FightReport) {
+  // Create the browser window.
+  const reportWindow = new BrowserWindow({
+    width: 600,
+    height: 800,
+    webPreferences: {
+      nodeIntegrationInWorker: true,
+      preload: path.join(__dirname, 'preload.js'),
+    }
+  })
+  const patchySumary = new Sumamry();
+  patchySumary.cur = fightReport;
+  // and load the index.html of the app.
+  reportWindow.loadFile('report.html')
+  setTimeout(() => {
+    reportWindow.webContents.send('Miri.ProcessOver', patchySumary);
+  }, 700)
+  // reportWindow.removeMenu();
+  // Open the DevTools.
+  // reportWindow.webContents.openDevTools()
+}
+
 function SearchCard(_event, inKey: string): Array<string> {
   return CardSearcher.me.Search(inKey);
 }
@@ -137,6 +161,7 @@ function SearchCard(_event, inKey: string): Array<string> {
 app.whenReady().then(() => {
   ipcMain.handle("Miri.SearchCard", SearchCard)
   ipcMain.on("Main.Report", CreateReport)
+  ipcMain.on("Main.ViewReport", ViewReport)
   ipcMain.on("Main.Debug", Debug)
   createWindow()
   app.on('activate', function () {

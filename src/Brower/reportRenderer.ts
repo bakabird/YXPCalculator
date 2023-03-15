@@ -5,7 +5,7 @@ namespace reportRenderer {
             this._cardBlue = $(".Hub .Card");
         }
         public build(cards: Array<any>) {
-            cards.forEach((v,i)=>{
+            cards.forEach((v, i) => {
                 var item = this._cardBlue.clone();
                 item.children("img").attr("src", `./img/${v.name}_${v.level}级.png`);
                 this._node.append(item);
@@ -28,10 +28,10 @@ namespace reportRenderer {
             item.children(".heChg").text("敌方生命变化")
             this._node.append(item);
 
-            fr.meRoundHp.forEach((_,idx)=>{
+            fr.meRoundHp.forEach((_, idx) => {
                 var item = this._itemBlue.clone();
                 item.children(".roundIdx").text(idx);
-                if(fr.meUseCard.length > idx) {
+                if (fr.meUseCard.length > idx) {
                     item.children(".useCard").text(fr.meUseCard[idx].join(" "));
                 }
                 item.children(".meHp").text(`${fr.meRoundHp[idx]}/${fr.meRoundMaxHp[idx]}`)
@@ -45,10 +45,10 @@ namespace reportRenderer {
                     item.children(".heChg").text(`${heChg} | ${heMaxChg}`)
                 }
                 this._node.append(item);
-            })            
+            })
         }
     }
-    
+
     class RecommendWrap {
         private _blue: JQuery<HTMLElement>;
         constructor(private _node: JQuery<HTMLElement>) {
@@ -59,10 +59,16 @@ namespace reportRenderer {
             var list = new CardListWrap(item);
             list.build(aiRcmd.meCards);
             this._node.append(item);
+            this._node.children(".view").on("click", () => {
+                window.electronAPI.viewReport(aiRcmd);
+            })
+        }
+        public hide() {
+            this._node.addClass('hide');
         }
     }
-    
-    window.electronAPI.onProcessOver((_, sumamry)=>{
+
+    window.electronAPI.onProcessOver((_, sumamry) => {
         $(".waiting").addClass("hide");
         $(".body").removeClass("hide");
         var clw = new CardListWrap($(".body .cards"));
@@ -71,6 +77,10 @@ namespace reportRenderer {
         clw.build(sumamry.cur.meCards);
         rdw.build(sumamry.cur);
         $(".fightLog").text(sumamry.cur.log);
-        rw.build(sumamry.dmgBest);
+        if (sumamry.dmgBest) {
+            rw.build(sumamry.dmgBest);
+        } else {
+            rw.hide();
+        }
     });
 }

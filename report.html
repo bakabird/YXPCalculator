@@ -1,49 +1,54 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
-    <script src="./jquery-3.6.3.min.js"></script>
-    <link href="./css/report.css" rel="stylesheet">
-    <title>分析报告</title>
-  </head>
-  <body>
-    <div class="waiting">
-        <p>分析中...</p>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+  <script src="./jquery-3.6.3.min.js"></script>
+  <link href="./css/report.css" rel="stylesheet">
+  <title>分析报告</title>
+</head>
+
+<body>
+  <div class="waiting">
+    <p>分析中...</p>
+  </div>
+  <div class="body hide">
+    <div class="cards">
     </div>
-    <div class="body hide">
-      <div class="cards">
-      </div>
-      <div class="shortwin">
-        <table class="curFightReport" border="1">
-        </table>
-        <pre class="fightLog"></pre>
-      </div>
-      <div class="rcmd">
-        <h3>推荐牌序(伤害优先)</h3>
-      </div>
-    </div>
-    <div class="Hub hide">
-      <div class="Card">
-        <img src="">
-      </div>
-      <table>
-        <tbody>
-          <tr class="reportItem">
-            <td class="roundIdx"></td>
-            <td class="useCard"></td>
-            <td class="meChg"></td>
-            <td class="meHp"></td>
-            <td class="heHp"></td>
-            <td class="heChg"></td>
-          </tr>
-        </tbody>
+    <div class="shortwin">
+      <table class="curFightReport" border="1">
       </table>
-      <div class="cards">
-      </div>
+      <pre class="fightLog"></pre>
     </div>
-    <!-- You can also require other files to run in this process -->
-    <script src="./Brower/reportRenderer.js"></script>
-  </body>
+    <div class="rcmd">
+      <h3>推荐牌序(伤害优先)</h3>
+      <button class="view">战报详情</button>
+    </div>
+  </div>
+  <div class="Hub hide">
+    <div class="Card">
+      <img src="">
+    </div>
+    <table>
+      <tbody>
+        <tr class="reportItem">
+          <td class="roundIdx"></td>
+          <td class="useCard"></td>
+          <td class="meChg"></td>
+          <td class="meHp"></td>
+          <td class="heHp"></td>
+          <td class="heChg"></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="cards">
+    </div>
+  </div>
+  <!-- You can also require other files to run in this process -->
+  <script src="./Brower/reportRenderer.js"></script>
+</body>
+
 </html>

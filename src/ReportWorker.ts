@@ -8,8 +8,8 @@ import { Sumamry } from "./Sumamry";
 import WorkerMsg from "./WorkerMsg";
 
 const {
-    isMainThread, parentPort, workerData
-  } = require('node:worker_threads');
+  isMainThread, parentPort, workerData
+} = require('node:worker_threads');
 
 const cardKey = workerData.cardKey;
 const eCardKey = workerData.eCardKey;
@@ -24,10 +24,10 @@ const allMiri: Array<MiriWorker> = [];
 function buildFightTurn(miri: MiriWorker) {
   const id = allMiri.length;
   allMiri.push(miri);
-  const turn = (fr: FightReport)=>{
+  const turn = (fr: FightReport) => {
     sum.dmgBest = BestDmgAI.me.compare(fr, sum.dmgBest);
     const meCardInfos = possibleSet.Fetch();
-    if(meCardInfos) {
+    if (meCardInfos) {
       // console.log(id + " go work");
       miri.RunTask(JSON.stringify({
         meManArg, meCardInfos,
@@ -40,7 +40,7 @@ function buildFightTurn(miri: MiriWorker) {
     }
   }
   miri.onComplete = turn;
-  miri.onEnd = ()=> {
+  miri.onEnd = () => {
     if (!allMiri.find(i => !i.isOver)) {
       const msg = new WorkerMsg('process-over');
       msg.data = sum;
@@ -53,7 +53,7 @@ function buildFightTurn(miri: MiriWorker) {
 
 sum.cur = Fight.BuildRun2(meManArg, CardListFactory.me.SplitCode(cardKey), heManArg, heCardInfos);
 
-for(var i = 0;i < threadNum;i++){
+for (var i = 0; i < threadNum; i++) {
   buildFightTurn(new MiriWorker("./FightWorker.js"))(null);
 }
 
