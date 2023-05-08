@@ -10,7 +10,7 @@ export enum CardName {
     TongXin = "同心曲",
     MeiKai = "梅开二度",
     HuangQue = "黄雀在后",
-    
+
     QiTun = "气吞山河",
     YunTanYun = "云剑·探云",
     YunFeiCi = "云剑·飞刺",
@@ -35,11 +35,11 @@ export enum CardName {
     DishaSword = "地煞剑",
     XingyiSword = "形意剑",
     CrazyMoveOne = "狂剑·一式",
-    YunSoftMental  = "柔云心法",
+    YunSoftMental = "柔云心法",
     YunWuli = "云剑·无妄",
     YunPointStar = "云剑·点星",
     YunHuiling = "云剑·汇灵",
-    CloudDanceFormula  = "云舞诀",
+    CloudDanceFormula = "云舞诀",
     DarkCrowManaSword = "暗鸦灵剑",
     BreakingQiSword = "破气剑",
     GiantRocManaSword = "巨鹏灵剑",
@@ -117,6 +117,37 @@ export enum CardName {
 
     DecalEcho = "回响阵纹",
     ZhenMillionFlower = "万花迷魂阵",
+
+    // #region 五行道盟
+
+    // 炼器期
+    Mu_yin = "木灵印",
+    Mu_ya = "木灵·芽",
+    Huo_yin = "火灵印",
+    Huo_cuan = "火灵·窜",
+    Tu_yin = "土灵印",
+    Tu_sui = "土灵·碎",
+    Jin_yin = "金灵印",
+    Jin_zhen = "金灵·针",
+    Shui_yin = "水灵印",
+    Shui_tao = "水灵·涛",
+    Wuxingc = "五行刺",
+
+    // 筑基期
+    Mu_fusu = "木灵·复苏",
+    Mu_shuying = "木灵·疏影",
+    Huo_juyan = "火灵·聚炎",
+    Huo_chiyan = "火灵·赤焰",
+    Tu_zhen = "土灵阵",
+    Tu_qunshan = "土灵·群山",
+    Jin_zhenArray = "金灵阵",
+    Jin_chuanxin = "金灵·穿心",
+    Shui_bolan = "水灵·波澜",
+    Shui_xiongyong = "水灵·汹涌",
+    Huntianyin = "浑天印",
+
+    // #endregion
+
 }
 
 export enum CardOrder {
@@ -145,7 +176,7 @@ export type CardInfo = {
     level: number,
 }
 
-export type CardEffect = (me: Human,he: Human)=>void;
+export type CardEffect = (me: Human, he: Human) => void;
 
 export abstract class ACard {
     abstract cardName: CardName;
@@ -160,6 +191,24 @@ export abstract class ACard {
     public get isCrazy(): boolean {
         return this.cardName.startsWith("狂剑")
     }
+    public get isMu(): boolean {
+        return this.cardName.startsWith("木灵")
+    }
+    public get isShui(): boolean {
+        return this.cardName.startsWith("水灵")
+    }
+    public get isJin(): boolean {
+        return this.cardName.startsWith("金灵")
+    }
+    public get isHuo(): boolean {
+        return this.cardName.startsWith("火灵")
+    }
+    public get isTu(): boolean {
+        return this.cardName.startsWith("土灵")
+    }
+    public get isWuxing(): boolean {
+        return this.isTu || this.isHuo || this.isJin || this.isShui || this.isMu;
+    }
     // 持续卡?
     public get isKeeping(): boolean {
         return this.onGetIsKeeping();
@@ -171,33 +220,59 @@ export abstract class ACard {
     public decUseNum() {
         this._useNum--;
     }
-    public effect(me:Human, he: Human) {
+    public effect(me: Human, he: Human) {
         const secondAct = this.onGetSecondAct();
         const starAct = this.onGetStarAct();
         const yunAct = this.onGetYunAct();
         const hurtAct = this.onGetHurtAct();
+        const muAct = this.onGetMuAct();
+        const huoAct = this.onGetHuoAct();
+        const jinAct = this.onGetJinAct();
+        const shuiAct = this.onGetShuiAct();
+        const tuAct = this.onGetTuAct();
         const meCrazyMoveNum = me.GetBuff(BuffId.CrazyMoveZero)?.num ?? 0;
         const meStarPowerNum = me.GetBuff(BuffId.StarPower)?.num ?? 0;
+        const meHuntianNum = me.GetBuff(BuffId.Huntianyin)?.num ?? 0;
+        const meTuZhenNum = me.GetBuff(BuffId.TuZhen)?.num ?? 0;
+        const meJinZhenNum = me.GetBuff(BuffId.JinZhen)?.num ?? 0;
         const oldHeHp = he.hp;
         const onStar = me.CardList.IsOnStar();
         // 前处理
-        if(this.isCrazy && meCrazyMoveNum > 0) {
+        if (this.isCrazy && meCrazyMoveNum > 0) {
             me.AddBuffById(BuffId.HpSteal, meCrazyMoveNum, BuffId.CrazyMoveZero);
         }
-        if(onStar && meStarPowerNum > 0) {
+        if (onStar && meStarPowerNum > 0) {
             me.AddBuffById(BuffId.Power, meStarPowerNum, BuffId.StarPower);
+        }
+        if (this.isWuxing) {
+            // 浑天印
+            if (meHuntianNum > 0) {
+                if (this.isMu) me.AddBuffById(BuffId.Mu, 1, BuffId.Huntianyin);
+                if (this.isHuo) me.AddBuffById(BuffId.Huo, 1, BuffId.Huntianyin);
+                if (this.isShui) me.AddBuffById(BuffId.Shui, 1, BuffId.Huntianyin);
+                if (this.isJin) me.AddBuffById(BuffId.Jin, 1, BuffId.Huntianyin);
+                if (this.isTu) me.AddBuffById(BuffId.Tu, 1, BuffId.Huntianyin);
+                me.AddBuffById(BuffId.Huntianyin, -1, "消耗");
+            }
+            // 五行
+            if (this.isMu && meTuZhenNum > 0) {
+                me.AddBuffById(BuffId.Shield, meTuZhenNum, BuffId.TuZhen);
+            }
+            if (this.isJin && meJinZhenNum > 0) {
+                me.AddBuffById(BuffId.Sharp, meJinZhenNum, BuffId.JinZhen);
+            }
         }
         // 卡牌效果
         this.onEffect(me, he);
         if (starAct && onStar) {
             starAct(me, he);
         }
-        if (secondAct){
-            if(this._useNum > 0) {
+        if (secondAct) {
+            if (this._useNum > 0) {
                 secondAct(me, he);
             }
             var buff = me.GetBuff(BuffId.HuangQue);
-            if(buff && buff.num > 0) {
+            if (buff && buff.num > 0) {
                 he.GetHit(buff.num, me, buff.id);
             }
         }
@@ -208,9 +283,24 @@ export abstract class ACard {
             hurtAct(me, he);
         }
         if (this.onGetIsCost() || this.onGetIsKeeping()) {
-            if(!me.CheckBuff(BuffId.DecalEcho, 1)) {
+            if (!me.CheckBuff(BuffId.DecalEcho, 1)) {
                 me.CardList.CostCur();
             }
+        }
+        if (muAct && me.isMu) {
+            muAct(me, he);
+        }
+        if (tuAct && me.isTu) {
+            tuAct(me, he);
+        }
+        if (huoAct && me.isHuo) {
+            huoAct(me, he);
+        }
+        if (shuiAct && me.isShui) {
+            shuiAct(me, he);
+        }
+        if (jinAct && me.isJin) {
+            jinAct(me, he);
         }
         // 后处理
         if (this.cardName.startsWith("云剑")) {
@@ -220,13 +310,13 @@ export abstract class ACard {
         } else {
             me.RemoveBuff(BuffId.YunJian, "断云");
         }
-        if(this.isCrazy) {
+        if (this.isCrazy) {
             me.AddBuffById(BuffId.CrazySword, 1, "狂!");
-            if(meCrazyMoveNum > 0) {
+            if (meCrazyMoveNum > 0) {
                 me.AddBuffById(BuffId.HpSteal, -meCrazyMoveNum, BuffId.CrazyMoveZero);
             }
         }
-        if(onStar && meStarPowerNum > 0) {
+        if (onStar && meStarPowerNum > 0) {
             me.AddBuffById(BuffId.Power, -meStarPowerNum, BuffId.StarPower);
         }
         // 结束
@@ -236,7 +326,7 @@ export abstract class ACard {
     // 获取卡牌的实际耗蓝
     public getMana(me: Human, he: Human): number {
         let mana = this.onGetMana(me);
-        if (this.cardName.endsWith("灵剑") && me.CheckBuff(BuffId.BNLJ, 1)){
+        if (this.cardName.endsWith("灵剑") && me.CheckBuff(BuffId.BNLJ, 1)) {
             mana = Math.max(0, mana - me.GetBuff(BuffId.BNLJ).num);
         }
         return mana;
@@ -271,9 +361,29 @@ export abstract class ACard {
     protected onGetHurtAct(): CardEffect {
         return null
     }
+    // 木灵效果
+    protected onGetMuAct(): CardEffect {
+        return null
+    }
+    // 水灵效果
+    protected onGetShuiAct(): CardEffect {
+        return null
+    }
+    // 火灵效果
+    protected onGetHuoAct(): CardEffect {
+        return null
+    }
+    // 金灵效果
+    protected onGetJinAct(): CardEffect {
+        return null
+    }
+    // 土灵效果
+    protected onGetTuAct(): CardEffect {
+        return null
+    }
 
-    protected _lvlVal<T>(normal: T, rare: T, legend: T): T  {
-        switch(this._level) {
+    protected _lvlVal<T>(normal: T, rare: T, legend: T): T {
+        switch (this._level) {
             case CardLevel.Normal:
                 return normal;
             case CardLevel.Rare:
@@ -282,8 +392,8 @@ export abstract class ACard {
                 return legend;
         }
     }
-    protected _lvlMethod(normal: Function, rare: Function, legend: Function)  {
-        switch(this._level) {
+    protected _lvlMethod(normal: Function, rare: Function, legend: Function) {
+        switch (this._level) {
             case CardLevel.Normal:
                 normal && normal();
                 break;

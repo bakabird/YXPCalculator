@@ -25,6 +25,7 @@ export class Human {
     private _fakeRdmRateCounter: number;
     private _connectingFr: FightReport;
     private _frOption: FROption;
+    private _lastUseCard: ACard;
 
     constructor(name: string, hp: number, speed: number) {
         this._name = name;
@@ -46,12 +47,12 @@ export class Human {
     public get speed(): number {
         return this._speed;
     }
-    
+
     public get name(): string {
         return this._name;
     }
 
-    public get guaCostNum() : number {
+    public get guaCostNum(): number {
         return this._guaCostNum;
     }
 
@@ -64,6 +65,26 @@ export class Human {
         return manaBuff ? manaBuff.num : 0;
     }
 
+    public get isMu(): boolean {
+        return this.CheckBuff(BuffId.Mu, 1) || this._lastUseCard.isMu;
+    }
+
+    public get isHuo(): boolean {
+        return this.CheckBuff(BuffId.Huo, 1) || this._lastUseCard.isHuo;
+    }
+
+    public get isShui(): boolean {
+        return this.CheckBuff(BuffId.Shui, 1) || this._lastUseCard.isShui;
+    }
+
+    public get isTu(): boolean {
+        return this.CheckBuff(BuffId.Tu, 1) || this._lastUseCard.isTu;
+    }
+
+    public get isJin(): boolean {
+        return this.CheckBuff(BuffId.Jin, 1) || this._lastUseCard.isJin;
+    }
+
     public SetFight(fight: Fight) {
         this._fight = fight;
     }
@@ -73,7 +94,7 @@ export class Human {
     }
 
     public RecoverMana(num: number, log: string = "") {
-        if(num == 0) return;
+        if (num == 0) return;
         if (log == "") {
             log = num > 0 ? "回蓝" : "耗蓝"
         }
@@ -83,7 +104,7 @@ export class Human {
     // 如果消耗失败会自动恢复一点蓝
     //<retrun>是否成功消耗</return>
     public CostMana(num: number): boolean {
-        if(this.mana >= num) {
+        if (this.mana >= num) {
             this.RecoverMana(-num);
             return true;
         }
@@ -97,10 +118,10 @@ export class Human {
         var findRlt = this._BuffList.find(b => b.id == buff.id);
         this._frOption.buffChg && this._connectingFr.apeendLog(
             `【${log}】${this._name} ${buff.num > 0 ? '+' : ''}${buff.num} 层${buff.id}`);
-        if(findRlt) {
+        if (findRlt) {
             findRlt.ModNum(buff.num);
             this._onBuffChg(buff.id, buff.num);
-            if(findRlt.num <= 0) {
+            if (findRlt.num <= 0) {
                 this.RemoveBuff(findRlt.id, "no");
             }
         } else {
@@ -110,19 +131,19 @@ export class Human {
     }
 
     private _onBuffChg(buffId: BuffId, chg: number) {
-        if(buffId == BuffId.Mana) {
-            if(chg > 0 && this.CheckBuff(BuffId.Mind, 1)) {
+        if (buffId == BuffId.Mana) {
+            if (chg > 0 && this.CheckBuff(BuffId.Mind, 1)) {
                 this.AddHp(this.GetBuff(BuffId.Mind).num * chg, BuffId.Mind);
             }
-        } else if(buffId == BuffId.Gua) {
-            if(chg > 0 && this.CheckBuff(BuffId.Sixyao, 1)) {
+        } else if (buffId == BuffId.Gua) {
+            if (chg > 0 && this.CheckBuff(BuffId.Sixyao, 1)) {
                 this.GetAnother().SimpleGetHit(this.GetBuff(BuffId.Sixyao).num * chg, BuffId.Sixyao);
             }
         }
     }
 
     AddBuffById(buffId: BuffId, num: number, log: string) {
-        if(num == 0) return;
+        if (num == 0) return;
         this.AddBuff(BuffFactory.me.Produce(buffId, this, num), log);
     }
 
@@ -140,7 +161,7 @@ export class Human {
         return findRlt;
     }
 
-    EachBuff(walk: (buff: ABuff)=>void) {
+    EachBuff(walk: (buff: ABuff) => void) {
         this._BuffList.forEach(buff => {
             walk(buff);
         });
@@ -176,50 +197,55 @@ export class Human {
      * @return {number} how many hp actual hit
      */
     public GetHit(hurt: number, from: Human, log: string): number {
-        if(hurt <= 0) throw "invalid arg";
+        if (hurt <= 0) throw "invalid arg";
         const fromWeak = from.GetBuff(BuffId.Weak);
         const fromPierce = from.GetBuff(BuffId.Pierce);
         const fromPower = from.GetBuff(BuffId.Power);
         const fromDepower = from.GetBuff(BuffId.Depower);
-        const fromSM = from.GetBuff(BuffId.SwordMenaing);
-        const fromHS = from.GetBuff(BuffId.HpSteal);
-        const meCS = this.GetBuff(BuffId.Countershock);
+        const fromSwordMenaing = from.GetBuff(BuffId.SwordMenaing);
+        const fromHpSteal = from.GetBuff(BuffId.HpSteal);
+        const fromSharp = from.GetBuff(BuffId.Sharp);
+        const meCountershock = this.GetBuff(BuffId.Countershock);
         const meFlaw = this.GetBuff(BuffId.Flaw);
         const meShield = this.GetBuff(BuffId.Shield);
         from.EffectBuff(BES.BeforeHitOther);
-        if(fromSM) {
-            hurt += fromSM.num;
+        if (fromSwordMenaing) {
+            hurt += fromSwordMenaing.num;
         }
-        if(fromPower) {
+        if (fromPower) {
             hurt += fromPower.num;
         }
-        if(fromDepower) {
+        if (fromDepower) {
             hurt = Math.max(1, hurt - fromDepower.num);
         }
-        if(fromWeak) {
+        if (fromWeak) {
             hurt = Math.max(1, Math.floor(hurt * 0.6));
         }
-        if(meFlaw) {
+        if (meFlaw) {
             hurt = Math.floor(hurt * 1.4);
         }
-        if(fromPierce) {
+        if (fromPierce) {
             from.AddBuff(BuffFactory.me.Produce(BuffId.Pierce, from, -1), log);
-        } else if(meShield) {
+        } else if (meShield) {
             const shiledOut = Math.min(meShield.num, hurt);
             this.AddBuff(BuffFactory.me.Produce(BuffId.Shield, this, -shiledOut), log);
             hurt -= shiledOut;
-        } 
-        if(hurt > 0) {
+        }
+        if (hurt > 0) {
+            if (fromSharp) {
+                hurt += fromSharp.num;
+                from.RemoveBuff(BuffId.Sharp, log);
+            }
             this.CutHp(hurt, log);
-            if(fromHS) {
-                const steal = Math.floor(hurt * fromHS.num / 100);
-                if(steal > 0) {
-                    from.AddHp(steal, fromHS.id);
+            if (fromHpSteal) {
+                const steal = Math.floor(hurt * fromHpSteal.num / 100);
+                if (steal > 0) {
+                    from.AddHp(steal, fromHpSteal.id);
                 }
             }
         }
-        if(meCS) {
-            from.SimpleGetHit(meCS.num, meCS.id);
+        if (meCountershock) {
+            from.SimpleGetHit(meCountershock.num, meCountershock.id);
         }
         return Math.max(0, hurt);
     }
@@ -228,18 +254,18 @@ export class Human {
      * 只考虑自己的情况
      */
     public SimpleGetHit(hurt: number, log: string) {
-        if(hurt <= 0) throw "invalid arg";
+        if (hurt <= 0) throw "invalid arg";
         const meFlaw = this.GetBuff(BuffId.Flaw);
         const meShield = this.GetBuff(BuffId.Shield);
-        if(meFlaw) {
+        if (meFlaw) {
             hurt = Math.floor(hurt * 1.4);
         }
-        if(meShield) {
+        if (meShield) {
             const shiledOut = Math.min(meShield.num, hurt);
             this.AddBuff(BuffFactory.me.Produce(BuffId.Shield, this, -shiledOut), log);
             hurt -= shiledOut;
-        } 
-        if(hurt > 0) {
+        }
+        if (hurt > 0) {
             this.CutHp(hurt, log);
         }
         return Math.max(0, hurt);
@@ -248,8 +274,8 @@ export class Human {
     //削减生命（不考虑护甲）
     public CutHp(hp: number, log: string) {
         if (hp <= 0) throw "invalid arg";
-        
-        if(this.CheckBuff(BuffId.Protect, 1)) {
+
+        if (this.CheckBuff(BuffId.Protect, 1)) {
             this.AddBuff(BuffFactory.me.Produce(BuffId.Protect, this, -1), "扣血");
         } else {
             this._frOption.hpChg && this._connectingFr.apeendLog(
@@ -258,17 +284,17 @@ export class Human {
         }
     }
 
-    public AddMaxHp(maxHp: number, log:string) {
-        if(maxHp == 0) return;
-        if(maxHp < 0) throw "invalid arg";
+    public AddMaxHp(maxHp: number, log: string) {
+        if (maxHp == 0) return;
+        if (maxHp < 0) throw "invalid arg";
         this._frOption.hpChg && this._connectingFr.apeendLog(
             `【${log}】${this._name} 加血上限 ${maxHp}`);
         this._maxHp += maxHp;
     }
 
     public CutMaxHp(cut: number, log: string) {
-        if(cut == 0) return;
-        if(cut < 0) throw "invalid arg"
+        if (cut == 0) return;
+        if (cut < 0) throw "invalid arg"
         this._frOption.hpChg && this._connectingFr.apeendLog(
             `【${log}】${this._name} 减血上限 ${cut}`);
         this._maxHp -= cut;
@@ -301,18 +327,19 @@ export class Human {
         var useMeiKai = this.CheckBuff(BuffId.MeiKai, 1);
         var card = this.GetCurCard();
         var cardmana = card.getMana(this, _target);
-        if(this.CostMana(cardmana)) {
+        if (this.CostMana(cardmana)) {
             this._frOption.cardUseLog && this._connectingFr?.apeendLog(`【卡牌使用】${this.name} 使用 ${card.cardName}`);
             card.effect(this, _target);
             this._frOption.cardUse && this._connectingFr?.appendUse(card.cardName);
-            if(this.isDead) return;
-            if(useMeiKai) {
+            if (this.isDead) return;
+            if (useMeiKai) {
                 this._frOption.cardUseLog && this._connectingFr?.apeendLog(`【卡牌使用】${this.name} 使用 ${card.cardName}`);
                 card.effect(this, _target);
                 this._frOption.cardUse && this._connectingFr?.appendUse(card.cardName);
-                if(this.isDead) return;
+                if (this.isDead) return;
                 this.AddBuff(BuffFactory.me.Produce(BuffId.MeiKai, this, -1), "梅开二度");
             }
+            this._lastUseCard = card;
             this.ShiftCard();
         }
     }
@@ -329,15 +356,15 @@ export class Human {
 
     public MakeAllStar() {
         var i = this._CardList.size;
-        while(i--){
+        while (i--) {
             this._CardList.MakeStar(i);
         }
     }
 
-    public Gua(min:number, max:number): number {
+    public Gua(min: number, max: number): number {
         const gua = this.GetBuff(BuffId.Gua);
         let rdm = FightConst.TRUE_RANDOM ? Math.random() : 0.5;
-        if(gua) {
+        if (gua) {
             gua.effect(BES.CALL_BY_CODE);
             this._guaCostNum++;
             rdm = 1;
@@ -345,28 +372,28 @@ export class Human {
         return min + Math.floor((max - min) * rdm);
     }
 
-    public GuaRate(rate:number): boolean {
+    public GuaRate(rate: number): boolean {
         const gua = this.GetBuff(BuffId.Gua);
         if (!FightConst.TRUE_RANDOM) {
-            if(gua) {
+            if (gua) {
                 gua.effect(BES.CALL_BY_CODE);
                 this._guaCostNum++;
                 return true;
             } else {
                 this._fakeRdmRateCounter += rate;
-                if(this._fakeRdmRateCounter >= 1) {
+                if (this._fakeRdmRateCounter >= 1) {
                     this._fakeRdmRateCounter -= 1;
                     return true;
                 }
             }
         } else {
             let rdm = Math.random();
-            if(gua) {
+            if (gua) {
                 gua.effect(BES.CALL_BY_CODE);
                 this._guaCostNum++;
                 rdm = 0;
             }
-            if(rdm < rate) return true;
+            if (rdm < rate) return true;
         }
         return false;
     }

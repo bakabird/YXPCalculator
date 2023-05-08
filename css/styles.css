@@ -1,5 +1,9 @@
 /* styles.css */
 
+.hide {
+    display: none;
+}
+
 /* Add styles here to customize the appearance of your app */
 .CardBox {
     display: flex;
@@ -13,7 +17,7 @@
     width: 12.5vw;
 }
 
-.Card .cardFace{
+.Card .cardFace {
     height: 21vw;
     width: 100%;
 }
@@ -26,7 +30,7 @@
 
 
 
-.CardSearch input{
+.CardSearch input {
     width: 80%;
     height: 30px;
     margin: 6px 1% 6px;
@@ -42,7 +46,7 @@
     margin: 6px 1% 6px;
 }
 
-.cardPos button{
+.cardPos button {
     height: 100%;
     width: 45%;
 }

@@ -9,7 +9,7 @@ export class StarMoveCard extends ACard {
     protected onEffect(me: Human, he: Human) {
         he.GetHit(this._lvlVal(5, 8, 8), me, this.cardName);
         me.MakeStar(1);
-        this._lvlMethod(null, null, ()=> {
+        this._lvlMethod(null, null, () => {
             me.MakeStar(2);
         })
     }
@@ -20,9 +20,9 @@ export class PosStarCard extends ACard {
     cardName: CardName = CardName.PosStar;
     cardState: CardState = CardState.LianQi;
     protected onEffect(me: Human, he: Human) {
-        me.RecoverMana(this._lvlVal(1,2,2), this.cardName);
-        me.AddBuffById(BuffId.Shield, this._lvlVal(2,3,4), this.cardName);
-        me.AddBuffById(BuffId.StarPower, this._lvlVal(1,1,2), this.cardName);
+        me.RecoverMana(this._lvlVal(1, 2, 2), this.cardName);
+        me.AddBuffById(BuffId.Shield, this._lvlVal(2, 3, 4), this.cardName);
+        me.AddBuffById(BuffId.StarPower, this._lvlVal(1, 1, 2), this.cardName);
     }
 
 }
@@ -31,11 +31,11 @@ export class XingDangCard extends ACard {
     cardName: CardName = CardName.XingDang;
     cardState: CardState = CardState.LianQi;
     protected onEffect(me: Human, he: Human) {
-        he.GetHit(this._lvlVal(6,8, 10), me, this.cardName);
+        he.GetHit(this._lvlVal(6, 8, 10), me, this.cardName);
     }
     protected onGetStarAct(): CardEffect {
         return (me: Human, he: Human) => {
-            me.AddBuffById(BuffId.Shield, this._lvlVal(2,4,6), this.cardName);
+            me.AddBuffById(BuffId.Shield, this._lvlVal(2, 4, 6), this.cardName);
         }
     }
 }
@@ -47,7 +47,7 @@ export class XingJiaCard extends ACard {
         he.GetHit(this._lvlVal(6, 7, 8), me, this.cardName);
     }
     protected onGetStarAct(): CardEffect {
-        return (me: Human, he: Human)=>{
+        return (me: Human, he: Human) => {
             he.GetHit(this._lvlVal(5, 7, 9), me, this.cardName)
         }
     }
@@ -81,7 +81,7 @@ export class GuaXunCard extends ACard {
     cardState: CardState = CardState.LianQi;
     protected onEffect(me: Human, he: Human) {
         me.RecoverMana(this._lvlVal(1, 2, 2), this.cardName);
-        me.AddBuffById(BuffId.Gua, this._lvlVal(1,1,2),this.cardName);
+        me.AddBuffById(BuffId.Gua, this._lvlVal(1, 1, 2), this.cardName);
     }
 
 }
@@ -90,7 +90,7 @@ export class PalmThunderCard extends ACard {
     cardName: CardName = CardName.PalmThunder;
     cardState: CardState = CardState.LianQi;
     protected onEffect(me: Human, he: Human) {
-        he.GetHit(me.Gua(this._lvlVal(2,5,8), this._lvlVal(10, 13, 16)),
+        he.GetHit(me.Gua(this._lvlVal(2, 5, 8), this._lvlVal(10, 13, 16)),
             me, this.cardName);
     }
 
@@ -111,7 +111,7 @@ export class FinchTailCard extends ACard {
     cardState: CardState = CardState.LianQi;
     protected onEffect(me: Human, he: Human) {
         he.GetHit(this._lvlVal(9, 10, 11), me, this.cardName);
-        if(me.GuaRate(0.1)) {
+        if (me.GuaRate(0.1)) {
             he.GetHit(this._lvlVal(5, 7, 9), me, this.cardName);
         }
     }
@@ -124,7 +124,7 @@ export class MustangCard extends ACard {
     cardName: CardName = CardName.Mustang;
     cardState: CardState = CardState.LianQi;
     protected onEffect(me: Human, he: Human) {
-        for(var i = 0;i < 2;i++) {
+        for (var i = 0; i < 2; i++) {
             he.GetHit(this._lvlVal(3, 4, 5), me, this.cardName);
         }
         me.AddBuffById(BuffId.Shield, me.Gua(1, this._lvlVal(10, 12, 14)), this.cardName);
@@ -160,7 +160,7 @@ export class FlyingStarCard extends ACard {
     cardState: CardState = CardState.ZhuJi;
     protected onEffect(me: Human, he: Human) {
         he.GetHit(5, me, this.cardName);
-        me.AddBuffById(BuffId.StarPower, this._lvlVal(1,2,3), this.cardName);
+        me.AddBuffById(BuffId.StarPower, this._lvlVal(1, 2, 3), this.cardName);
     }
 
 }
@@ -183,10 +183,10 @@ export class XingLiCard extends ACard {
     cardName: CardName = CardName.XingLi;
     cardState: CardState = CardState.ZhuJi;
     protected onEffect(me: Human, he: Human) {
-        he.GetHit(this._lvlVal(7,8,9), me, this.cardName);
+        he.GetHit(this._lvlVal(7, 8, 9), me, this.cardName);
     }
     protected onGetStarAct(): CardEffect {
-        return (me: Human, he: Human)=>{
+        return (me: Human, he: Human) => {
             me.RecoverMana(this._lvlVal(1, 2, 3), this.cardName);
         }
     }
@@ -197,8 +197,8 @@ export class GuaGenCard extends ACard {
     cardState: CardState = CardState.ZhuJi;
     protected onEffect(me: Human, he: Human) {
         me.AddBuffById(BuffId.Gua, this._lvlVal(2, 3, 4), this.cardName);
-        me.AddMaxHp(this._lvlVal(2,3,4), this.cardName);
-        me.AddHp(this._lvlVal(2,3,4), this.cardName);
+        me.AddMaxHp(this._lvlVal(2, 3, 4), this.cardName);
+        me.AddHp(this._lvlVal(2, 3, 4), this.cardName);
     }
 
 }
@@ -207,7 +207,7 @@ export class GuaKanCard extends ACard {
     cardName: CardName = CardName.GuaKan;
     cardState: CardState = CardState.ZhuJi;
     protected onEffect(me: Human, he: Human) {
-        me.AddBuffById(BuffId.Gua, this._lvlVal(2, 3, 4),this.cardName);
+        me.AddBuffById(BuffId.Gua, this._lvlVal(2, 3, 4), this.cardName);
         me.MakeStar(1);
     }
 
@@ -233,7 +233,7 @@ export class DigRootCard extends ACard {
     cardName: CardName = CardName.DigRoot;
     cardState: CardState = CardState.ZhuJi;
     protected onEffect(me: Human, he: Human) {
-        for(var i = 0;i < 2;i++) {
+        for (var i = 0; i < 2; i++) {
             he.GetHit(this._lvlVal(5, 7, 9), me, this.cardName);
         }
         he.CutMaxHp(me.Gua(this._lvlVal(3, 6, 9), this._lvlVal(13, 17, 21)), this.cardName);
@@ -248,7 +248,7 @@ export class OneFootCard extends ACard {
     cardState: CardState = CardState.ZhuJi;
     protected onEffect(me: Human, he: Human) {
         he.GetHit(this._lvlVal(11, 15, 15), me, this.cardName);
-        if(me.GuaRate(0.11)) {
+        if (me.GuaRate(0.11)) {
             he.AddBuffById(BuffId.Weak, this._lvlVal(1, 1, 2), this.cardName);
         }
     }
@@ -283,7 +283,7 @@ export class ImbuedRainbowCard extends ACard {
     cardName: CardName = CardName.ImbuedRainbow;
     cardState: CardState = CardState.ZhuJi;
     protected onEffect(me: Human, he: Human) {
-        me.RecoverMana(this._lvlVal(2,3,4),this.cardName);
+        me.RecoverMana(this._lvlVal(2, 3, 4), this.cardName);
     }
     protected onGetSecondAct(): CardEffect {
         return (me: Human) => {
@@ -340,12 +340,12 @@ export class XingDaCard extends ACard {
     cardName: CardName = CardName.XingDa;
     cardState: CardState = CardState.JinDan;
     protected onEffect(me: Human, he: Human) {
-        for(var i = 0;i < 2;i++) {
+        for (var i = 0; i < 2; i++) {
             he.GetHit(this._lvlVal(5, 6, 7), me, this.cardName);
         }
     }
     protected onGetStarAct(): CardEffect {
-        return (me:Human, he: Human) => {
+        return (me: Human, he: Human) => {
             he.GetHit(this._lvlVal(5, 7, 9), me, this.cardName);
         }
     }
@@ -370,7 +370,7 @@ export class WhiteSnakeCard extends ACard {
     cardName: CardName = CardName.WhiteSnake;
     cardState: CardState = CardState.JinDan;
     protected onEffect(me: Human, he: Human) {
-        if(me.GuaRate(0.1)) {
+        if (me.GuaRate(0.1)) {
             he.AddBuffById(BuffId.Flaw, this._lvlVal(2, 3, 4), this.cardName);
         }
         he.GetHit(6, me, this.cardName);
@@ -395,11 +395,11 @@ export class LiangyiArrayCard extends ACard {
     cardName: CardName = CardName.LiangyiArray;
     cardState: CardState = CardState.JinDan;
     protected onEffect(me: Human, he: Human) {
-        me.RecoverMana(this._lvlVal(2,3,4), this.cardName);
-        if(me.CheckBuff(BuffId.Gua, 1)) {
+        me.RecoverMana(this._lvlVal(2, 3, 4), this.cardName);
+        if (me.CheckBuff(BuffId.Gua, 1)) {
             const guaNum = me.GetBuff(BuffId.Gua).num;
             me.AddBuffById(BuffId.Shield, guaNum * this._lvlVal(1, 2, 2), this.cardName);
-            me.AddHp(guaNum * this._lvlVal(1,1,2), this.cardName);
+            me.AddHp(guaNum * this._lvlVal(1, 1, 2), this.cardName);
         }
     }
 
@@ -416,7 +416,7 @@ export class FlowingWaterCard extends ACard {
                 hasDebuff = true;
             }
         });
-        if(hasDebuff) {
+        if (hasDebuff) {
             he.AddBuffById(BuffId.Posion, this._lvlVal(2, 3, 4), this.cardName);
         }
     }
@@ -524,7 +524,7 @@ export class XingHuCard extends ACard {
     cardState: CardState = CardState.YuanYing;
     protected onEffect(me: Human, he: Human) {
         var i = 3;
-        while(i--) {
+        while (i--) {
             he.GetHit(1, me, this.cardName);
         }
     }
@@ -563,7 +563,7 @@ export class StarOrbitCard extends ACard {
     protected onEffect(me: Human, he: Human) {
         me.AddBuffById(BuffId.Shield, this._lvlVal(6, 12, 18), this.cardName);
         const guaBuffNum = me.GetBuff(BuffId.Gua)?.num ?? 0;
-        if(guaBuffNum > 0) {
+        if (guaBuffNum > 0) {
             me.AddBuffById(BuffId.StarPower, guaBuffNum, this.cardName);
             me.RecoverMana(guaBuffNum, this.cardName);
             me.RemoveBuff(BuffId.Gua, this.cardName);
@@ -577,7 +577,7 @@ export class TouchWaterCard extends ACard {
     cardState: CardState = CardState.YuanYing;
     protected onEffect(me: Human, he: Human) {
         he.GetHit(this._lvlVal(5, 9, 13), me, this.cardName);
-        if(me.GuaRate(0.1)) {
+        if (me.GuaRate(0.1)) {
             me.AddBuffById(BuffId.MoveAgain, 1, this.cardName);
         }
     }
@@ -590,18 +590,18 @@ export class DoubleThunderCard extends ACard {
     protected onEffect(me: Human, he: Human) {
         var i = 2;
         var meGuaNum = me.GetBuff(BuffId.Gua)?.num ?? 0;
-        while(i--){
+        while (i--) {
             he.GetHit(
-                me.Gua(1, this._lvlVal(10,13,16)),
+                me.Gua(1, this._lvlVal(10, 13, 16)),
                 me, this.cardName
             );
-            if(meGuaNum > 0) {
+            if (meGuaNum > 0) {
                 me.RecoverMana(1, this.cardName);
                 meGuaNum--;
             }
         }
     }
-    
+
 }
 
 export class CountershockMentalCard extends ACard {
@@ -655,7 +655,7 @@ export class WorldCenterMentalCard extends ACard {
     cardName: CardName = CardName.WorldCenterMental;
     cardState: CardState = CardState.HuaShen;
     protected onEffect(me: Human, he: Human) {
-        me.AddBuffById(BuffId.StarPower, this._lvlVal(1,2,3), this.cardName);
+        me.AddBuffById(BuffId.StarPower, this._lvlVal(1, 2, 3), this.cardName);
         me.MakeAllStar();
     }
     protected onGetIsKeeping(): boolean {
@@ -667,7 +667,7 @@ export class XingDuanCard extends ACard {
     cardName: CardName = CardName.XingDuan;
     cardState: CardState = CardState.HuaShen;
     protected onEffect(me: Human, he: Human) {
-        he.GetHit(this._lvlVal(16,22,28), me, this.cardName);
+        he.GetHit(this._lvlVal(16, 22, 28), me, this.cardName);
     }
     protected onGetStarAct(): CardEffect {
         return (me: Human, he: Human) => {
@@ -683,9 +683,9 @@ export class GuaQianCard extends ACard {
     cardName: CardName = CardName.GuaQian;
     cardState: CardState = CardState.HuaShen;
     protected onEffect(me: Human, he: Human) {
-        me.RecoverMana(this._lvlVal(1,2,3), this.cardName);
-        me.AddBuffById(BuffId.Gua, this._lvlVal(1,2,3), this.cardName);
-        if(me.CheckBuff(BuffId.Gua, 3)) {
+        me.RecoverMana(this._lvlVal(1, 2, 3), this.cardName);
+        me.AddBuffById(BuffId.Gua, this._lvlVal(1, 2, 3), this.cardName);
+        if (me.CheckBuff(BuffId.Gua, 3)) {
             me.AddBuffById(BuffId.MoveAgain, 1, this.cardName);
         }
     }
@@ -697,8 +697,8 @@ export class FiveThunderCard extends ACard {
     cardState: CardState = CardState.HuaShen;
     protected onEffect(me: Human, he: Human) {
         var i = 5;
-        while(i--){
-            if(me.GuaRate(0.3)) {
+        while (i--) {
+            if (me.GuaRate(0.3)) {
                 he.GetHit(this._lvlVal(8, 10, 12), me, this.cardName);
             }
         }
@@ -758,8 +758,8 @@ export class PurpleManaCard extends ACard {
         const mana = me.mana;
         const gua = me.GetBuff(BuffId.Gua)?.num ?? 0;
         const star = me.GetBuff(BuffId.StarPower)?.num ?? 0;
-        const add = this._lvlVal(3,5,7);
-        if(mana >= gua && mana >= star) {
+        const add = this._lvlVal(3, 5, 7);
+        if (mana >= gua && mana >= star) {
             me.RecoverMana(add, this.cardName);
         } else if (gua >= mana && gua >= star) {
             me.AddBuffById(BuffId.Gua, add, this.cardName);
