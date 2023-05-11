@@ -146,6 +146,41 @@ export enum CardName {
     Shui_xiongyong = "水灵·汹涌",
     Huntianyin = "浑天印",
 
+    // 金丹期
+    Mu_zhen = "木灵阵",
+    Mu_Xunlin = "木灵·巡林",
+    Huo_zhen = "火灵阵",
+    Huo_honbao = "火灵·轰爆",
+    Tu_yangchen = "土灵·扬尘",
+    Tu_duanya = "土灵·断崖",
+    Jin_xurui = "金灵·蓄锐",
+    Jin_fengmang = "金灵·锋芒",
+    Shui_zhen = "水灵阵",
+    Shui_quanyong = "水灵·泉涌",
+    Wuxingflow = "五行流转",
+
+    // 元婴期
+    Mu_anxiang = "木灵·暗香",
+    Mu_meici = "木灵·玫刺",
+    Huo_shunran = "火灵·瞬燃",
+    Huo_zhuoxin = "火灵·灼心",
+    Tu_juebi = "土灵·绝壁",
+    Tu_liusha = "土灵·流沙",
+    Jin_feisuo = "金灵·飞梭",
+    Jin_tiegu = "金灵·铁骨",
+    Shui_tenglang = "水灵·腾浪",
+    Shui_qiandun = "水灵·潜遁",
+    Hunyuansj = "混元碎击",
+
+    // 化神期
+    Mu_liufengfei = "木灵·柳纷飞",
+    Huo_lieliaoyuan = "火灵·烈燎原",
+    Tu_hebahuan = "土灵·合八荒",
+    Jin_judiluo = "金灵·巨鼎落",
+    Shui_nabaichuan = "水灵·纳百川",
+    Hunyuan_wuji = "混元无极阵",
+    WuXing_tiansuijue = "五行天髓决",
+
     // #endregion
 
 }
@@ -235,6 +270,10 @@ export abstract class ACard {
         const meHuntianNum = me.GetBuff(BuffId.Huntianyin)?.num ?? 0;
         const meTuZhenNum = me.GetBuff(BuffId.TuZhen)?.num ?? 0;
         const meJinZhenNum = me.GetBuff(BuffId.JinZhen)?.num ?? 0;
+        const meMuZhenNum = me.GetBuff(BuffId.MuZhen)?.num ?? 0;
+        const meHuoZhenNum = me.GetBuff(BuffId.HuoZhen)?.num ?? 0;
+        const meShuiZhenNum = me.GetBuff(BuffId.ShuiZhen)?.num ?? 0;
+        const meRecord_AtkTime = me.GetBuff(BuffId.Record_AtkTime)?.num ?? 0;
         const oldHeHp = he.hp;
         const onStar = me.CardList.IsOnStar();
         // 前处理
@@ -260,6 +299,16 @@ export abstract class ACard {
             }
             if (this.isJin && meJinZhenNum > 0) {
                 me.AddBuffById(BuffId.Sharp, meJinZhenNum, BuffId.JinZhen);
+            }
+            if (this.isMu && meMuZhenNum > 0) {
+                me.AddHp(meMuZhenNum, BuffId.MuZhen);
+            }
+            if (this.isHuo && meHuoZhenNum > 0) {
+                he.CutHp(meHuoZhenNum, BuffId.HuoZhen);
+                he.CutMaxHp(meHuoZhenNum, BuffId.HuoZhen);
+            }
+            if (this.isShui && meShuiZhenNum > 0) {
+                me.RecoverMana(meShuiZhenNum, BuffId.ShuiZhen);
             }
         }
         // 卡牌效果
@@ -318,6 +367,11 @@ export abstract class ACard {
         }
         if (onStar && meStarPowerNum > 0) {
             me.AddBuffById(BuffId.Power, -meStarPowerNum, BuffId.StarPower);
+        }
+        if (me.NumOf(BuffId.Record_AtkTime) == meRecord_AtkTime
+            && me.CheckBuff(BuffId.Wuxingtiansui, 1)) {
+            me.AddBuffById(BuffId.Wuxingtiansui, -1, "五行天髓·发");
+            me.AddBuffById(BuffId.MoveAgain, 1, BuffId.Wuxingtiansui);
         }
         // 结束
         this._useNum++;
@@ -404,6 +458,23 @@ export abstract class ACard {
                 legend && legend();
                 break;
         }
+    }
+    /**是否五行相生目标卡 */
+    public amIWuxingGen(target: ACard) {
+        if (this.isMu) return target.isMu || target.isHuo;
+        if (this.isHuo) return target.isHuo || target.isTu;
+        if (this.isTu) return target.isTu || target.isJin;
+        if (this.isJin) return target.isJin || target.isShui;
+        if (this.isShui) return target.isShui || target.isMu;
+        return false;
+    }
+
+    public effectCardWuxing(me: Human, log: string) {
+        if (this.isJin) me.AddBuffById(BuffId.Jin, 1, log);
+        if (this.isMu) me.AddBuffById(BuffId.Mu, 1, log);
+        if (this.isShui) me.AddBuffById(BuffId.Shui, 1, log);
+        if (this.isHuo) me.AddBuffById(BuffId.Huo, 1, log);
+        if (this.isTu) me.AddBuffById(BuffId.Tu, 1, log);
     }
 }
 

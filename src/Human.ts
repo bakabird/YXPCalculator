@@ -1,5 +1,5 @@
 import { ACard, CardName } from "./Card"
-import { BES, BO, BuffId, ABuff, ManaBuff, BuffFactory } from "./Buff";
+import { BES, BO, BuffId, ABuff, ManaBuff, BuffFactory, Qiandun } from "./Buff";
 import CardList from "./CardList";
 import { FightReport, FROption } from "./FightReport";
 import { FightConst } from "./FightConst";
@@ -20,7 +20,9 @@ export class Human {
     private _name: string
 
     private _fight: Fight;
+
     private _hpEverAdd: number;
+    private _shieldEverCut: number;
     private _guaCostNum: number;
     private _fakeRdmRateCounter: number;
     private _connectingFr: FightReport;
@@ -40,6 +42,7 @@ export class Human {
         this._BuffList = [];
         this._guaCostNum = 0;
         this._hpEverAdd = 0;
+        this._shieldEverCut = 0;
         this._fakeRdmRateCounter = FightConst.FAKE_START_RDMRATE;
         this._fight = null;
     }
@@ -60,29 +63,37 @@ export class Human {
         return this._hpEverAdd;
     }
 
+    public get shieldEverCut(): number {
+        return this._shieldEverCut;
+    }
+
     public get mana(): number {
         var manaBuff = this.GetBuff(BuffId.Mana)
         return manaBuff ? manaBuff.num : 0;
     }
 
+    public get everAddHp(): boolean {
+        return this._hpEverAdd > 0;
+    }
+
     public get isMu(): boolean {
-        return this.CheckBuff(BuffId.Mu, 1) || this._lastUseCard.isMu;
+        return this.CheckBuff(BuffId.Mu, 1) || this._lastUseCard.isMu || this._lastUseCard.isShui;
     }
 
     public get isHuo(): boolean {
-        return this.CheckBuff(BuffId.Huo, 1) || this._lastUseCard.isHuo;
+        return this.CheckBuff(BuffId.Huo, 1) || this._lastUseCard.isHuo || this._lastUseCard.isMu;
     }
 
     public get isShui(): boolean {
-        return this.CheckBuff(BuffId.Shui, 1) || this._lastUseCard.isShui;
+        return this.CheckBuff(BuffId.Shui, 1) || this._lastUseCard.isShui || this._lastUseCard.isJin;
     }
 
     public get isTu(): boolean {
-        return this.CheckBuff(BuffId.Tu, 1) || this._lastUseCard.isTu;
+        return this.CheckBuff(BuffId.Tu, 1) || this._lastUseCard.isTu || this._lastUseCard.isHuo;
     }
 
     public get isJin(): boolean {
-        return this.CheckBuff(BuffId.Jin, 1) || this._lastUseCard.isJin;
+        return this.CheckBuff(BuffId.Jin, 1) || this._lastUseCard.isJin || this._lastUseCard.isTu;
     }
 
     public SetFight(fight: Fight) {
@@ -139,6 +150,21 @@ export class Human {
             if (chg > 0 && this.CheckBuff(BuffId.Sixyao, 1)) {
                 this.GetAnother().SimpleGetHit(this.GetBuff(BuffId.Sixyao).num * chg, BuffId.Sixyao);
             }
+        } else if (buffId == BuffId.Shield) {
+            if (chg < 0) {
+                this._shieldEverCut += chg;
+            }
+            if (chg < 0 && this.CheckBuff(BuffId.Duanya, 1)) {
+                this.GetAnother().SimpleGetHit(Math.abs(chg), BuffId.Duanya);
+                this.AddBuffById(BuffId.Duanya, -1, "断崖·落")
+            }
+            if (chg < 0 && this.CheckBuff(BuffId.Hebahuan, 1)) {
+                this.AddBuffById(BuffId.Hebahuan, -1, "合八荒·合")
+                this.AddBuffById(BuffId.Shield, -chg, "合八荒");
+            }
+        } else if (this.CheckBuff(BuffId.Hunyuanwuji, 1) && ABuff.IsActiveWuxing(buffId)) {
+            this.AddBuffById(BuffId.Hunyuanwuji, -1, "混元无极·发");
+            this.AddBuffById(BuffId.MoveAgain, 1, BuffId.Hunyuanwuji)
         }
     }
 
@@ -159,6 +185,10 @@ export class Human {
     GetBuff(buffId: BuffId) {
         var findRlt = this._BuffList.find(b => b.id == buffId);
         return findRlt;
+    }
+
+    NumOf(buffId: BuffId) {
+        return this.GetBuff(buffId)?.num ?? 0;
     }
 
     EachBuff(walk: (buff: ABuff) => void) {
@@ -205,6 +235,9 @@ export class Human {
         const fromSwordMenaing = from.GetBuff(BuffId.SwordMenaing);
         const fromHpSteal = from.GetBuff(BuffId.HpSteal);
         const fromSharp = from.GetBuff(BuffId.Sharp);
+        const fromBanSharp = from.GetBuff(BuffId.BanSharp);
+        const fromSuiyan = from.GetBuff(BuffId.Suiyan)
+        const fromQuanyong = from.GetBuff(BuffId.Quanyong);
         const meCountershock = this.GetBuff(BuffId.Countershock);
         const meFlaw = this.GetBuff(BuffId.Flaw);
         const meShield = this.GetBuff(BuffId.Shield);
@@ -221,32 +254,45 @@ export class Human {
         if (fromWeak) {
             hurt = Math.max(1, Math.floor(hurt * 0.6));
         }
+        hurt = Qiandun.apply(this, hurt)
         if (meFlaw) {
             hurt = Math.floor(hurt * 1.4);
         }
         if (fromPierce) {
             from.AddBuff(BuffFactory.me.Produce(BuffId.Pierce, from, -1), log);
         } else if (meShield) {
+            if (fromSuiyan) hurt *= 2;
             const shiledOut = Math.min(meShield.num, hurt);
             this.AddBuff(BuffFactory.me.Produce(BuffId.Shield, this, -shiledOut), log);
             hurt -= shiledOut;
+            if (fromSuiyan) hurt = Math.ceil(hurt / 2);
         }
         if (hurt > 0) {
-            if (fromSharp) {
-                hurt += fromSharp.num;
-                from.RemoveBuff(BuffId.Sharp, log);
+            if (!fromBanSharp) {
+                if (fromSharp) {
+                    hurt += fromSharp.num;
+                    from.RemoveBuff(BuffId.Sharp, log);
+                }
             }
-            this.CutHp(hurt, log);
+            hurt = this.CutHp(hurt, log);
             if (fromHpSteal) {
                 const steal = Math.floor(hurt * fromHpSteal.num / 100);
                 if (steal > 0) {
                     from.AddHp(steal, fromHpSteal.id);
                 }
             }
+            if (fromQuanyong) {
+                const waterflow = Math.floor(hurt / 5);
+                if (waterflow > 0) {
+                    from.AddBuffById(BuffId.WaterFlow, waterflow, BuffId.Quanyong);
+                }
+                from.AddBuffById(BuffId.Quanyong, -1, "激发")
+            }
         }
         if (meCountershock) {
             from.SimpleGetHit(meCountershock.num, meCountershock.id);
         }
+        from.AddBuffById(BuffId.Record_AtkTime, 1, "GetHit")
         return Math.max(0, hurt);
     }
 
@@ -257,6 +303,7 @@ export class Human {
         if (hurt <= 0) throw "invalid arg";
         const meFlaw = this.GetBuff(BuffId.Flaw);
         const meShield = this.GetBuff(BuffId.Shield);
+        hurt = Qiandun.apply(this, hurt)
         if (meFlaw) {
             hurt = Math.floor(hurt * 1.4);
         }
@@ -265,16 +312,19 @@ export class Human {
             this.AddBuff(BuffFactory.me.Produce(BuffId.Shield, this, -shiledOut), log);
             hurt -= shiledOut;
         }
+
         if (hurt > 0) {
-            this.CutHp(hurt, log);
+            hurt = this.CutHp(hurt, log);
         }
         return Math.max(0, hurt);
     }
 
     //削减生命（不考虑护甲）
-    public CutHp(hp: number, log: string) {
+    public CutHp(hp: number, log: string): number {
         if (hp <= 0) throw "invalid arg";
-
+        if (this.CheckBuff(BuffId.Tiegu, 1)) {
+            hp = Math.max(1, hp - 5);
+        }
         if (this.CheckBuff(BuffId.Protect, 1)) {
             this.AddBuff(BuffFactory.me.Produce(BuffId.Protect, this, -1), "扣血");
         } else {
@@ -282,6 +332,7 @@ export class Human {
                 `【${log}】${this._name} 扣血 ${hp}`);
             this._hp -= hp;
         }
+        return hp;
     }
 
     public AddMaxHp(maxHp: number, log: string) {

@@ -1,7 +1,5 @@
 
-import { extname } from "path";
 import { Human } from "./Human";
-import { XingDuanCard } from "./QiXingGeCard";
 
 
 //BuffEfectStage
@@ -23,6 +21,8 @@ export enum BO {
 }
 
 export enum BuffId {
+    Record_AtkTime = "攻击次数",
+
     Mana = "灵气",
     MoveAgain = "再动",
     Shield = "护甲",
@@ -64,10 +64,23 @@ export enum BuffId {
 
     TuZhen = "土灵阵",
     JinZhen = "金灵阵",
+    MuZhen = "木灵阵",
+    HuoZhen = "火灵阵",
+    ShuiZhen = "水灵阵",
 
     WaterFlow = "水势",
     Sharp = "锋锐",
+    BanSharp = "封印-锋锐",
+    Suiyan = "碎岩",
+    Duanya = "断崖", // 防减 成 攻击
+    Quanyong = "泉涌",
+    Tiegu = "铁骨", // 绝对值减伤
+    Qiandun = "潜遁", // 百分比减伤
+    Hebahuan = "合八荒",
+
     Huntianyin = "浑天印",
+    Hunyuanwuji = "混元无极",
+    Wuxingtiansui = "五行天髓",
 }
 
 export abstract class ABuff {
@@ -94,6 +107,23 @@ export abstract class ABuff {
     public static IsDebuff(buffId: BuffId) {
         return [BuffId.Posion, BuffId.Weak, BuffId.Flaw].indexOf(buffId) != -1;
     }
+    public static IsActiveWuxing(buffId: BuffId) {
+        return [BuffId.Jin, BuffId.Mu, BuffId.Shui, BuffId.Huo, BuffId.Tu].indexOf(buffId) != -1;
+    }
+}
+
+abstract class EmptyBuff extends ABuff {
+    getEffectOrder(stage: BES): BO {
+        return BO.None;
+    }
+    effect(stage: BES) {
+
+    }
+
+}
+
+export class Record_AtkTime extends EmptyBuff {
+    id: BuffId = BuffId.Record_AtkTime;
 }
 
 export class MeiKaiBuff extends ABuff {
@@ -588,6 +618,16 @@ export class SharpBuff extends ABuff {
 
 }
 
+export class BanSharp extends ABuff {
+    id: BuffId = BuffId.BanSharp;
+    getEffectOrder(stage: BES): BO {
+        return BO.None;
+    }
+    effect(stage: BES) {
+    }
+
+}
+
 export class TuZhenBuff extends ABuff {
     id: BuffId = BuffId.TuZhen;
     getEffectOrder(stage: BES): BO {
@@ -610,6 +650,36 @@ export class JinZhenBuff extends ABuff {
 
 }
 
+export class MuZhenBuff extends ABuff {
+    id: BuffId = BuffId.MuZhen;
+    getEffectOrder(stage: BES): BO {
+        return BO.None
+    }
+    effect(stage: BES) {
+    }
+
+}
+
+export class HuoZhenBuff extends ABuff {
+    id: BuffId = BuffId.HuoZhen;
+    getEffectOrder(stage: BES): BO {
+        return BO.None
+    }
+    effect(stage: BES) {
+    }
+
+}
+
+export class ShuiZhenBuff extends ABuff {
+    id: BuffId = BuffId.ShuiZhen;
+    getEffectOrder(stage: BES): BO {
+        return BO.None
+    }
+    effect(stage: BES) {
+    }
+
+}
+
 export class Huntianyin extends ABuff {
     id: BuffId = BuffId.Huntianyin;
     getEffectOrder(stage: BES): BO {
@@ -621,7 +691,77 @@ export class Huntianyin extends ABuff {
 
 }
 
+export class Suiyan extends ABuff {
+    id: BuffId = BuffId.Suiyan;
+    getEffectOrder(stage: BES): BO {
+        return BO.None;
+    }
+    effect(stage: BES) {
+
+    }
+
+}
+
+export class Duanya extends ABuff {
+    id: BuffId = BuffId.Duanya;
+    getEffectOrder(stage: BES): BO {
+        return BO.None;
+    }
+    effect(stage: BES) {
+    }
+
+}
+
+
+
+export class Quanyong extends EmptyBuff { id: BuffId = BuffId.Quanyong; }
+
+export class Tiegu extends ABuff {
+    id: BuffId = BuffId.Tiegu;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.RoundStart) {
+            return BO.First;
+        }
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if (stage == BES.RoundStart) {
+            this._owner.AddBuffById(this.id, -1, "消耗");
+        }
+    }
+
+}
+
+export class Qiandun extends ABuff {
+    id: BuffId = BuffId.Qiandun;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.RoundStart) {
+            return BO.First;
+        }
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if (stage == BES.RoundStart) {
+            this._owner.AddBuffById(this.id, -1, "消耗");
+        }
+    }
+    public static apply(me: Human, hurt: number) {
+        const meQiandun = me.GetBuff(BuffId.Qiandun);
+        if (meQiandun) {
+            return Math.max(1, Math.floor(hurt * 0.6));
+        } else {
+            return hurt;
+        }
+    }
+}
+
+export class Hebahuan extends EmptyBuff { id: BuffId = BuffId.Hebahuan; }
+export class Hunyuanwuji extends EmptyBuff { id: BuffId = BuffId.Hunyuanwuji; }
+export class Wuxingtiansui extends EmptyBuff { id: BuffId = BuffId.Wuxingtiansui; }
+
+
 var AllBuffType = [
+    Record_AtkTime,
     PosionBuff, ManaBuff, DCBuff, MeiKaiBuff, MoveAgainBuff,
     HuangQueBuff, ProtectBuff, YunJianBuff, ShieldBuff,
     PierceBuff, SwordMenaingBuff, CrazySwordBuff, YunSoftBuff,
@@ -629,10 +769,11 @@ var AllBuffType = [
     ManaGatherSlowBuff, WaterMoonBuff, CrazyMoveZeroBuff, HpStealBuff,
     StarPowerBuff, GuaBuff, WeakBuff, MindBuff, FlawBuff, SixyaoBuff,
     CountershockBuff, XingDuanBuff, DecalEchoBuff, ZhenMillionFlowerBuff,
-    DepowerBuff,
+    DepowerBuff, Suiyan, BanSharp,
     MuBuff, JinBuff, ShuiBuff, HuoBuff, TuBuff,
-    TuZhenBuff, JinZhenBuff,
-    WaterFlowBuff, SharpBuff,
+    TuZhenBuff, JinZhenBuff, MuZhenBuff, HuoZhenBuff, ShuiZhenBuff,
+    WaterFlowBuff, SharpBuff, Duanya, Tiegu, Quanyong, Qiandun, Hebahuan,
+    Huntianyin, Hunyuanwuji, Wuxingtiansui,
 ]
 
 export class BuffFactory {

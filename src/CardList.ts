@@ -4,7 +4,7 @@ export default class CardList {
     // 卡组
     private _item: ACard[];
     // 已消耗/持续的牌的位置
-    private _costed: boolean[]; 
+    private _costed: boolean[];
     // 星位
     private _star: boolean[];
 
@@ -31,6 +31,18 @@ export default class CardList {
         })
     }
 
+    public get numOfWuxing(): number {
+        const note = new Array(5).fill(false);
+        this._item.forEach((c) => {
+            if (c.isJin) note[0] = true;
+            if (c.isMu) note[1] = true;
+            if (c.isShui) note[2] = true;
+            if (c.isHuo) note[3] = true;
+            if (c.isTu) note[4] = true;
+        })
+        return note.filter(i => i).length;
+    }
+
     constructor(item: ACard[]) {
         this._item = item;
         this.reset();
@@ -41,16 +53,16 @@ export default class CardList {
         this._star = [];
         this._curCardIndex = 0;
         this._cardOrder = CardOrder.L2R;
-        for(var i = 0;i < this.size;i ++){
+        for (var i = 0; i < this.size; i++) {
             this._star[i] = i == 2 || i == 5;
             this._costed[i] = false;
         }
     }
-    
+
     public GetCur(): ACard {
         return this._item[this._curCardIndex];
     }
-    
+
     public IsOnStar(): boolean {
         return this._star[this._curCardIndex];
     }
@@ -60,7 +72,7 @@ export default class CardList {
      */
     public MakeStar(posOffsetCur: number): boolean {
         const pos = this._PosAjust(this._curCardIndex + posOffsetCur, this.size);
-        if(this._star[pos]) {
+        if (this._star[pos]) {
             return true;
         } else {
             this._star[pos] = true;
@@ -79,23 +91,23 @@ export default class CardList {
     public PosBack() {
         this._ShiftCard(-1);
     }
-    
+
     public PosShift() {
         this._ShiftCard(1);
     }
 
-    public EachCardsL2R(walk: (card: ACard)=>void) {
+    public EachCardsL2R(walk: (card: ACard) => void) {
         this._item.forEach(walk);
     }
 
-    public EachCardsR2L(walk: (card:ACard)=>void) {
+    public EachCardsR2L(walk: (card: ACard) => void) {
         for (let index = this._item.length - 1; index > -1; index--) {
             walk(this._item[index]);
         }
     }
 
     private _PosAjust(num: number, size: number): number {
-        if(num >= 0) {
+        if (num >= 0) {
             return num % size;
         } else {
             return this._PosAjust(size + num, size);
@@ -107,10 +119,10 @@ export default class CardList {
         var absTime = Math.abs(time);
         var step = (this._cardOrder == CardOrder.L2R ? 1 : -1) * (time > 0 ? 1 : -1);
         var size = this.size;
-        while(absTime > 0){
+        while (absTime > 0) {
             var cur = this._curCardIndex;
             var sum = step;
-            while(this._costed[this._PosAjust(cur + sum, size)]) {
+            while (this._costed[this._PosAjust(cur + sum, size)]) {
                 sum += step;
             }
             this._curCardIndex = this._PosAjust(cur + sum, size);
@@ -119,10 +131,10 @@ export default class CardList {
     }
 
     public toString(): string {
-        return this._item.reduce((p,c,i)=> {
+        return this._item.reduce((p, c, i) => {
             var curMark = i == this._curCardIndex ? ">" : "";
             var costMark = this._costed[i] ? "*" : "";
             return p + ` ${costMark}${curMark}${c.cardName}${c.initLevel}`
-        },"");
+        }, "");
     }
 }
