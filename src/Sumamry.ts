@@ -1,4 +1,3 @@
-import { CardInfo } from "./Card";
 import { FightReport } from "./FightReport";
 
 

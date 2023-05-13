@@ -284,6 +284,7 @@ export class HuntianyinCard extends ACard {
     cardState: CardState = CardState.ZhuJi;
     protected onEffect(me: Human, he: Human) {
         he.GetHit(this._lvlVal(5, 9, 13), me, this.cardName);
+        me.AddBuffById(BuffId.Huntianyin, 1, this.cardName);
         me.RecoverMana(1);
     }
 }
@@ -650,7 +651,7 @@ export class HunyuansjCard extends ACard {
 
 //#endregion
 
-//#region 
+//#region 化神期
 export class Mu_liufengfeiCard extends ACard {
     cardName: CardName = CardName.Mu_liufengfei;
     cardState: CardState = CardState.HuaShen;
@@ -758,3 +759,25 @@ export class WuXing_tiansuijueCard extends ACard {
 
 // }
 //#endregion
+
+
+export var list = [
+    Mu_yinCard, Mu_yaCard, Huo_yinCard, Huo_cuanCard, Tu_yinCard,
+    Tu_suiCard, Jin_yinCard, WuxingcCard, Shui_yinCard, Shui_taoCard,
+    Jin_zhenCard,
+
+    Mu_fusuCard, Mu_shuyingCard, Huo_juyanCard, Huo_chiyanCard, Tu_zhenCard,
+    Tu_qunshanCard, Jin_zhenArrayCard, Jin_chuanxinCard, Shui_bolanCard, Shui_xiongyongCard,
+    HuntianyinCard,
+
+    Mu_zhenCard, Mu_XunlinCard, Huo_zhenCard, Huo_honbaoCard,
+    Tu_yangchenCard, Tu_duanyaCard, Jin_xuruiCard, Jin_fengmangCard,
+    Shui_zhenCard, Shui_quanyongCard, WuxingflowCard,
+
+    Mu_anxiangCard, Mu_meiciCard, Huo_shunranCard, Huo_zhuoxinCard,
+    Tu_juebiCard, Tu_liushaCard, Jin_feisuoCard, Shui_tenglangCard,
+    Jin_tieguCard, Shui_qiandunCard, HunyuansjCard,
+
+    Mu_liufengfeiCard, Huo_lieliaoyuanCard, Tu_hebahuanCard, Shui_nabaichuanCard,
+    Hunyuan_wujiCard, WuXing_tiansuijueCard
+]

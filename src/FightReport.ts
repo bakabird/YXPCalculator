@@ -1,6 +1,7 @@
 import { last } from "./ArrUtil";
 import { CardInfo, CardName } from "./Card";
 import { FightConst } from "./FightConst";
+import LogEncode from "./LogEncode";
 
 export type FROption = {
     hpChg: boolean;
@@ -22,6 +23,7 @@ export class FightReport {
         this.meUseCard[this.meUseCard.length - 1].push(cardName);
     }
     public apeendLog(log: string) {
+        if (log.includes(LogEncode.Ignore)) return;
         this.log += log + "\n";
     }
     constructor() {

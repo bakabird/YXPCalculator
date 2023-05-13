@@ -9,12 +9,17 @@
 .Card {
     flex: 1;
 }
-.Card img{
+
+.Card img {
     width: 100%;
     height: 21vw;
 }
 
 
+.fightLog {
+    font-size: 14px;
+    line-height: 1.6em;
+}
 
 
 
@@ -24,4 +29,3 @@
     max-height: 320px;
     overflow-y: scroll;
 }
-

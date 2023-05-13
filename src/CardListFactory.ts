@@ -1,20 +1,22 @@
-import { ACard, CardInfo, CardName, HitCard,  } from "./Card"
-import { BeiGongCard, CountershockMentalCard, DigRootCard, DoubleThunderCard, DryTreeCard, FallingFlowerCard, FeiTaCard, FinchTailCard, FiveThunderCard, FlowingWaterCard, FlyingStarCard, GoldChanCard, GuaDuiCard, GuaGenCard, GuaKunCard, GuaLiCard, GuaQianCard, GuaXunCard, GuaZhenCard, HaiDiCard, HuangQueCard, ImbuedRainbowCard, LiangyiArrayCard, MeiKaiCard, MindMentalCard, MustangCard, OneFootCard, PalmThunderCard, PosStarCard, PurpleManaCard, QiRecoverCard, QiTunCard, SilkRemain as SilkRemainCard, SixyaoArrayCard, StarAroundMoonCard, StarMoveCard, StarOrbitCard, TangLangCard, ThunderCard, ThunderGuaFormulaCard, TouchWaterCard, WhiteCraneCard, WhiteSnakeCard, WorldCenterMentalCard, XingDaCard, XingDangCard, XingDianCard, XingDuanCard, XingFeiCard, XingHuCard, XingJiaCard, XingLiCard } from "./QiXingGeCard";
+import { ACard, CardInfo, CardName, HitCard, } from "./Card"
+import { BeiGongCard, CountershockMentalCard, DigRootCard, DoubleThunderCard, DryTreeCard, FallingFlowerCard, FeiTaCard, FinchTailCard, FiveThunderCard, FlowingWaterCard, FlyingStarCard, GoldChanCard, GuaDuiCard, GuaGenCard, GuaKanCard, GuaKunCard, GuaLiCard, GuaQianCard, GuaXunCard, GuaZhenCard, HaiDiCard, HuangQueCard, ImbuedRainbowCard, LiangyiArrayCard, MeiKaiCard, MindMentalCard, MustangCard, OneFootCard, PalmThunderCard, PosStarCard, PurpleManaCard, QiRecoverCard, QiTunCard, SilkRemain, SixyaoArrayCard, StarAroundMoonCard, StarMoveCard, StarOrbitCard, TangLangCard, ThunderCard, ThunderGuaFormulaCard, TouchWaterCard, WhiteCraneCard, WhiteSnakeCard, WorldCenterMentalCard, XingDaCard, XingDangCard, XingDianCard, XingDuanCard, XingFeiCard, XingHuCard, XingJiaCard, XingLiCard } from "./QiXingGeCard";
 import { DCTuneCard, TongXinCard } from "./QinCards";
 import { BNLJFormulaCard, BreakingQiSwordCard, ChainSwordArrayCard, CloudDanceFormula, CondensationFormulaCard, CrazyMoveOneCard, CrazyMoveTwoCard, CrazyMoveZeroCard, DarkCrowManaSwordCard, DishaSwordCard, EgretManaSwordCard, FlyingSpiritFlashingShadowSwordCard, FlyingToothSwordCard, GiantKunManaSwordCard, GiantRocManaSwordCard, GiantWhaleSwordCard, HugeTigerManaSwordCard, InspirationSwordCard, LightSwordCard, LingxiSwordArray, LiuyunChaoticSwordCard, ManaGatherMentalCard, ManaInsideCard, ManaProtectMeCard, MirrorFlowerSwordArrayCard, QiDrawingSwordCard, ReflexiveSwordCard, ShockThunderSwordCard, SuddenWindSwordCard, SwordBlockCard, SwordChopCard, SwordMenaingStirringCard, TenThousandWayManaSwordCard, ThreePeakSwordCard, ToManaFormulaCard, WaterMoonSwordArrayCard, XingyiSwordCard, YukongSwordArrayCard, YunCrashSnowCard, YunFeiCiCard, YunFlashingWindCard, YunHouTuCard, YunHuilingCard, YunHuiShouCard, YunJiYiCard, YunLingboCard, YunMoonShadowCard, YunPointStarCard, YunSoftMentalCard, YunTanYunCard, YunWuFengCard, YunWuliCard, YunYouLongCard } from "./YunLingJianCards";
+import { list as wuxingList } from "./WuXingDaoMengCards"
 import CardList from "./CardList";
 import { DecalEchoCard, ZhenMillionFlower } from "./ZhenCards";
+import { list as characterList } from "./Character";
 
 var AllCardType = [
-    HitCard, 
+    HitCard,
 
     DCTuneCard, TongXinCard,
 
-    BeiGongCard, FeiTaCard, MeiKaiCard, HuangQueCard, 
+    BeiGongCard, FeiTaCard, MeiKaiCard, HuangQueCard,
     XingFeiCard, HaiDiCard, TangLangCard,
-    GoldChanCard, QiTunCard, 
-    
-    YunTanYunCard, YunFeiCiCard, YunHouTuCard,
+    GoldChanCard, QiTunCard,
+
+    YunTanYunCard, YunFeiCiCard, YunHouTuCard, GuaKanCard,
     LightSwordCard, ManaProtectMeCard, ManaInsideCard, HugeTigerManaSwordCard,
     ShockThunderSwordCard, SwordChopCard, SwordBlockCard, FlyingToothSwordCard,
     SuddenWindSwordCard, YunHuiShouCard, YunJiYiCard, YunWuFengCard,
@@ -27,13 +29,14 @@ var AllCardType = [
     EgretManaSwordCard, GiantKunManaSwordCard, InspirationSwordCard, LiuyunChaoticSwordCard,
     WaterMoonSwordArrayCard, CrazyMoveTwoCard, YunYouLongCard, YunLingboCard, FlyingSpiritFlashingShadowSwordCard, YunCrashSnowCard,
     TenThousandWayManaSwordCard, SwordMenaingStirringCard, YukongSwordArrayCard, ChainSwordArrayCard, CrazyMoveZeroCard,
-    StarMoveCard, PosStarCard, XingDangCard, XingJiaCard, GuaZhenCard, GuaKunCard, GuaXunCard, PalmThunderCard, WhiteCraneCard, FinchTailCard, MustangCard, SilkRemainCard,
-    FlyingStarCard, XingDianCard, XingLiCard, GuaGenCard, GuaKunCard, ThunderCard, DigRootCard, OneFootCard, MindMentalCard, FallingFlowerCard, ImbuedRainbowCard, 
-    StarAroundMoonCard, FlowingWaterCard, XingDaCard, GuaDuiCard, WhiteSnakeCard,  ThunderGuaFormulaCard, LiangyiArrayCard, QiRecoverCard, DryTreeCard,
+    StarMoveCard, PosStarCard, XingDangCard, XingJiaCard, GuaZhenCard, GuaKunCard, GuaXunCard, PalmThunderCard, WhiteCraneCard, FinchTailCard, SilkRemain, MustangCard,
+    FlyingStarCard, XingDianCard, XingLiCard, GuaGenCard, GuaKunCard, ThunderCard, DigRootCard, OneFootCard, MindMentalCard, FallingFlowerCard, ImbuedRainbowCard,
+    StarAroundMoonCard, FlowingWaterCard, XingDaCard, GuaDuiCard, WhiteSnakeCard, ThunderGuaFormulaCard, LiangyiArrayCard, QiRecoverCard, DryTreeCard,
     XingHuCard, SixyaoArrayCard, GuaLiCard, StarOrbitCard, TouchWaterCard, DoubleThunderCard, CountershockMentalCard,
     WorldCenterMentalCard, XingDuanCard, GuaQianCard, FiveThunderCard, PurpleManaCard,
-
     DecalEchoCard, ZhenMillionFlower,
+    ...wuxingList,
+    ...characterList
 ]
 
 export type CardRecord = {
@@ -45,7 +48,7 @@ export class CardListFactory {
     private static _me: CardListFactory;
     public static Size: number = 8;
     public static get me(): CardListFactory {
-        if(!this._me) {
+        if (!this._me) {
             this._me = new CardListFactory();
         }
         return this._me;
@@ -68,13 +71,13 @@ export class CardListFactory {
     public SplitCode(code: string): CardInfo[] {
         var ret: Array<CardInfo> = [];
         var arg = code == "" ? [] : code.split(";");
-        for (var i = 0;i < CardListFactory.Size;i++) {
-            if(i >= arg.length) {
+        for (var i = 0; i < CardListFactory.Size; i++) {
+            if (i >= arg.length) {
                 arg[i] = CardName.Hit + ",1";
             }
             var parts = arg[i].split(",");
             ret.push({
-                name: parts[0] as CardName, 
+                name: parts[0] as CardName,
                 level: parseInt(parts[1]) + 1,
             });
         }
@@ -99,7 +102,7 @@ export class CardListFactory {
         return card;
     }
 
-    public EachRecord(walk:(record: CardRecord)=>void) {
+    public EachRecord(walk: (record: CardRecord) => void) {
         Object.values(this._dict).forEach(record => {
             walk(record);
         });
@@ -107,4 +110,3 @@ export class CardListFactory {
 }
 
 
-  

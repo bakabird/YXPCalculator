@@ -4,6 +4,7 @@ import CardList from "./CardList";
 import { FightReport, FROption } from "./FightReport";
 import { FightConst } from "./FightConst";
 import { Fight } from "./Fight";
+import LogEncode from "./LogEncode";
 
 export class Human {
     //卡牌
@@ -77,23 +78,27 @@ export class Human {
     }
 
     public get isMu(): boolean {
-        return this.CheckBuff(BuffId.Mu, 1) || this._lastUseCard.isMu || this._lastUseCard.isShui;
+        return this.CheckBuff(BuffId.Mu, 1) || this._lastUseCard?.isMu || this._lastUseCard?.isShui;
     }
 
     public get isHuo(): boolean {
-        return this.CheckBuff(BuffId.Huo, 1) || this._lastUseCard.isHuo || this._lastUseCard.isMu;
+        return this.CheckBuff(BuffId.Huo, 1) || this._lastUseCard?.isHuo || this._lastUseCard?.isMu;
     }
 
     public get isShui(): boolean {
-        return this.CheckBuff(BuffId.Shui, 1) || this._lastUseCard.isShui || this._lastUseCard.isJin;
+        return this.CheckBuff(BuffId.Shui, 1) || this._lastUseCard?.isShui || this._lastUseCard?.isJin;
     }
 
     public get isTu(): boolean {
-        return this.CheckBuff(BuffId.Tu, 1) || this._lastUseCard.isTu || this._lastUseCard.isHuo;
+        return this.CheckBuff(BuffId.Tu, 1) || this._lastUseCard?.isTu || this._lastUseCard?.isHuo;
     }
 
     public get isJin(): boolean {
-        return this.CheckBuff(BuffId.Jin, 1) || this._lastUseCard.isJin || this._lastUseCard.isTu;
+        return this.CheckBuff(BuffId.Jin, 1) || this._lastUseCard?.isJin || this._lastUseCard?.isTu;
+    }
+
+    public get isWuxing(): boolean {
+        return this.isMu || this.isJin || this.isShui || this.isHuo || this.isTu
     }
 
     public SetFight(fight: Fight) {
@@ -127,17 +132,20 @@ export class Human {
 
     AddBuff(buff: ABuff, log: string) {
         var findRlt = this._BuffList.find(b => b.id == buff.id);
-        this._frOption.buffChg && this._connectingFr.apeendLog(
-            `【${log}】${this._name} ${buff.num > 0 ? '+' : ''}${buff.num} 层${buff.id}`);
         if (findRlt) {
             findRlt.ModNum(buff.num);
             this._onBuffChg(buff.id, buff.num);
             if (findRlt.num <= 0) {
-                this.RemoveBuff(findRlt.id, "no");
+                this.RemoveBuff(findRlt.id, log);
             }
         } else {
             this._BuffList.push(buff);
             this._onBuffChg(buff.id, buff.num);
+        }
+        const afterNum = this.NumOf(buff.id);
+        if (afterNum > 0) {
+            this._frOption.buffChg && this._connectingFr.apeendLog(
+                `【${log}】${this._name} ${buff.num > 0 ? '+' : ''}${buff.num} 层${buff.id} [${afterNum}]`);
         }
     }
 
@@ -174,7 +182,12 @@ export class Human {
     }
 
     RemoveBuff(buffId: BuffId, log: string) {
+        const orilen = this._BuffList.length;
         this._BuffList = this._BuffList.filter((b => b.id != buffId));
+        if (this._BuffList.length !== orilen) {
+            this._frOption.buffChg && this._connectingFr.apeendLog(
+                `【${log}】${this._name} ${buffId} [移除]`);
+        }
     }
 
     CheckBuff(buffId: BuffId, need: number): boolean {
@@ -292,7 +305,7 @@ export class Human {
         if (meCountershock) {
             from.SimpleGetHit(meCountershock.num, meCountershock.id);
         }
-        from.AddBuffById(BuffId.Record_AtkTime, 1, "GetHit")
+        from.AddBuffById(BuffId.Record_AtkTime, 1, "GetHit" + LogEncode.Ignore)
         return Math.max(0, hurt);
     }
 

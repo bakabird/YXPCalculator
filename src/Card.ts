@@ -179,8 +179,12 @@ export enum CardName {
     Jin_judiluo = "金灵·巨鼎落",
     Shui_nabaichuan = "水灵·纳百川",
     Hunyuan_wuji = "混元无极阵",
-    WuXing_tiansuijue = "五行天髓决",
+    WuXing_tiansuijue = "五行天髓诀",
 
+    // #endregion
+
+    // #region 角色卡
+    Youranhl = "悠然葫芦",
     // #endregion
 
 }
@@ -291,7 +295,7 @@ export abstract class ACard {
                 if (this.isShui) me.AddBuffById(BuffId.Shui, 1, BuffId.Huntianyin);
                 if (this.isJin) me.AddBuffById(BuffId.Jin, 1, BuffId.Huntianyin);
                 if (this.isTu) me.AddBuffById(BuffId.Tu, 1, BuffId.Huntianyin);
-                me.AddBuffById(BuffId.Huntianyin, -1, "消耗");
+                me.AddBuffById(BuffId.Huntianyin, -1, BuffId.Huntianyin + "·发");
             }
             // 五行
             if (this.isMu && meTuZhenNum > 0) {
@@ -368,8 +372,11 @@ export abstract class ACard {
         if (onStar && meStarPowerNum > 0) {
             me.AddBuffById(BuffId.Power, -meStarPowerNum, BuffId.StarPower);
         }
-        if (me.NumOf(BuffId.Record_AtkTime) == meRecord_AtkTime
-            && me.CheckBuff(BuffId.Wuxingtiansui, 1)) {
+        if (
+            this.isWuxing
+            && me.NumOf(BuffId.Record_AtkTime) == meRecord_AtkTime
+            && me.CheckBuff(BuffId.Wuxingtiansui, 1)
+            && !me.CheckBuff(BuffId.MoveAgainIng, 1)) {
             me.AddBuffById(BuffId.Wuxingtiansui, -1, "五行天髓·发");
             me.AddBuffById(BuffId.MoveAgain, 1, BuffId.Wuxingtiansui);
         }

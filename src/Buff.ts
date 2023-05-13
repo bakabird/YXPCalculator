@@ -21,6 +21,7 @@ export enum BO {
 }
 
 export enum BuffId {
+    MoveAgainIng = "再动进行中",
     Record_AtkTime = "攻击次数",
 
     Mana = "灵气",
@@ -206,6 +207,10 @@ export class MoveAgainBuff extends ABuff {
             this._owner.RemoveBuff(this.id, "回合结束");
         }
     }
+}
+
+export class MoveAgainIng extends EmptyBuff {
+    id: BuffId = BuffId.MoveAgainIng;
 }
 
 export class HuangQueBuff extends ABuff {
@@ -761,7 +766,7 @@ export class Wuxingtiansui extends EmptyBuff { id: BuffId = BuffId.Wuxingtiansui
 
 
 var AllBuffType = [
-    Record_AtkTime,
+    Record_AtkTime, MoveAgainIng,
     PosionBuff, ManaBuff, DCBuff, MeiKaiBuff, MoveAgainBuff,
     HuangQueBuff, ProtectBuff, YunJianBuff, ShieldBuff,
     PierceBuff, SwordMenaingBuff, CrazySwordBuff, YunSoftBuff,
