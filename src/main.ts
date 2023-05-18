@@ -1,3 +1,4 @@
+import { CardListFactory, CardRecord } from "./CardListFactory";
 import CardSearcher from "./CardSearcher";
 import { Debug } from "./Debug";
 import { FightReport } from "./FightReport";
@@ -151,6 +152,14 @@ function ViewReport(_, fightReport: FightReport) {
   // reportWindow.webContents.openDevTools()
 }
 
+function GetAllCards(): Array<string> {
+  let list: Array<string> = [];
+  CardListFactory.me.EachRecord((record: CardRecord) => {
+    list.push(record.name)
+  });
+  return list;
+}
+
 function SearchCard(_event, inKey: string): Array<string> {
   return CardSearcher.me.Search(inKey);
 }
@@ -160,6 +169,7 @@ function SearchCard(_event, inKey: string): Array<string> {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   ipcMain.handle("Miri.SearchCard", SearchCard)
+  ipcMain.handle("Main.GetAllCards", GetAllCards)
   ipcMain.on("Main.Report", CreateReport)
   ipcMain.on("Main.ViewReport", ViewReport)
   ipcMain.on("Main.Debug", Debug)

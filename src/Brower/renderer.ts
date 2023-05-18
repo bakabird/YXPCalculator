@@ -7,14 +7,14 @@
  */
 
 class Eventer {
-    private _listDict: Record<string, Array<(...arg:any)=>void>> = {};
-    public event(name: string, ...arg:any){
+    private _listDict: Record<string, Array<(...arg: any) => void>> = {};
+    public event(name: string, ...arg: any) {
         if (this._listDict[name]) {
             this._listDict[name].forEach(lis => lis(...arg));
         }
     }
-    public add(event: string, listen: (...arg: any)=>void) {
-        if(!this._listDict[event]) {
+    public add(event: string, listen: (...arg: any) => void) {
+        if (!this._listDict[event]) {
             this._listDict[event] = [];
         }
         this._listDict[event].push(listen);
@@ -66,7 +66,7 @@ class CardWrap {
         const allLevelBtn = this._levelG.find("*");
         allLevelBtn.each((index, btn) => {
             const btnIndex = index;
-            $(btn).on("click", ()=>{
+            $(btn).on("click", () => {
                 this.level = btnIndex;
             });
         })
@@ -85,6 +85,14 @@ class CardWrap {
     }
 }
 
+class CardLibItemWrap {
+    constructor(private _node: JQuery<HTMLElement>, private _cardname: string) {
+        const _cardFace = _node.find(".cardFace") as JQuery<HTMLImageElement>;
+        _cardFace.attr("src", `./img/${_cardname}_1级.png`);
+        _node.find("p").text(_cardname);
+    }
+}
+
 class CardListWrap {
     public eventer: Eventer = new Eventer();
     private _blue: JQuery<HTMLElement>;
@@ -94,28 +102,28 @@ class CardListWrap {
         this._blue = $(".Hub .Card");
         this._list = [];
     }
-    public get key():string {
-        return this._list.reduce((p,c)=>{
+    public get key(): string {
+        return this._list.reduce((p, c) => {
             return p + c.cardname + "," + c.level + ";"
-        },"")
+        }, "")
     }
     public set key(v: string) {
-        if(v == null) {
+        if (v == null) {
             this.each(c => {
                 c.cardname = "普通攻击";
                 c.level = 0;
             })
             return;
         }
-        v.split(";").forEach((part,index) => {
-            if(part == "" || index >= this._list.length) return
-            const [cardName,level] = part.split(",");
+        v.split(";").forEach((part, index) => {
+            if (part == "" || index >= this._list.length) return
+            const [cardName, level] = part.split(",");
             this._list[index].cardname = cardName;
             this._list[index].level = parseInt(level);
         })
     }
     public init() {
-        for(var i = 0;i < 8;i++) {
+        for (var i = 0; i < 8; i++) {
             const item = this._blue.clone(false, false);
             const cardWrap = new CardWrap(item, i);
             this.add(cardWrap);
@@ -127,13 +135,13 @@ class CardListWrap {
         cardWrap.eventer.add("uptFace", this.onUptFace.bind(this));
         this._list.push(cardWrap);
     }
-    public each(walk: (card: CardWrap)=>void) {
+    public each(walk: (card: CardWrap) => void) {
         this._list.forEach(walk);
     }
     public modCard(name: string) {
-        if(this._curTargetIndex < 0) return;
+        if (this._curTargetIndex < 0) return;
         this._list[this._curTargetIndex].cardname = name;
-        if(this._curTargetIndex + 1 < this._list.length) {
+        if (this._curTargetIndex + 1 < this._list.length) {
             this.onClickFace(this._curTargetIndex + 1);
         } else {
             this.onClickFace(0);
@@ -143,9 +151,9 @@ class CardListWrap {
         const absStep = Math.abs(step);
         const miniStep = step > 0 ? 1 : -1;
         let cur = this._curTargetIndex;
-        for(var i = 0;i < absStep;i ++){
-            const tar = (cur + miniStep) >= 0 ? 
-                ((cur + miniStep) % this._list.length) : 
+        for (var i = 0; i < absStep; i++) {
+            const tar = (cur + miniStep) >= 0 ?
+                ((cur + miniStep) % this._list.length) :
                 (cur + miniStep + this._list.length);
             const curC = this._list[cur];
             const tarC = this._list[tar];
@@ -161,8 +169,8 @@ class CardListWrap {
     }
     public onClickFace(index: number) {
         this._curTargetIndex = index;
-        this._list.forEach((i,iIdx) => {
-            if(iIdx == index){
+        this._list.forEach((i, iIdx) => {
+            if (iIdx == index) {
                 i.oShowArrow();
             } else {
                 i.oHideArrow();
@@ -175,7 +183,7 @@ class CardListWrap {
         this._list.forEach(i => i.oHideArrow());
     }
     public read() {
-        if(readKey(this._localKey)){
+        if (readKey(this._localKey)) {
             this.key = readKey(this._localKey);
         }
     }
@@ -193,7 +201,7 @@ class CardChooseWrap {
     constructor(private _node: JQuery<HTMLButtonElement>, cardName: string) {
         this._cardName = cardName;
         _node.text(cardName);
-        _node.on("click", ()=>{
+        _node.on("click", () => {
             this.choose();
         });
     }
@@ -250,13 +258,13 @@ class CardSearchWrap {
         this.eventer.event("move", 1);
     }
     private _search(key: string) {
-        if(key == "") return;
+        if (key == "") return;
         window.electronAPI.searchCard(key).then(rlt => {
             this.clear();
             rlt.forEach(name => {
                 var node = this._chooseCopy.clone();
                 var choose = new CardChooseWrap(node, name)
-                choose.eventer.add("chooseDown", (name)=>{
+                choose.eventer.add("chooseDown", (name) => {
                     this.eventer.event("chooseDown", name)
                     this._input.val("");
                     this._onInput();
@@ -274,21 +282,54 @@ class CardSearchWrap {
     }
 }
 
+class CardLibWrap {
+    private _body: JQuery<HTMLElement>;
+    private _blue: JQuery<HTMLElement>;
+    constructor(
+        private _node: JQuery<HTMLElement>,
+    ) {
+        _node.children(".close").on("click", () => {
+            console.log("click");
+            this.hide();
+        });
+        this._body = _node.children(".body")
+        this._blue = $(".Hub .CardLibItem");
+        window.electronAPI.getAllCards().then((allcards: Array<string>) => {
+            allcards.forEach((card, idx) => {
+                const item = this._blue.clone(false, false);
+                new CardLibItemWrap(item, card);
+                this._body.append(item);
+            })
+        })
+    }
+
+    public show() {
+        this._node.removeClass("hide");
+    }
+
+    public hide() {
+        this._node.addClass("hide");
+    }
+}
 
 class BarWrap {
     constructor(
-        private _node: JQuery<HTMLElement>, 
+        private _node: JQuery<HTMLElement>,
         private _fCardListWrap: CardListWrap,
         private _eCardListWrap: CardListWrap,
+        private _libWrap: CardLibWrap,
     ) {
-        _node.children(".analysis").on("click", ()=>{
+        _node.children(".analysis").on("click", () => {
             const threadNum = parseInt(_node.children("select")[0].value);
             window.electronAPI.createReport(this._fCardListWrap.key, this._eCardListWrap.key, threadNum);
         });
-        _node.children(".fix").on("click", ()=>{
+        _node.children(".openCardlib").on("click", () => {
+            this._libWrap.show();
+        })
+        _node.children(".fix").on("click", () => {
             localStorage.clear();
         });
-        _node.children(".debug").on("click", ()=>{
+        _node.children(".debug").on("click", () => {
             window.electronAPI.doDebug();
         })
     }
@@ -299,7 +340,7 @@ class ECardBoxTitle {
         _node: JQuery<HTMLElement>,
         _eCardListWrap: CardListWrap,
     ) {
-        _node.children(".cleanEnemyBox").on("click", ()=>{
+        _node.children(".cleanEnemyBox").on("click", () => {
             _eCardListWrap.key = null;
         })
     }
@@ -308,11 +349,12 @@ class ECardBoxTitle {
 const cardListWrap = new CardListWrap($(".FCardBox"), "fCardKey");
 const eCardListWrap = new CardListWrap($(".ECardBox"), "eCardKey");
 const searchWrap = new CardSearchWrap($(".CardSearch"));
-const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap);
+const cardlibWrap = new CardLibWrap($(".CardLib"))
+const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap, cardlibWrap);
 new ECardBoxTitle($(".enemyCardBoxTitle"), eCardListWrap);
 let activeWrap: CardListWrap;
 const onClickFace = (wrap: CardListWrap) => {
-    if(activeWrap != wrap) {
+    if (activeWrap != wrap) {
         activeWrap?.unclick();
         activeWrap = wrap;
     }
@@ -323,10 +365,10 @@ eCardListWrap.init();
 eCardListWrap.eventer.add("clickFace", onClickFace);
 cardListWrap.eventer.add("clickFace", onClickFace);
 cardListWrap.onClickFace(0);
-searchWrap.eventer.add("chooseDown", (name: string)=>{
+searchWrap.eventer.add("chooseDown", (name: string) => {
     activeWrap.modCard(name);
 });
-searchWrap.eventer.add("move", (step: number)=>{
+searchWrap.eventer.add("move", (step: number) => {
     activeWrap.moveCard(step);
 });
 cardListWrap.read();

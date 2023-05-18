@@ -1,0 +1,54 @@
+.CardLib {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #000000cf;
+    height: 100vh;
+}
+
+.CardLib .close {
+    position: absolute;
+    right: 4vw;
+    font-weight: bold;
+    top: 4vh;
+    font-size: 14px;
+    width: 50px;
+    height: 50px;
+}
+
+.CardLib h1 {
+    position: absolute;
+    left: 4vw;
+    top: 4vh;
+    margin: 0px;
+    background: #fff;
+    /* margin: 0 auto; */
+}
+
+.CardLib .body {
+    display: flex;
+    flex-wrap: wrap;
+    height: 80vh;
+    width: 90vw;
+    margin: 13vh auto 5vh;
+    overflow-x: clip;
+    padding: 1vh;
+    background: #fff;
+    overflow-y: scroll;
+}
+
+.CardLibItem {
+    width: 16.5%;
+}
+
+
+.CardLibItem .cardFace {
+    width: 100%;
+}
+
+.CardLibItem p {
+    width: 100%;
+    text-align: center;
+    margin: 0px;
+}

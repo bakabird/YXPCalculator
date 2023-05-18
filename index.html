@@ -8,6 +8,7 @@
     content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
   <script src="./jquery-3.6.3.min.js"></script>
   <link href="./css/Bar.css" rel="stylesheet">
+  <link href="./css/Cardlib.css" rel="stylesheet">
   <link href="./css/styles.css" rel="stylesheet">
   <title>奕仙牌计算器</title>
 </head>
@@ -22,6 +23,7 @@
       <option>5</option>
       <option selected="selected">7</option>
     </select>
+    <button class="openCardlib">卡库</button>
     <button class="fix">一键修复</button>
     <!-- <button class="debug">测试</button> -->
   </div>
@@ -53,6 +55,12 @@
     <p>推荐牌战报增加标识(赢/输 多少回合)</p>
     <p>设置自己/对手属性</p>
   </div>
+  <div class="CardLib hide">
+    <button class="close">关闭</button>
+    <h1>当前卡库</h1>
+    <div class="body">
+    </div>
+  </div>
   <div class="Hub">
     <div class="Card">
       <div class="levelG">
@@ -62,6 +70,10 @@
       </div>
       <img class="cardFace" src="./img/普通攻击_1级.png" alt="">
       <img class="arrow" src="./ui/Arrow.png" alt="">
+    </div>
+    <div class="CardLibItem">
+      <img class="cardFace" src="./img/普通攻击_1级.png" alt="">
+      <p>普通攻击</p>
     </div>
     <button class="cardBtn">
       普通攻击
