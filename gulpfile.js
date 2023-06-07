@@ -72,6 +72,15 @@ function browerTsWatch(cb) {
 }
 function shareCodeWatch(cb) {
     gulp_1.default.src(shareCodePath)
+        .on('error', (e) => {
+        console.error(e);
+        /* Ignore compiler errors */
+    })
+        .on("end", () => {
+        // console.log("SHARE_CODE STEP2 END")
+        console.log("SHARE_CODE END");
+        cb();
+    })
         .pipe(through2_1.default.obj(function (file, encode, cb1) {
         const shareContentLines = file.contents.toString().split("\n");
         gulp_1.default.src(shareCodeInjecterTargets)
@@ -89,26 +98,15 @@ function shareCodeWatch(cb) {
             targetContentLines.splice(shareCodeStartIndex, shareCodeEndIndex - shareCodeStartIndex, ...shareContentLines);
             // console.log(targetContentLines.join("\n"))
             _file.contents = Buffer.from(targetContentLines.join("\n"));
-            cb2(null, _file);
+            this.push(_file);
+            cb2();
         }))
-            .pipe(gulp_1.default.dest('./Brower/'))
-            .on('error', (e) => {
-            console.error(e);
-            /* Ignore compiler errors */
-        })
             .on("end", () => {
-            console.log("SHARE_CODE END");
+            // console.log("SHARE_CODE STEP1 END")
             cb1();
-        });
-    }))
-        .on('error', (e) => {
-        console.error(e);
-        /* Ignore compiler errors */
-    })
-        .on("end", () => {
-        console.log("SHARE_CODE END");
-        cb();
-    });
+        })
+            .pipe(gulp_1.default.dest('src/Brower/'));
+    }));
 }
 exports.default = function () {
     // You can use a single task

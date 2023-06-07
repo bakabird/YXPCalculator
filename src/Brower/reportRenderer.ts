@@ -1,10 +1,22 @@
-/**
- * SHARE CODE START
- */
-/**
- * SHARE CODE END
- */
+namespace Share2ReportRenderer {
+    /**
+     * SHARE CODE START
+     */
+export enum Men {
+    /**青莲剑宗 */
+    QLJJ,
+    /**五行道盟 */
+    WXDM,
+    /**七星阁 */
+    QXG,
+    /**无门派 */
+    NON,
+}
+    /**
+     * SHARE CODE END
+     */
 
+}
 namespace reportRenderer {
     class CardListWrap {
         private _cardBlue: JQuery<HTMLElement>;
