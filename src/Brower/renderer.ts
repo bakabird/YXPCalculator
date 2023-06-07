@@ -5,7 +5,18 @@
  * `contextIsolation` is turned on. Use the contextBridge API in `preload.js`
  * to expose Node.js functionality from the main process.
  */
+interface Window {
+    electronAPI: any;
+}
 
+/**
+ * SHARE CODE START
+ */
+/**
+ * SHARE CODE END
+ */
+const Cfg = {
+}
 class Eventer {
     private _listDict: Record<string, Array<(...arg: any) => void>> = {};
     public event(name: string, ...arg: any) {
@@ -21,8 +32,8 @@ class Eventer {
     }
 }
 
-function readKey(key: string) {
-    return localStorage.getItem(key);
+function readKey(key: string, def: string): string {
+    return localStorage.getItem(key) ?? def;
 }
 
 function saveKey(key: string, val: string) {
@@ -183,8 +194,8 @@ class CardListWrap {
         this._list.forEach(i => i.oHideArrow());
     }
     public read() {
-        if (readKey(this._localKey)) {
-            this.key = readKey(this._localKey);
+        if (readKey(this._localKey, "") != "") {
+            this.key = readKey(this._localKey, "");
         }
     }
     public onUptFace() {
@@ -210,6 +221,68 @@ class CardChooseWrap {
     }
 }
 
+class AvatarSelector {
+    private _choosen: string;
+    private _img: JQuery<HTMLImageElement>
+
+    public get choosen(): string {
+        return this._choosen;
+    }
+
+    constructor(
+        _node: JQuery<HTMLElement>
+    ) {
+        const sotragekey = "avatar-choosen";
+        const self = this;
+        this._choosen = readKey(sotragekey, "谭舒雁")
+        this._img = _node.find("img");
+
+        _node.find(`option`).attr("label", function (i) {
+            return this.innerText;
+        });
+        const choose = _node.find(`option[label='${this._choosen}']`)
+        choose.attr("selected", "selected")
+        this._img.attr("src", `img1/${choose.attr('img')}.png`)
+        _node.find("select").on("change", function () {
+            const selected = this.selectedOptions[0];
+            const label = self._choosen = selected.label;
+            self._img.attr("src", `img1/${selected.attributes["img"].value}.png`)
+            saveKey(sotragekey, label);
+        })
+    }
+}
+
+class CareerSelector {
+    private _choosen: string;
+    private _img: JQuery<HTMLImageElement>
+
+    public get choosen(): string {
+        return this._choosen;
+    }
+
+    constructor(
+        _node: JQuery<HTMLElement>
+    ) {
+        const sotragekey = "career-choosen";
+        const self = this;
+        this._choosen = readKey(sotragekey, "琴师")
+        this._img = _node.find("img");
+
+        _node.find(`option`).attr("label", function (i) {
+            return this.innerText;
+        });
+        const choose = _node.find(`option[label='${this._choosen}']`)
+        choose.attr("selected", "selected")
+        this._img.attr("src", `img1/${choose.attr('img')}.png`)
+        _node.find("select").on("change", function () {
+            const selected = this.selectedOptions[0];
+            const label = self._choosen = selected.label;
+            self._img.attr("src", `img1/${selected.attributes["img"].value}.png`)
+            saveKey(sotragekey, label);
+        })
+    }
+}
+
 class CardSearchWrap {
     public eventer: Eventer = new Eventer();
     private _selectionBox: JQuery<HTMLElement>;
@@ -219,6 +292,8 @@ class CardSearchWrap {
     private _lastInputStr: string;
     private _engRegxp: RegExp;
     private _numRegxp: RegExp;
+    private _avatarSelector: AvatarSelector;
+    private _careerSelector: CareerSelector;
     constructor(private _node: JQuery<HTMLElement>) {
         this._engRegxp = new RegExp('[A-z]');
         this._numRegxp = new RegExp("[0-9]");
@@ -227,6 +302,8 @@ class CardSearchWrap {
         this._selectionBox = _node.find(".selection");
         this._chooseList = []
         this._lastInputStr = "";
+        this._avatarSelector = new AvatarSelector(_node.find(".avatar"));
+        this._careerSelector = new CareerSelector(_node.find(".career"))
         this._input.on("input", this._onInput.bind(this))
         _node.find(".moveLeft").on("click", this._onMoveLeft.bind(this));
         _node.find(".moveRight").on("click", this._onMoveRight.bind(this));
@@ -345,6 +422,7 @@ class ECardBoxTitle {
         })
     }
 }
+
 
 const cardListWrap = new CardListWrap($(".FCardBox"), "fCardKey");
 const eCardListWrap = new CardListWrap($(".ECardBox"), "eCardKey");

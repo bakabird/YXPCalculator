@@ -761,7 +761,7 @@ export class WuXing_tiansuijueCard extends ACard {
 //#endregion
 
 
-export var list = [
+export var WuXing_LIST = [
     Mu_yinCard, Mu_yaCard, Huo_yinCard, Huo_cuanCard, Tu_yinCard,
     Tu_suiCard, Jin_yinCard, WuxingcCard, Shui_yinCard, Shui_taoCard,
     Jin_zhenCard,

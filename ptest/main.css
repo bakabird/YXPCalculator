@@ -1,0 +1,110 @@
+/* styles.css */
+.hide {
+  display: none;
+}
+/* Add styles here to customize the appearance of your app */
+.CardBox {
+  display: flex;
+}
+.Hub {
+  display: none;
+}
+.Card {
+  width: 12.5vw;
+}
+.Card .cardFace {
+  height: 21vw;
+  width: 100%;
+}
+.Card .arrow {
+  width: 17%;
+  margin: 0px 41.5%;
+  opacity: 0;
+}
+.CardSearch input {
+  width: 80%;
+  height: 30px;
+  margin: 6px 1% 6px;
+  font-size: 29px;
+}
+.CardSearch .avatar {
+  width: 90px;
+}
+.CardSearch .career {
+  width: 90px;
+}
+.CardSearch img {
+  width: 100%;
+}
+.CardSearch .cardHandle {
+  display: flex;
+}
+.CardSearch .bar00 {
+  display: flex;
+  width: calc(100vw - 180px);
+  align-items: flex-end;
+}
+.cardPos {
+  width: 16%;
+  margin: 6px 1% 6px;
+}
+.cardPos button {
+  height: 35px;
+  width: 45%;
+}
+.cardBtn {
+  width: 100px;
+  height: 40px;
+}
+.selection {
+  margin-top: 20px;
+  width: 100%;
+}
+.levelG button {
+  width: 27%;
+  height: 30px;
+  padding: 0;
+  border-color: #fff;
+  border-style: solid;
+}
+.levelG .on {
+  border-color: black;
+}
+.levelG .one {
+  background-color: #ede5da;
+}
+.levelG .two {
+  background-color: #f5be76;
+}
+.levelG .three {
+  background-color: #ffff23;
+}
+.CardBoxTitle {
+  display: flex;
+  color: #fff;
+  margin: 3px auto;
+}
+.CardBoxTitle h3 {
+  font-size: 15px;
+  margin: 0px 0px;
+  padding: 0px 10px;
+}
+.selfCardBoxTitle {
+  background-color: #104578;
+}
+.enemyCardBoxTitle {
+  background-color: #6c3636;
+  flex-direction: row-reverse;
+}
+.enemyCardBoxTitle .cleanEnemyBox {
+  font-size: 12px;
+  border: none;
+  padding: 0px 10px;
+  margin: 0px 0px;
+  background: #361c13;
+  color: #d9cece;
+}
+.enemyCardBoxTitle .cleanEnemyBox .cleanEnemyBox:hover {
+  background: #e3d8ce;
+  color: #580000;
+}

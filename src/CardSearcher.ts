@@ -20,7 +20,7 @@ export default class CardSearcher {
         }
         return this._me;
     }
-    private _searcher: FuzzySearch;
+    private _searcher: FuzzySearch<SearchItem>;
     private constructor() {
         var list: Array<SearchItem> = [];
         CardListFactory.me.EachRecord((record: CardRecord) => {

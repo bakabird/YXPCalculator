@@ -1,3 +1,10 @@
+/**
+ * SHARE CODE START
+ */
+/**
+ * SHARE CODE END
+ */
+
 namespace reportRenderer {
     class CardListWrap {
         private _cardBlue: JQuery<HTMLElement>;

@@ -1,0 +1,149 @@
+/* styles.css */
+
+.hide {
+    display: none;
+}
+
+/* Add styles here to customize the appearance of your app */
+.CardBox {
+    display: flex;
+}
+
+.Hub {
+    display: none;
+}
+
+.Card {
+    width: 12.5vw;
+
+    .cardFace {
+        height: 21vw;
+        width: 100%;
+    }
+
+    .arrow {
+        width: 17%;
+        margin: 0px 41.5%;
+        opacity: 0;
+    }
+}
+
+
+.CardSearch {
+    input {
+        width: 80%;
+        height: 30px;
+        margin: 6px 1% 6px;
+        font-size: 29px;
+    }
+
+    .avatar {
+        width: 90px;
+    }
+
+    .career {
+        width: 90px;
+    }
+
+    img {
+        width: 100%;
+    }
+
+    .cardHandle {
+        display: flex;
+    }
+
+    .bar00 {
+        display: flex;
+        width: calc(100vw - 180px);
+        align-items: flex-end;
+    }
+}
+
+.cardPos {
+    width: 16%;
+    margin: 6px 1% 6px;
+
+    button {
+        height: 35px;
+        width: 45%;
+    }
+}
+
+.cardBtn {
+    width: 100px;
+    height: 40px;
+}
+
+.selection {
+    margin-top: 20px;
+    width: 100%;
+}
+
+
+.levelG {
+    button {
+        width: 27%;
+        height: 30px;
+        padding: 0;
+        border-color: #fff;
+        border-style: solid;
+
+    }
+
+    .on {
+        border-color: black;
+    }
+
+    .one {
+        background-color: rgb(237, 229, 218);
+    }
+
+    .two {
+        background-color: rgb(245, 190, 118);
+    }
+
+    .three {
+        background-color: rgb(255, 255, 35);
+
+    }
+}
+
+
+
+
+
+.CardBoxTitle {
+    display: flex;
+    color: #fff;
+    margin: 3px auto;
+
+    h3 {
+        font-size: 15px;
+        margin: 0px 0px;
+        padding: 0px 10px;
+    }
+}
+
+.selfCardBoxTitle {
+    background-color: #104578;
+}
+
+.enemyCardBoxTitle {
+    background-color: #6c3636;
+    flex-direction: row-reverse;
+
+    .cleanEnemyBox {
+        font-size: 12px;
+        border: none;
+        padding: 0px 10px;
+        margin: 0px 0px;
+        background: #361c13;
+        color: #d9cece;
+
+        .cleanEnemyBox:hover {
+            background: #e3d8ce;
+            color: #580000;
+        }
+    }
+}

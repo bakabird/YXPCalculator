@@ -651,6 +651,7 @@ export class BeiGongCard extends ACard {
 
 
 
+
 export class WorldCenterMentalCard extends ACard {
     cardName: CardName = CardName.WorldCenterMental;
     cardState: CardState = CardState.HuaShen;
@@ -769,3 +770,22 @@ export class PurpleManaCard extends ACard {
     }
 
 }
+
+export var QiXing_LIST = [
+    StarMoveCard, PosStarCard, XingDangCard, XingJiaCard, GuaZhenCard, GuaKunCard, GuaXunCard,
+    PalmThunderCard, WhiteCraneCard, FinchTailCard, MustangCard, SilkRemain,
+
+    FlyingStarCard, XingDianCard, XingLiCard, GuaGenCard, GuaKanCard, ThunderCard,
+    DigRootCard, OneFootCard, MindMentalCard, FallingFlowerCard, ImbuedRainbowCard,
+    FeiTaCard,
+
+    StarAroundMoonCard, XingDaCard, GuaDuiCard, WhiteSnakeCard, ThunderGuaFormulaCard,
+    LiangyiArrayCard, FlowingWaterCard, QiRecoverCard, DryTreeCard, TangLangCard,
+    HaiDiCard,
+
+    XingFeiCard, XingHuCard, SixyaoArrayCard, GuaLiCard, StarOrbitCard, TouchWaterCard,
+    DoubleThunderCard, CountershockMentalCard, GoldChanCard, BeiGongCard,
+
+    WorldCenterMentalCard, XingDuanCard, GuaQianCard, FiveThunderCard, QiTunCard,
+    HuangQueCard, MeiKaiCard, PurpleManaCard
+]

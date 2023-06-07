@@ -17,6 +17,6 @@ export class Youranhl extends ACard {
 
 }
 
-export var list = [
+export var Wu_Xingzhi_LIST = [
     Youranhl,
 ]
