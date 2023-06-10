@@ -7,7 +7,8 @@ const lessPath = "less/*.less";
 const tsPath = 'src/*.ts'
 const browerTsPath = "src/Brower/*.ts"
 const shareCodePath = "src/_share_code_.ts"
-const shareCodeInjecterTargets = [
+const shareCode2Path = "src/_share_code2_.ts"
+const _shareCodeInjecterTargets = [
     "src/Brower/renderer.ts",
     "src/Brower/reportRenderer.ts",
 ]
@@ -70,7 +71,13 @@ function browerTsWatch(cb) {
         })
 }
 
-function shareCodeWatch(cb) {
+function produceShareCodeWatchFunc(shareCodePath: string, shareCodeInjecterTargets: string[], startMark: string, endMark: string) {
+    return (cb) => {
+        shareCodeWatch(cb, shareCodePath, shareCodeInjecterTargets, startMark, endMark)
+    }
+}
+
+function shareCodeWatch(cb, shareCodePath: string, shareCodeInjecterTargets: string[], startMark: string, endMark: string) {
     gulp.src(shareCodePath)
         .on('error', (e) => {
             console.error(e)
@@ -88,10 +95,10 @@ function shareCodeWatch(cb) {
                     const targetContent: string = _file.contents.toString()
                     const targetContentLines = targetContent.split("\n")
                     const shareCodeStartIndex = targetContentLines.findIndex((line: string) => {
-                        return line.includes("SHARE CODE START")
+                        return line.includes(startMark)
                     }) + 2;
                     const shareCodeEndIndex = targetContentLines.findIndex((line: string) => {
-                        return line.includes("SHARE CODE END")
+                        return line.includes(endMark)
                     }) - 1;
                     // console.log(shareCodeStartIndex, shareCodeEndIndex)
                     // console.log(...shareContentLines)
@@ -115,7 +122,8 @@ exports.default = function () {
     gulp.watch(lessPath, lessWatch)
     gulp.watch(tsPath, tsWatch)
     gulp.watch(browerTsPath, browerTsWatch)
-    gulp.watch(shareCodePath, shareCodeWatch)
+    gulp.watch(shareCodePath, produceShareCodeWatchFunc(shareCodePath, _shareCodeInjecterTargets, "SHARE CODE START", "SHARE CODE END"))
+    gulp.watch(shareCode2Path, produceShareCodeWatchFunc(shareCode2Path, _shareCodeInjecterTargets, "SHARE CODE2 START", "SHARE CODE2 END"))
     // TODO: 增加 SHARE_CODE 相关执行
 };
 

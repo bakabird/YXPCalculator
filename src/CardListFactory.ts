@@ -1,34 +1,52 @@
-import { ACard, CardInfo, CardName, HitCard, } from "./Card"
-import { BeiGongCard, CountershockMentalCard, DigRootCard, DoubleThunderCard, DryTreeCard, FallingFlowerCard, FeiTaCard, FinchTailCard, FiveThunderCard, FlowingWaterCard, FlyingStarCard, GoldChanCard, GuaDuiCard, GuaGenCard, GuaKanCard, GuaKunCard, GuaLiCard, GuaQianCard, GuaXunCard, GuaZhenCard, HaiDiCard, HuangQueCard, ImbuedRainbowCard, LiangyiArrayCard, MeiKaiCard, MindMentalCard, MustangCard, OneFootCard, PalmThunderCard, PosStarCard, PurpleManaCard, QiRecoverCard, QiTunCard, QiXing_LIST, SilkRemain, SixyaoArrayCard, StarAroundMoonCard, StarMoveCard, StarOrbitCard, TangLangCard, ThunderCard, ThunderGuaFormulaCard, TouchWaterCard, WhiteCraneCard, WhiteSnakeCard, WorldCenterMentalCard, XingDaCard, XingDangCard, XingDianCard, XingDuanCard, XingFeiCard, XingHuCard, XingJiaCard, XingLiCard } from "./QiXingGeCard";
-import { DCTuneCard, TongXinCard } from "./QinCards";
-import { BNLJFormulaCard, BreakingQiSwordCard, ChainSwordArrayCard, CloudDanceFormula, CondensationFormulaCard, CrazyMoveOneCard, CrazyMoveTwoCard, CrazyMoveZeroCard, DarkCrowManaSwordCard, DishaSwordCard, EgretManaSwordCard, FlyingSpiritFlashingShadowSwordCard, FlyingToothSwordCard, GiantKunManaSwordCard, GiantRocManaSwordCard, GiantWhaleSwordCard, HugeTigerManaSwordCard, InspirationSwordCard, LightSwordCard, LingxiSwordArray, LiuyunChaoticSwordCard, ManaGatherMentalCard, ManaInsideCard, ManaProtectMeCard, MirrorFlowerSwordArrayCard, QiDrawingSwordCard, ReflexiveSwordCard, ShockThunderSwordCard, SuddenWindSwordCard, SwordBlockCard, SwordChopCard, SwordMenaingStirringCard, TenThousandWayManaSwordCard, ThreePeakSwordCard, ToManaFormulaCard, WaterMoonSwordArrayCard, XingyiSwordCard, YukongSwordArrayCard, YunCrashSnowCard, YunFeiCiCard, YunFlashingWindCard, YunHouTuCard, YunHuilingCard, YunHuiShouCard, YunJiYiCard, YunLingboCard, YunMoonShadowCard, YunPointStarCard, YunSoftMentalCard, YunTanYunCard, YunWuFengCard, YunWuliCard, YunYouLongCard } from "./YunLingJianCards";
+import { ACard, CardInfo, CardName, HitCard, } from "./Card";
 import CardList from "./CardList";
-import { DecalEchoCard, ZhenMillionFlower } from "./ZhenCards";
-import { Wu_Xingzhi_LIST } from "./Character";
+import { WuXingzhi_LIST } from "./Character";
+import { QiXing_LIST } from "./QiXingGeCard";
+import { Qin_LIST } from "./QinCards";
 import { WuXing_LIST } from "./WuXingDaoMengCards";
-import { Men } from "./_share_code_";
+import { JianZong_LIST } from "./YunLingJianCards";
+import { Zhen_LIST } from "./ZhenCards";
+import { Career, Men, Role } from "./_share_code_";
 
 
 var AllCardType = [
     // 通用卡
     HitCard,
     // 门派卡
+    ...JianZong_LIST,
     ...QiXing_LIST,
     ...WuXing_LIST,
     // 角色卡
-    ...Wu_Xingzhi_LIST,
+    ...WuXingzhi_LIST,
+    // 职业卡
+    ...Zhen_LIST,
+    ...Qin_LIST,
 ]
 
 function getMenByType(type): Men {
     if (QiXing_LIST.includes(type)) return Men.QXG
     else if (WuXing_LIST.includes(type)) return Men.WXDM
+    else if (JianZong_LIST.includes(type)) return Men.QLJJ
     else return Men.NON
+}
+
+function getCareerByType(type): Career {
+    if (Zhen_LIST.includes(type)) return Career.Zhen
+    else if (Qin_LIST.includes(type)) return Career.Qin
+    else return Career.NON
+}
+
+function getRoleByType(type): Role {
+    if (WuXingzhi_LIST.includes(type)) return Role.Wxz
+    else return Role.NON
 }
 
 export type CardRecord = {
     name: CardName,
     Type: any,
     onlyMen: Men | null,
+    onlyCareer: Career | null,
+    onlyRole: Role | null,
     // 门派卡 | 职业卡 | 个人卡
 }
 
@@ -48,10 +66,12 @@ export class CardListFactory {
         this._dict = {};
         AllCardType.forEach(type => {
             var card = new type() as ACard;
-            var cardRecord = {
+            var cardRecord: CardRecord = {
                 name: card.cardName,
                 Type: type,
                 onlyMen: getMenByType(type),
+                onlyCareer: getCareerByType(type),
+                onlyRole: getRoleByType(type),
             };
             this._dict[cardRecord.name] = cardRecord;
         });

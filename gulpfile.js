@@ -12,7 +12,8 @@ const lessPath = "less/*.less";
 const tsPath = 'src/*.ts';
 const browerTsPath = "src/Brower/*.ts";
 const shareCodePath = "src/_share_code_.ts";
-const shareCodeInjecterTargets = [
+const shareCode2Path = "src/_share_code2_.ts";
+const _shareCodeInjecterTargets = [
     "src/Brower/renderer.ts",
     "src/Brower/reportRenderer.ts",
 ];
@@ -70,7 +71,12 @@ function browerTsWatch(cb) {
         cb();
     });
 }
-function shareCodeWatch(cb) {
+function produceShareCodeWatchFunc(shareCodePath, shareCodeInjecterTargets, startMark, endMark) {
+    return (cb) => {
+        shareCodeWatch(cb, shareCodePath, shareCodeInjecterTargets, startMark, endMark);
+    };
+}
+function shareCodeWatch(cb, shareCodePath, shareCodeInjecterTargets, startMark, endMark) {
     gulp_1.default.src(shareCodePath)
         .on('error', (e) => {
         console.error(e);
@@ -88,10 +94,10 @@ function shareCodeWatch(cb) {
             const targetContent = _file.contents.toString();
             const targetContentLines = targetContent.split("\n");
             const shareCodeStartIndex = targetContentLines.findIndex((line) => {
-                return line.includes("SHARE CODE START");
+                return line.includes(startMark);
             }) + 2;
             const shareCodeEndIndex = targetContentLines.findIndex((line) => {
-                return line.includes("SHARE CODE END");
+                return line.includes(endMark);
             }) - 1;
             // console.log(shareCodeStartIndex, shareCodeEndIndex)
             // console.log(...shareContentLines)
@@ -113,6 +119,7 @@ exports.default = function () {
     gulp_1.default.watch(lessPath, lessWatch);
     gulp_1.default.watch(tsPath, tsWatch);
     gulp_1.default.watch(browerTsPath, browerTsWatch);
-    gulp_1.default.watch(shareCodePath, shareCodeWatch);
+    gulp_1.default.watch(shareCodePath, produceShareCodeWatchFunc(shareCodePath, _shareCodeInjecterTargets, "SHARE CODE START", "SHARE CODE END"));
+    gulp_1.default.watch(shareCode2Path, produceShareCodeWatchFunc(shareCode2Path, _shareCodeInjecterTargets, "SHARE CODE2 START", "SHARE CODE2 END"));
     // TODO: 增加 SHARE_CODE 相关执行
 };

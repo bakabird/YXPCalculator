@@ -21,6 +21,10 @@ export class DCTuneCard extends ACard {
     }
 }
 
+
+
+
+
 export class TongXinCard extends ACard {
     cardState: CardState = CardState.YuanYing;
     cardName: CardName = CardName.TongXin;
@@ -35,3 +39,11 @@ export class TongXinCard extends ACard {
         return this._lvlVal(2, 1, 0);
     }
 }
+
+
+
+export var Qin_LIST = [
+    DCTuneCard,
+
+    TongXinCard,
+]

@@ -1,5 +1,5 @@
 import { CardListFactory, CardRecord } from "./CardListFactory";
-import CardSearcher from "./CardSearcher";
+import CardSearcher, { SearchFilter } from "./CardSearcher";
 import { Debug } from "./Debug";
 import { FightReport } from "./FightReport";
 import { Sumamry } from "./Sumamry";
@@ -160,8 +160,8 @@ function GetAllCards(): Array<string> {
   return list;
 }
 
-function SearchCard(_event, inKey: string): Array<string> {
-  return CardSearcher.me.Search(inKey);
+function SearchCard(_event, inKey: string, filter: SearchFilter): Array<string> {
+  return CardSearcher.me.Search(inKey, filter);
 }
 
 // This method will be called when Electron has finished

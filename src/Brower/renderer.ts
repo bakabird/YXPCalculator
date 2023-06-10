@@ -5,28 +5,108 @@
  * `contextIsolation` is turned on. Use the contextBridge API in `preload.js`
  * to expose Node.js functionality from the main process.
  */
-interface Window {
-    electronAPI: any;
-}
-
 namespace Share2Renderer {
     /**
      * SHARE CODE START
      */
-export enum Men {
-    /**青莲剑宗 */
-    QLJJ,
-    /**五行道盟 */
-    WXDM,
-    /**七星阁 */
-    QXG,
-    /**无门派 */
-    NON,
-}
+    export enum Men {
+        /**青莲剑宗 */
+        QLJJ,
+        /**五行道盟 */
+        WXDM,
+        /**七星阁 */
+        QXG,
+        /**无门派 */
+        NON,
+    }
+
+    export enum Career {
+        /**丹 */
+        Dan,
+        /**符 */
+        Fu,
+        /**琴 */
+        Qin,
+        /**画 */
+        Hua,
+        /**阵 */
+        Zhen,
+        /**植 */
+        Zhi,
+        /**无 */
+        NON,
+    }
+
+    export enum Role {
+        // 牧逸风
+        Dyf,
+        // 炎雪
+        Yx,
+        // 龙瑶
+        Ly,
+        // 林小月
+        Lxy,
+        // 谭舒雁
+        Tsy,
+        // 炎尘
+        Yc,
+        // 曜灵
+        Yl,
+        // 姜袭明
+        Jxm,
+        // 吾行之
+        Wxz,
+        // 杜伶鸳
+        Dly,
+        // 花沁蕊
+        Hqr,
+        // 慕虎
+        Mh,
+        /**无 */
+        NON,
+    }
+
+    var JianRole = [
+        Role.Dyf, Role.Yx, Role.Ly, Role.Lxy,
+    ]
+    var QiRole = [
+        Role.Tsy, Role.Yc, Role.Yl, Role.Jxm
+    ]
+    var WuRole = [
+        Role.Wxz, Role.Dly, Role.Hqr, Role.Mh
+    ]
+
+    export function getMenByRole(role: Role): Men {
+        if (JianRole.includes(role)) return Men.QLJJ
+        else if (QiRole.includes(role)) return Men.QXG
+        else if (WuRole.includes(role)) return Men.WXDM
+        return Men.NON;
+    }
+
     /**
      * SHARE CODE END
      */
 }
+/**
+ * SHARE CODE2 START
+ */
+interface Window {
+    electronAPI: {
+        searchCard(key: string, filter: {
+            men: any,
+            career: any,
+            role: any
+        }): Promise<Array<string>>;
+        getAllCards(): Promise<Array<string>>;
+        createReport(key: string, eKey: string, threadNum: number): void;
+        viewReport(fightReport: any): void;
+        doDebug(): void;
+        onProcessOver(callback: (evt: any, data: any) => void): void;
+    };
+}
+/**
+ * SHARE CODE2 END
+ */
 const Cfg = {
 }
 class Eventer {
@@ -237,29 +317,36 @@ class AvatarSelector {
     private _choosen: string;
     private _img: JQuery<HTMLImageElement>
 
-    public get choosen(): string {
-        return this._choosen;
+    public get role(): Share2Renderer.Role {
+        return Share2Renderer.Role[this._choosen];
+    }
+
+    public get men(): Share2Renderer.Men {
+        return Share2Renderer.getMenByRole(this.role);
     }
 
     constructor(
-        _node: JQuery<HTMLElement>
+        _node: JQuery<HTMLElement>,
+        private _onChg: () => void,
     ) {
         const sotragekey = "avatar-choosen";
         const self = this;
-        this._choosen = readKey(sotragekey, "谭舒雁")
+        this._choosen = readKey(sotragekey, "Tsy")
         this._img = _node.find("img");
 
         _node.find(`option`).attr("label", function (i) {
             return this.innerText;
         });
-        const choose = _node.find(`option[label='${this._choosen}']`)
+        const choose = _node.find(`option[img=${this._choosen}]`)
         choose.attr("selected", "selected")
-        this._img.attr("src", `img1/${choose.attr('img')}.png`)
+        this._img.attr("src", `img1/Role/${choose.attr('img')}.png`)
         _node.find("select").on("change", function () {
             const selected = this.selectedOptions[0];
-            const label = self._choosen = selected.label;
-            self._img.attr("src", `img1/${selected.attributes["img"].value}.png`)
+            const img = selected.attributes["img"].value
+            const label = self._choosen = img;
+            self._img.attr("src", `img1/Role/${img}.png`)
             saveKey(sotragekey, label);
+            self._onChg()
         })
     }
 }
@@ -268,29 +355,32 @@ class CareerSelector {
     private _choosen: string;
     private _img: JQuery<HTMLImageElement>
 
-    public get choosen(): string {
-        return this._choosen;
+    public get career(): Share2Renderer.Career {
+        return Share2Renderer.Career[this._choosen];
     }
 
     constructor(
-        _node: JQuery<HTMLElement>
+        _node: JQuery<HTMLElement>,
+        private _onChg: () => void,
     ) {
         const sotragekey = "career-choosen";
         const self = this;
-        this._choosen = readKey(sotragekey, "琴师")
+        this._choosen = readKey(sotragekey, "Qin")
         this._img = _node.find("img");
 
         _node.find(`option`).attr("label", function (i) {
             return this.innerText;
         });
-        const choose = _node.find(`option[label='${this._choosen}']`)
+        const choose = _node.find(`option[img=${this._choosen}]`)
         choose.attr("selected", "selected")
-        this._img.attr("src", `img1/${choose.attr('img')}.png`)
+        this._img.attr("src", `img1/Career/${choose.attr('img')}.png`)
         _node.find("select").on("change", function () {
             const selected = this.selectedOptions[0];
-            const label = self._choosen = selected.label;
-            self._img.attr("src", `img1/${selected.attributes["img"].value}.png`)
+            const img = selected.attributes["img"].value
+            const label = self._choosen = img;
+            self._img.attr("src", `img1/Career/${img}.png`)
             saveKey(sotragekey, label);
+            self._onChg()
         })
     }
 }
@@ -306,6 +396,7 @@ class CardSearchWrap {
     private _numRegxp: RegExp;
     private _avatarSelector: AvatarSelector;
     private _careerSelector: CareerSelector;
+    private _key: string;
     constructor(private _node: JQuery<HTMLElement>) {
         this._engRegxp = new RegExp('[A-z]');
         this._numRegxp = new RegExp("[0-9]");
@@ -314,8 +405,9 @@ class CardSearchWrap {
         this._selectionBox = _node.find(".selection");
         this._chooseList = []
         this._lastInputStr = "";
-        this._avatarSelector = new AvatarSelector(_node.find(".avatar"));
-        this._careerSelector = new CareerSelector(_node.find(".career"))
+        this._key = "";
+        this._avatarSelector = new AvatarSelector(_node.find(".avatar"), this._search.bind(this));
+        this._careerSelector = new CareerSelector(_node.find(".career"), this._search.bind(this))
         this._input.on("input", this._onInput.bind(this))
         _node.find(".moveLeft").on("click", this._onMoveLeft.bind(this));
         _node.find(".moveRight").on("click", this._onMoveRight.bind(this));
@@ -326,7 +418,8 @@ class CardSearchWrap {
             if (val.length > this._lastInputStr.length) {
                 const lastInput = val[val.length - 1];
                 if (this._engRegxp.test(lastInput)) {
-                    this._search(val);
+                    this._key = val;
+                    this._search();
                 } else {
                     this._input.val(val.slice(0, val.length - 1));
                     if (this._numRegxp.test(lastInput)) {
@@ -335,7 +428,8 @@ class CardSearchWrap {
                     }
                 }
             } else {
-                this._search(val);
+                this._key = val;
+                this._search();
             }
         }
         this._lastInputStr = this._input.val().toString();
@@ -346,9 +440,14 @@ class CardSearchWrap {
     private _onMoveRight() {
         this.eventer.event("move", 1);
     }
-    private _search(key: string) {
+    private _search() {
+        const key = this._key
         if (key == "") return;
-        window.electronAPI.searchCard(key).then(rlt => {
+        window.electronAPI.searchCard(key, {
+            men: this._avatarSelector.men,
+            role: this._avatarSelector.role,
+            career: this._careerSelector.career
+        }).then(rlt => {
             this.clear();
             rlt.forEach(name => {
                 var node = this._chooseCopy.clone();

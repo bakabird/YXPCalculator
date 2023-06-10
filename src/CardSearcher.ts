@@ -2,6 +2,7 @@ import { CardListFactory, CardRecord } from "./CardListFactory";
 import pinyin from "pinyin";
 import FuzzySearch from 'fuzzy-search'; // Or: var FuzzySearch = require('fuzzy-search');
 import CardPinyinCfg from "./CardPinyinCfg";
+import { Career, Men, Role } from "./_share_code_";
 
 type SearchItem = {
     record: CardRecord,
@@ -10,6 +11,12 @@ type SearchItem = {
 
 var pinyinOption = {
     style: pinyin.STYLE_FIRST_LETTER,
+}
+
+export interface SearchFilter {
+    men: Men,
+    career: Career,
+    role: Role,
 }
 
 export default class CardSearcher {
@@ -36,7 +43,21 @@ export default class CardSearcher {
             caseSensitive: false,
         });
     }
-    public Search(needle: string): Array<string> {
-        return this._searcher.search(needle).map(i => i.record.name);
+    public Search(needle: string, filter: SearchFilter): Array<string> {
+        return this._searcher.search(needle).filter(r => {
+            const {
+                onlyMen,
+                onlyCareer,
+                onlyRole
+            } = r.record
+            if (filter.men == onlyMen) {
+                return true
+            } else if (filter.career == onlyCareer) {
+                return true
+            } else if (filter.role == onlyRole) {
+                return true
+            }
+            return false;
+        }).map(i => i.record.name);
     }
 }

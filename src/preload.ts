@@ -1,3 +1,5 @@
+import { SearchFilter } from "./CardSearcher";
+
 /**
  * The preload script runs before. It has access to web APIs
  * as well as Electron's renderer process modules and some
@@ -8,8 +10,8 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  searchCard: (key: string) => {
-    return ipcRenderer.invoke('Miri.SearchCard', key)
+  searchCard: (key: string, filter: SearchFilter) => {
+    return ipcRenderer.invoke('Miri.SearchCard', key, filter)
   },
   getAllCards: () => {
     return ipcRenderer.invoke('Main.GetAllCards')

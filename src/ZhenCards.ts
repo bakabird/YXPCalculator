@@ -46,3 +46,8 @@ export class ZhenMillionFlower extends ACard {
     }
 }
 
+
+
+export var Zhen_LIST = [
+    DecalEchoCard, ZhenMillionFlower
+]
