@@ -31,7 +31,7 @@ function lessWatch(cb) {
         .pipe(less({
         paths: [path.join(__dirname, 'less', 'includes')]
     }))
-        .pipe(gulp_1.default.dest('./ptest'))
+        .pipe(gulp_1.default.dest('./css'))
         .on('error', (e) => {
         console.error(e);
         /* Ignore compiler errors */

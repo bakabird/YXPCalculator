@@ -9,6 +9,7 @@
   <script src="./jquery-3.6.3.min.js"></script>
   <link href="./css/Bar.css" rel="stylesheet">
   <link href="./css/Cardlib.css" rel="stylesheet">
+  <link href="./css/Feedback.css" rel="stylesheet">
   <link href="./css/main.css" rel="stylesheet">
   <title>奕仙牌计算器</title>
 </head>
@@ -24,6 +25,7 @@
       <option selected="selected">7</option>
     </select>
     <button class="openCardlib">卡库</button>
+    <button class="feedback">问题反馈</button>
     <button class="fix">一键修复</button>
     <!-- <button class="debug">测试</button> -->
   </div>
@@ -83,7 +85,6 @@
 
     <div class="selection"></div>
   </div>
-  <p>增加角色选取，按照角色职业筛选可用卡牌(角色选择，分门派列出，记录选择的角色)</p>
   <p>反馈页(反馈项目，反馈正文，反馈CD，反馈附件)</p>
   <p>卡库-反馈按钮</p>
   <p>卡库-查看卡牌升级项</p>
@@ -97,6 +98,25 @@
     <button class="close">关闭</button>
     <h1>当前卡库</h1>
     <div class="body">
+    </div>
+  </div>
+  <div class="Feedback hide">
+    <button class="close">关闭</button>
+    <h1>问题反馈</h1>
+    <div class="body">
+      <form>反馈项目
+        <select>
+          <option>无</option>
+          <option>缺卡</option>
+          <option>卡描述有误</option>
+          <option>建议</option>
+          <option>意见</option>
+        </select>
+      </form>
+      <textarea name="" id="" cols="30" rows="10"></textarea>
+      <br>
+      <button class="confirm">提交</button>
+      <p class="tip"></p>
     </div>
   </div>
   <div class="Hub">

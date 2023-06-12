@@ -109,6 +109,10 @@ interface Window {
  */
 const Cfg = {
 }
+const Const = {
+    FeedbackDefaultItem: "无",
+    FeedbackContentMinLen: 3,
+}
 class Eventer {
     private _listDict: Record<string, Array<(...arg: any) => void>> = {};
     public event(name: string, ...arg: any) {
@@ -477,7 +481,6 @@ class CardLibWrap {
         private _node: JQuery<HTMLElement>,
     ) {
         _node.children(".close").on("click", () => {
-            console.log("click");
             this.hide();
         });
         this._body = _node.children(".body")
@@ -500,12 +503,87 @@ class CardLibWrap {
     }
 }
 
+class FeedbackWrap {
+    private get _item() {
+        return this._node.find(".body form select")
+    }
+
+    private get _content() {
+        return this._node.find(".body textarea")
+    }
+
+    constructor(
+        private _node: JQuery<HTMLElement>,
+    ) {
+        let cd = false
+        const tip = _node.find(".body .tip")
+        _node.children(".close").on("click", () => {
+            this.hide();
+        });
+        _node.find(".body .confirm").on("click", () => {
+            if (cd) return
+            cd = true;
+            setInterval(() => {
+                cd = false
+            }, 1333);
+            if (this._item.val() == Const.FeedbackDefaultItem) {
+                this._item
+                    .css({
+                        borderColor: "red"
+                    })
+                    .animate({
+                        'borderWidth': '3px',
+                    }, 500)
+                    .animate({
+                        'borderWidth': '1px',
+                    }, 400, () => {
+                        this._item.css({
+                            borderColor: "black"
+                        })
+                    })
+                return
+            }
+            if (this._content.val().toString().length < Const.FeedbackContentMinLen) {
+                tip.text("反馈内容过短")
+                setInterval(() => {
+                    tip.text("")
+                }, 1000);
+                this._content
+                    .css({
+                        borderColor: "red"
+                    })
+                    .animate({
+                        'borderWidth': '3px',
+                    }, 500)
+                    .animate({
+                        'borderWidth': '1px',
+                    }, 400, () => {
+                        this._item.css({
+                            borderColor: "black"
+                        })
+                    })
+                return;
+            }
+            console.log(this._item.val(), this._content.val());
+        })
+    }
+
+    public show() {
+        this._node.removeClass("hide");
+    }
+
+    public hide() {
+        this._node.addClass("hide");
+    }
+}
+
 class BarWrap {
     constructor(
         private _node: JQuery<HTMLElement>,
         private _fCardListWrap: CardListWrap,
         private _eCardListWrap: CardListWrap,
         private _libWrap: CardLibWrap,
+        private _feedbackWrap: FeedbackWrap
     ) {
         _node.children(".analysis").on("click", () => {
             const threadNum = parseInt(_node.children("select")[0].value);
@@ -513,6 +591,9 @@ class BarWrap {
         });
         _node.children(".openCardlib").on("click", () => {
             this._libWrap.show();
+        })
+        _node.children(".feedback").on("click", () => {
+            this._feedbackWrap.show();
         })
         _node.children(".fix").on("click", () => {
             localStorage.clear();
@@ -539,7 +620,8 @@ const cardListWrap = new CardListWrap($(".FCardBox"), "fCardKey");
 const eCardListWrap = new CardListWrap($(".ECardBox"), "eCardKey");
 const searchWrap = new CardSearchWrap($(".CardSearch"));
 const cardlibWrap = new CardLibWrap($(".CardLib"))
-const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap, cardlibWrap);
+const feedbackWrap = new FeedbackWrap($(".Feedback"))
+const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap, cardlibWrap, feedbackWrap);
 new ECardBoxTitle($(".enemyCardBoxTitle"), eCardListWrap);
 let activeWrap: CardListWrap;
 const onClickFace = (wrap: CardListWrap) => {

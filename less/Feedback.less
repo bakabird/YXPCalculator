@@ -1,0 +1,73 @@
+.Feedback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #000000cf;
+    height: 100vh;
+
+    .close {
+        position: absolute;
+        right: 4vw;
+        font-weight: bold;
+        top: 4vh;
+        font-size: 14px;
+        width: 50px;
+        height: 50px;
+    }
+
+    h1 {
+        position: absolute;
+        left: 4vw;
+        top: 4vh;
+        margin: 0px;
+        background: #fff;
+        /* margin: 0 auto; */
+    }
+
+    .body {
+        height: 80vh;
+        width: 90vw;
+        margin: 13vh auto 5vh;
+        overflow-x: clip;
+        padding: 1vh;
+        background: #fff;
+        overflow-y: scroll;
+
+        form {
+            margin: 10px 0 10px;
+            font-size: 20px;
+
+            select {
+                width: 200px;
+                font-size: 17px;
+            }
+        }
+
+        textarea {
+            margin: 20px 0 20px;
+            width: 99%;
+            height: 75%;
+            font-size: 18px;
+        }
+
+        button {
+            width: 200px;
+            height: 32px;
+            display: block;
+            background: #4caf50;
+            border: none;
+            font-size: 17px;
+            color: #fff;
+            margin: 0 auto;
+        }
+
+        button:hover {
+            background: #009688;
+        }
+
+        .tip {
+            color: red;
+        }
+    }
+}
