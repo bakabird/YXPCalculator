@@ -517,6 +517,8 @@ class FeedbackWrap {
     ) {
         let cd = false
         const tip = _node.find(".body .tip")
+        const inputFile = _node.find(".body .file_upload input") as JQuery<HTMLInputElement>
+        const previewImg = _node.find(".body img") as JQuery<HTMLImageElement>
         _node.children(".close").on("click", () => {
             this.hide();
         });
@@ -547,7 +549,7 @@ class FeedbackWrap {
                 tip.text("反馈内容过短")
                 setInterval(() => {
                     tip.text("")
-                }, 1000);
+                }, 3000);
                 this._content
                     .css({
                         borderColor: "red"
@@ -565,6 +567,22 @@ class FeedbackWrap {
                 return;
             }
             console.log(this._item.val(), this._content.val());
+        })
+        inputFile.on("change", () => {
+            const fileObj = inputFile[0].files[0]
+            const reader = new FileReader();   // 读取文件并以数据 URI 形式保存在 result 属性中
+            reader.readAsDataURL(fileObj);   // 在文件加载成功后触发 load 事件
+            // readAsBinaryString [file] 将文件读取为二进制码
+            // readAsDataURL [file] 将文件读取为 DataURL
+            // readAsText [file] 将文件读取为文本
+            // readAsText：该方法有两个参数，其中第二个参数是文本的编码方式，默认值为 UTF-8。这个方法非常容易理解，将文件以文本方式读取，读取的结果即是这个文本文件中的内容。
+            // readAsBinaryString：该方法将文件读取为二进制字符串，通常我们将它传送到后端，后端可以通过这段字符串存储文件。
+            // readAsDataURL：这是例子程序中用到的方法，该方法将文件读取为一段以 data: 开头的字符串，这段字符串的实质就是 Data URL，Data URL是一种将小文件直接嵌入文档的方案。这里的小文件通常是指图像与 html 等格式的文件。
+            reader.onload = function (e) {
+                let imgUrl = e.target.result as string;
+                previewImg.attr("src", imgUrl);
+            }   // 在文件加载失败后触发 error 事件
+            reader.onerror = function (e) { }
         })
     }
 

@@ -4,8 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-  <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+  <!-- <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"> -->
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content: https://ssl.gstatic.com; 
+    media-src * blob: 'self' http://* 'unsafe-inline' 'unsafe-eval'; 
+    style-src * 'self' 'unsafe-inline'; 
+    img-src * 'self' data: content:; 
+    connect-src * blob:;">
   <script src="./jquery-3.6.3.min.js"></script>
   <link href="./css/Bar.css" rel="stylesheet">
   <link href="./css/Cardlib.css" rel="stylesheet">
@@ -85,7 +90,8 @@
 
     <div class="selection"></div>
   </div>
-  <p>反馈页(反馈项目，反馈正文，反馈CD，反馈附件)</p>
+  <p>反馈页-实际上传</p>
+  <p>反馈页-反馈CD</p>
   <p>卡库-反馈按钮</p>
   <p>卡库-查看卡牌升级项</p>
   <div class="hide">
@@ -114,6 +120,11 @@
         </select>
       </form>
       <textarea name="" id="" cols="30" rows="10"></textarea>
+      <img src="" id="PreviewImg" />
+      <div class="file_upload">
+        选择文件
+        <input id="myFile" type="file" accept="image/png,image/jpeg" name="inputFile" />
+      </div>
       <br>
       <button class="confirm">提交</button>
       <p class="tip"></p>
