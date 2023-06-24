@@ -6,7 +6,8 @@
   "scripts": {
     "start": "electron .",
     "less-watch": "less-watch-compiler less css main.less",
-    "ts-watch": "tsc -w"
+    "ts-watch": "tsc -w",
+    "pack": "cd Hunxiao && node hunxiao.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,10 +16,12 @@
     "electron": "^22.0.0"
   },
   "dependencies": {
+    "@types/ali-oss": "^6.16.8",
     "@types/fuzzy-search": "^2.1.2",
     "@types/gulp": "^4.0.11",
     "@types/jquery": "^3.5.14",
     "@types/through2": "^2.0.38",
+    "ali-oss": "^6.17.1",
     "fuzzy-search": "^3.2.1",
     "gulp": "^4.0.2",
     "gulp-less": "^5.0.0",

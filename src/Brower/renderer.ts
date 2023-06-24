@@ -99,6 +99,7 @@ interface Window {
         }): Promise<Array<string>>;
         getAllCards(): Promise<Array<string>>;
         createReport(key: string, eKey: string, threadNum: number): void;
+        feedback(item: string, content: string, fileName?: string, fileBuffer?: ArrayBuffer): Promise<void>;
         viewReport(fightReport: any): void;
         doDebug(): void;
         onProcessOver(callback: (evt: any, data: any) => void): void;
@@ -566,12 +567,26 @@ class FeedbackWrap {
                     })
                 return;
             }
-            console.log(this._item.val(), this._content.val());
+            const input = inputFile[0]
+            if (input.files.length > 0) {
+                const f = input.files[0]
+                const reader = new FileReader();   // 读取文件并以数据 URI 形式保存在 result 属性中
+                reader.readAsArrayBuffer(f);
+                reader.onload = (e) => {
+                    let rlt = e.target.result as ArrayBuffer;
+                    console.log(f.name)
+                    this._post(f.name, rlt);
+                }   // 在文件加载失败后触发 error 事件
+                reader.onerror = function (e) { }
+            } else {
+                this._post()
+            }
         })
         inputFile.on("change", () => {
             const fileObj = inputFile[0].files[0]
             const reader = new FileReader();   // 读取文件并以数据 URI 形式保存在 result 属性中
             reader.readAsDataURL(fileObj);   // 在文件加载成功后触发 load 事件
+
             // readAsBinaryString [file] 将文件读取为二进制码
             // readAsDataURL [file] 将文件读取为 DataURL
             // readAsText [file] 将文件读取为文本
@@ -584,6 +599,12 @@ class FeedbackWrap {
             }   // 在文件加载失败后触发 error 事件
             reader.onerror = function (e) { }
         })
+    }
+
+    private _post(fileName?: string, fileBianryStr?: ArrayBuffer) {
+        const item = this._item.val() as string;
+        const content = this._content.val() as string
+        window.electronAPI.feedback(item, content, fileName, fileBianryStr)
     }
 
     public show() {

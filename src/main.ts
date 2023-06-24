@@ -1,3 +1,4 @@
+import AliKit from "./AliKit";
 import { CardListFactory, CardRecord } from "./CardListFactory";
 import CardSearcher, { SearchFilter } from "./CardSearcher";
 import { Debug } from "./Debug";
@@ -10,7 +11,7 @@ const {
   Worker, isMainThread, parentPort, workerData
 } = require('node:worker_threads');
 const { app, Menu, BrowserWindow, ipcMain } = require('electron')
-const path = require('path')
+import path from 'path'
 const isMac = process.platform === 'darwin'
 
 const template = [
@@ -160,6 +161,18 @@ function GetAllCards(): Array<string> {
   return list;
 }
 
+function Feedback(_, item: string, content: string, fileName?: string, fileBuffer?: ArrayBuffer) {
+  AliKit.me.post({
+    item,
+    content,
+    attachment: !fileName ? null : {
+      fileExt: path.extname(fileName),
+      fileBuffer,
+    }
+  })
+  return true
+}
+
 function SearchCard(_event, inKey: string, filter: SearchFilter): Array<string> {
   return CardSearcher.me.Search(inKey, filter);
 }
@@ -170,6 +183,7 @@ function SearchCard(_event, inKey: string, filter: SearchFilter): Array<string> 
 app.whenReady().then(() => {
   ipcMain.handle("Miri.SearchCard", SearchCard)
   ipcMain.handle("Main.GetAllCards", GetAllCards)
+  ipcMain.handle("Main.Feedback", Feedback)
   ipcMain.on("Main.Report", CreateReport)
   ipcMain.on("Main.ViewReport", ViewReport)
   ipcMain.on("Main.Debug", Debug)

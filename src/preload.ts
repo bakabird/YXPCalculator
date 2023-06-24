@@ -16,6 +16,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getAllCards: () => {
     return ipcRenderer.invoke('Main.GetAllCards')
   },
+  feedback: (item: string, content: string, fileName?: string, fileBuffer?: ArrayBuffer) => {
+    return ipcRenderer.invoke('Main.Feedback', item, content, fileName, fileBuffer)
+  },
   createReport: (key: string, eKey: string, threadNum: number) => {
     ipcRenderer.send("Main.Report", key, eKey, threadNum);
   },
@@ -25,11 +28,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   doDebug: () => {
     ipcRenderer.send("Main.Debug");
   },
-
   onProcessOver: (callback) => {
     ipcRenderer.on("Miri.ProcessOver", callback);
   },
-
 })
 
 window.addEventListener('DOMContentLoaded', () => {

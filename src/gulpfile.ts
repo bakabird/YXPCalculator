@@ -6,6 +6,7 @@ const ts = require('gulp-typescript');
 const lessPath = "less/*.less";
 const tsPath = 'src/*.ts'
 const browerTsPath = "src/Brower/*.ts"
+const hunxiaoTsPath = "src/Hunxiao/*.ts"
 const shareCodePath = "src/_share_code_.ts"
 const shareCode2Path = "src/_share_code2_.ts"
 const _shareCodeInjecterTargets = [
@@ -71,6 +72,20 @@ function browerTsWatch(cb) {
         })
 }
 
+function hunxiaoTsWatch(cb) {
+    gulp.src(hunxiaoTsPath)
+        .pipe(ts(tsConfig))
+        .pipe(gulp.dest('./Hunxiao/'))
+        .on('error', (e) => {
+            console.error(e)
+            /* Ignore compiler errors */
+        })
+        .on("end", () => {
+            console.log("HTS END")
+            cb();
+        })
+}
+
 function produceShareCodeWatchFunc(shareCodePath: string, shareCodeInjecterTargets: string[], startMark: string, endMark: string) {
     return (cb) => {
         shareCodeWatch(cb, shareCodePath, shareCodeInjecterTargets, startMark, endMark)
@@ -122,6 +137,7 @@ exports.default = function () {
     gulp.watch(lessPath, lessWatch)
     gulp.watch(tsPath, tsWatch)
     gulp.watch(browerTsPath, browerTsWatch)
+    gulp.watch(hunxiaoTsPath, hunxiaoTsWatch)
     gulp.watch(shareCodePath, produceShareCodeWatchFunc(shareCodePath, _shareCodeInjecterTargets, "SHARE CODE START", "SHARE CODE END"))
     gulp.watch(shareCode2Path, produceShareCodeWatchFunc(shareCode2Path, _shareCodeInjecterTargets, "SHARE CODE2 START", "SHARE CODE2 END"))
     // TODO: 增加 SHARE_CODE 相关执行
