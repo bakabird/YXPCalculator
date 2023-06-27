@@ -2,3 +2,4 @@ node_modules
 *.js
 fight*.log
 !gulpfile.js
+privatekey.json
