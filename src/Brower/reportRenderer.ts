@@ -97,6 +97,15 @@ export function getMenByRole(role: Role): Men {
     return Men.NON;
 }
 
+export function countdown(num: number, deal: Function) {
+    return function () {
+        num--;
+        if (num == 0) {
+            deal();
+        }
+    }
+}
+
     /**
      * SHARE CODE END
      */

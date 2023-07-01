@@ -132,7 +132,7 @@ function shareCodeWatch(cb, shareCodePath: string, shareCodeInjecterTargets: str
 
 }
 
-exports.default = function () {
+exports.default = function (done) {
     // You can use a single task
     gulp.watch(lessPath, lessWatch)
     gulp.watch(tsPath, tsWatch)
@@ -141,5 +141,6 @@ exports.default = function () {
     gulp.watch(shareCodePath, produceShareCodeWatchFunc(shareCodePath, _shareCodeInjecterTargets, "SHARE CODE START", "SHARE CODE END"))
     gulp.watch(shareCode2Path, produceShareCodeWatchFunc(shareCode2Path, _shareCodeInjecterTargets, "SHARE CODE2 START", "SHARE CODE2 END"))
     // TODO: 增加 SHARE_CODE 相关执行
+    done()
 };
 

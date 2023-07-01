@@ -74,9 +74,9 @@ export default class AliKit {
         return new Promise<void>((rso, rje) => {
             putBuffer(advFileName, Buffer.from(content))
                 .then<void>(() => {
-                    console.log(picFileName)
+                    // console.log(picFileName)
                     if (picFileName != "") {
-                        console.log(arg.attachment.fileBuffer.byteLength)
+                        // console.log(arg.attachment.fileBuffer.byteLength)
                         putBuffer(picFileName, Buffer.from(arg.attachment.fileBuffer))
                             .then(() => {
                                 rso()

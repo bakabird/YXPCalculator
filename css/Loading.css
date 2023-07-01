@@ -1,0 +1,12 @@
+.Loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: #000000b8;
+}
+.Loading img {
+  display: block;
+  margin: 25vh auto 0;
+}

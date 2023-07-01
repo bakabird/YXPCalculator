@@ -128,7 +128,7 @@ function shareCodeWatch(cb, shareCodePath, shareCodeInjecterTargets, startMark, 
             .pipe(gulp_1.default.dest('src/Brower/'));
     }));
 }
-exports.default = function () {
+exports.default = function (done) {
     // You can use a single task
     gulp_1.default.watch(lessPath, lessWatch);
     gulp_1.default.watch(tsPath, tsWatch);
@@ -137,4 +137,5 @@ exports.default = function () {
     gulp_1.default.watch(shareCodePath, produceShareCodeWatchFunc(shareCodePath, _shareCodeInjecterTargets, "SHARE CODE START", "SHARE CODE END"));
     gulp_1.default.watch(shareCode2Path, produceShareCodeWatchFunc(shareCode2Path, _shareCodeInjecterTargets, "SHARE CODE2 START", "SHARE CODE2 END"));
     // TODO: 增加 SHARE_CODE 相关执行
+    done();
 };

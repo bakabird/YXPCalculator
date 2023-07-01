@@ -71,3 +71,12 @@ export function getMenByRole(role: Role): Men {
     else if (WuRole.includes(role)) return Men.WXDM
     return Men.NON;
 }
+
+export function countdown(num: number, deal: Function) {
+    return function () {
+        num--;
+        if (num == 0) {
+            deal();
+        }
+    }
+}

@@ -83,6 +83,15 @@ namespace Share2Renderer {
         return Men.NON;
     }
 
+    export function countdown(num: number, deal: Function) {
+        return function () {
+            num--;
+            if (num == 0) {
+                deal();
+            }
+        }
+    }
+
     /**
      * SHARE CODE END
      */
@@ -513,13 +522,17 @@ class FeedbackWrap {
         return this._node.find(".body textarea")
     }
 
+    private _tip: JQuery<HTMLElement>
+    private _inputFile: JQuery<HTMLInputElement>
+    private _previewImg: JQuery<HTMLImageElement>
+
     constructor(
         private _node: JQuery<HTMLElement>,
     ) {
         let cd = false
-        const tip = _node.find(".body .tip")
-        const inputFile = _node.find(".body .file_upload input") as JQuery<HTMLInputElement>
-        const previewImg = _node.find(".body img") as JQuery<HTMLImageElement>
+        const tip = this._tip = _node.find(".body .tip")
+        const inputFile = this._inputFile = _node.find(".body .file_upload input") as JQuery<HTMLInputElement>
+        const previewImg = this._previewImg = _node.find(".body img") as JQuery<HTMLImageElement>
         _node.children(".close").on("click", () => {
             this.hide();
         });
@@ -567,6 +580,7 @@ class FeedbackWrap {
                     })
                 return;
             }
+            LoadingWrap.last.show()
             const input = inputFile[0]
             if (input.files.length > 0) {
                 const f = input.files[0]
@@ -602,9 +616,28 @@ class FeedbackWrap {
     }
 
     private _post(fileName?: string, fileBianryStr?: ArrayBuffer) {
+        const cd = Share2Renderer.countdown(2, () => {
+            LoadingWrap.last.hide()
+            this._clean()
+            this.hide()
+        })
         const item = this._item.val() as string;
         const content = this._content.val() as string
         window.electronAPI.feedback(item, content, fileName, fileBianryStr)
+            .then(() => {
+                cd()
+            })
+        setTimeout(() => {
+            cd()
+        }, 1111);
+    }
+
+    private _clean() {
+        this._tip.val("");
+        this._content.val("");
+        this._item.val("")
+        this._inputFile.val("")
+        this._previewImg.removeAttr("src");
     }
 
     public show() {
@@ -613,6 +646,39 @@ class FeedbackWrap {
 
     public hide() {
         this._node.addClass("hide");
+    }
+}
+
+class LoadingWrap {
+    public static last: LoadingWrap;
+
+    private _img: JQuery<HTMLImageElement>
+
+    constructor(
+        private _node: JQuery<HTMLElement>,
+    ) {
+        LoadingWrap.last = this;
+        this._img = _node.find("img");
+    }
+
+    public show() {
+        this._node.removeClass("hide");
+        const longtime = 1000
+        const roundtime = 2000
+        this._img.animate({
+            rotation: `+=${360 * longtime}deg`
+        }, {
+            duration: roundtime * longtime,
+            easing: 'linear',
+            step: function (now, fx) {
+                $(this).css('transform', 'rotate(' + -now + 'deg)')
+            }
+        })
+    }
+
+    public hide() {
+        this._node.addClass("hide");
+        this._img.stop()
     }
 }
 
@@ -660,6 +726,7 @@ const eCardListWrap = new CardListWrap($(".ECardBox"), "eCardKey");
 const searchWrap = new CardSearchWrap($(".CardSearch"));
 const cardlibWrap = new CardLibWrap($(".CardLib"))
 const feedbackWrap = new FeedbackWrap($(".Feedback"))
+const loadingWrap = new LoadingWrap($(".Loading"))
 const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap, cardlibWrap, feedbackWrap);
 new ECardBoxTitle($(".enemyCardBoxTitle"), eCardListWrap);
 let activeWrap: CardListWrap;
