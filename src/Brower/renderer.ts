@@ -522,6 +522,7 @@ class FeedbackWrap {
         return this._node.find(".body textarea")
     }
 
+    private _cd: number
     private _tip: JQuery<HTMLElement>
     private _inputFile: JQuery<HTMLInputElement>
     private _previewImg: JQuery<HTMLImageElement>
@@ -529,7 +530,7 @@ class FeedbackWrap {
     constructor(
         private _node: JQuery<HTMLElement>,
     ) {
-        let cd = false
+        this._cd = 0
         const tip = this._tip = _node.find(".body .tip")
         const inputFile = this._inputFile = _node.find(".body .file_upload input") as JQuery<HTMLInputElement>
         const previewImg = this._previewImg = _node.find(".body img") as JQuery<HTMLImageElement>
@@ -537,10 +538,13 @@ class FeedbackWrap {
             this.hide();
         });
         _node.find(".body .confirm").on("click", () => {
-            if (cd) return
-            cd = true;
-            setInterval(() => {
-                cd = false
+            if (this._cd > 0) {
+                alert("请稍等片刻后重试~")
+                return;
+            }
+            this._cd++;
+            setTimeout(() => {
+                this._cd--;
             }, 1333);
             if (this._item.val() == Const.FeedbackDefaultItem) {
                 this._item
@@ -616,6 +620,10 @@ class FeedbackWrap {
     }
 
     private _post(fileName?: string, fileBianryStr?: ArrayBuffer) {
+        this._cd++
+        setTimeout(() => {
+            this._cd--;
+        }, 10 * 1000);
         const cd = Share2Renderer.countdown(2, () => {
             LoadingWrap.last.hide()
             this._clean()

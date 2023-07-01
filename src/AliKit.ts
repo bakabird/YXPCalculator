@@ -40,7 +40,7 @@ const client = new OSS({
 async function putBuffer(filename: string, buffer: Buffer) {
     try {
         const result = await client.put(filename, buffer);
-        console.log(result);
+        // console.log(result);
     } catch (e) {
         console.log(e);
     }
