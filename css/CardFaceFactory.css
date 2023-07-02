@@ -1,0 +1,20 @@
+.CardFaceFactory {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  height: 100vh;
+}
+.CardFaceFactory .ctrl {
+  height: 150px;
+  background: #6c3636;
+  color: #ffff23;
+}
+.CardFaceFactory .dot {
+  position: fixed;
+  width: 4px;
+  height: 4px;
+  background: red;
+  border-radius: 4px;
+}

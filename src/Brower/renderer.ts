@@ -124,7 +124,60 @@ const Const = {
     FeedbackLostCard: "缺卡",
     FeedbackContentMinLen: 3,
     MaxFileSize: 1024 * 2,
-    // MaxFileSize: 100,
+    CFFDotSize: 4,
+    CFFMarginTop: 150,
+}
+/**
+ *
+ * @param {string|Blob|Array} data 数据源，可以是图片的base64、File等
+ * @param {string} name 文件名
+ * @param {object} options
+ * @param {string} options.type MIME类型，尽量传入正确的类型
+ * @param {string} options.encode 字符编码类型
+ * @param {boolean} options.timestamp 是否在文件名后追加时间戳
+ */
+function download(
+    data,
+    name = '',
+    { type = 'text/plain', encode = "utf-8", timestamp = false } = {}
+) {
+    return new Promise<void>((resolve, reject) => {
+        if (!data) return
+
+        try {
+            let blob
+            const a = document.createElement('a')
+            a.style.display = 'none'
+            a.download = name + (timestamp ? `_${Date.now()}` : '')
+
+            if (/^https?|ftp|data:/.test(data)) {
+                a.href = data
+            } else {
+                blob =
+                    data instanceof Blob
+                        ? data
+                        : new Blob(data instanceof Array ? data : [data], {
+                            type: type + (encode ? ';charset=' + encode : '')
+                        })
+                a.href = URL.createObjectURL(blob)
+            }
+
+            setTimeout(() => {
+                a.click()
+                setTimeout(() => {
+                    a.remove()
+                    resolve()
+                    if (blob instanceof Blob) {
+                        setTimeout(() => {
+                            URL.revokeObjectURL(blob)
+                        }, 1000)
+                    }
+                }, 1)
+            }, 0)
+        } catch (error) {
+            reject(error)
+        }
+    })
 }
 class Eventer {
     private _listDict: Record<string, Array<(...arg: any) => void>> = {};
@@ -754,6 +807,9 @@ class BarWrap {
         _node.children(".debug").on("click", () => {
             window.electronAPI.doDebug();
         })
+        _node.children(".console").on("click", () => {
+            ConsoleWrap.last.show();
+        })
     }
 }
 
@@ -768,6 +824,260 @@ class ECardBoxTitle {
     }
 }
 
+class ConsoleWrap {
+    public static last: ConsoleWrap;
+
+    private _code: string
+
+    constructor(
+        private _node: JQuery<HTMLElement>,
+    ) {
+        ConsoleWrap.last = this;
+        const self = this
+        _node.find("td").on("click", function () {
+            // console.log(this.innerText)
+            self._code += this.innerText
+            self._checkCode()
+        })
+        _node.find(".back").on("click", () => {
+            this.hide()
+        })
+    }
+
+    private _checkCode() {
+        if (this._code == "2138") {
+            this._openCardFaceFactory()
+        }
+    }
+
+    private _openCardFaceFactory() {
+        this.hide();
+        CardFaceFactoryWrap.last.show()
+    }
+
+    public show() {
+        this._node.removeClass("hide");
+        this._code = ""
+    }
+
+    public hide() {
+        this._node.addClass("hide");
+        this._code = ""
+    }
+}
+
+class CardFaceFactoryWrap {
+    public static last: CardFaceFactoryWrap;
+
+    private _cutedImg1: JQuery<HTMLImageElement>
+    private _cutedImg2: JQuery<HTMLImageElement>
+    private _cutedImg3: JQuery<HTMLImageElement>
+    private _previewImg: JQuery<HTMLImageElement>
+    private _inputCardname: JQuery<HTMLInputElement>
+    private _inputFile: JQuery<HTMLInputElement>
+    private _inputX: JQuery<HTMLInputElement>
+    private _inputY: JQuery<HTMLInputElement>
+    private _dots: JQuery<HTMLElement>[]
+    private _posArr: Array<Array<number>>
+    private _cutTimer: NodeJS.Timer;
+
+    private _left: number
+    private _top: number
+    private _width: number
+    private _height: number
+    private _gap: number
+    private _scale: number
+
+    private set Left(l: number) {
+        this._left = l;
+        this._sync()
+    }
+
+    private set Top(t: number) {
+        this._top = t
+        this._sync()
+    }
+
+    private set Width(w: number) {
+        this._width = w
+        this._sync()
+    }
+
+    private set Height(h: number) {
+        this._height = h
+        this._sync()
+    }
+
+    private set Gap(g: number) {
+        this._gap = g
+        this._sync()
+    }
+
+    private set Scale(s: number) {
+        this._scale = s
+        this._sync()
+    }
+
+    constructor(
+        private _node: JQuery<HTMLElement>,
+    ) {
+        CardFaceFactoryWrap.last = this;
+        this._dots = []
+        this._posArr = []
+        this._cutedImg1 = _node.find("#CFFCutedImg1") as JQuery<HTMLImageElement>
+        this._cutedImg2 = _node.find("#CFFCutedImg2") as JQuery<HTMLImageElement>
+        this._cutedImg3 = _node.find("#CFFCutedImg3") as JQuery<HTMLImageElement>
+        this._inputCardname = _node.find("#cardname") as JQuery<HTMLInputElement>
+        _node.find(".dot").each((idx, ele) => {
+            this._dots.push($(ele));
+        })
+        const inputFile = this._inputFile = _node.find("#card") as JQuery<HTMLInputElement>
+        const previewImg = this._previewImg = _node.find("#CFFPreviewImg") as JQuery<HTMLImageElement>
+        const ctrl = _node.find(".ctrl")
+        const inputX = this._inputX = ctrl.find(".x") as JQuery<HTMLInputElement>
+        const inputY = this._inputY = ctrl.find(".y") as JQuery<HTMLInputElement>
+        const inputW = ctrl.find(".w")
+        const inputH = ctrl.find(".h")
+        const inputGap = ctrl.find(".gap")
+        const inputScale = ctrl.find(".scale")
+        const inputExport = ctrl.find("#export")
+        inputX.on("input", () => { this.Left = parseInt(inputX.val() as string) })
+        inputY.on("input", () => { this.Top = parseInt(inputY.val() as string) })
+        inputW.on("input", () => { this.Width = parseInt(inputW.val() as string) })
+        inputH.on("input", () => { this.Height = parseInt(inputH.val() as string) })
+        inputGap.on("input", () => { this.Gap = parseInt(inputGap.val() as string) })
+        inputScale.on("input", () => { this.Scale = parseFloat(inputScale.val() as string) })
+        inputFile.on("change", this._onInputFileChange.bind(this))
+        previewImg.on("click", this._onClickPreviewImg.bind(this))
+        inputExport.on("click", this._onInputExport.bind(this))
+        this.Left = 0;
+        this.Top = 0;
+        this.Width = 206;
+        this.Height = 345;
+        this.Gap = 50;
+        this.Scale = 1;
+        inputX.val(this._left)
+        inputY.val(this._top)
+        inputW.val(this._width)
+        inputH.val(this._height)
+        inputGap.val(this._gap)
+        inputScale.val(this._scale)
+    }
+
+    private _onInputFileChange() {
+        const fileObj = this._inputFile[0].files[0]
+        const previewImg = this._previewImg
+        const reader = new FileReader();   // 读取文件并以数据 URI 形式保存在 result 属性中
+        const self = this
+        reader.readAsDataURL(fileObj);   // 在文件加载成功后触发 load 事件
+
+        // readAsBinaryString [file] 将文件读取为二进制码
+        // readAsDataURL [file] 将文件读取为 DataURL
+        // readAsText [file] 将文件读取为文本
+        // readAsText：该方法有两个参数，其中第二个参数是文本的编码方式，默认值为 UTF-8。这个方法非常容易理解，将文件以文本方式读取，读取的结果即是这个文本文件中的内容。
+        // readAsBinaryString：该方法将文件读取为二进制字符串，通常我们将它传送到后端，后端可以通过这段字符串存储文件。
+        // readAsDataURL：这是例子程序中用到的方法，该方法将文件读取为一段以 data: 开头的字符串，这段字符串的实质就是 Data URL，Data URL是一种将小文件直接嵌入文档的方案。这里的小文件通常是指图像与 html 等格式的文件。
+        reader.onload = function (e) {
+            let imgUrl = e.target.result as string;
+            previewImg.attr("src", imgUrl);
+            self._cut()
+        }   // 在文件加载失败后触发 error 事件
+        reader.onerror = function (e) { }
+    }
+
+    /**
+     * export three cuted image
+     */
+    private _onInputExport() {
+        const cardname = this._inputCardname.val()
+        if (cardname === "") {
+            alert("尚未输入卡牌名")
+            return
+        }
+        const cutedArr = [this._cutedImg1, this._cutedImg2, this._cutedImg3]
+        cutedArr.forEach((cuted, index) => {
+            if (cuted.attr("src").startsWith("data:")) {
+                download(cuted.attr("src"), `${cardname}_${index + 1}级`)
+            }
+        })
+    }
+
+    private _onClickPreviewImg() {
+        const ox = event.target["x"]
+        const oy = event.target["y"]
+        const ex = event["x"]
+        const ey = event["y"]
+        const x = ex - ox
+        const y = ey - oy
+        this._inputX.val(x)
+        this._inputX.trigger("input")
+        this._inputY.val(y)
+        this._inputY.trigger("input")
+    }
+
+    private _sync() {
+        const dotSize = Const.CFFDotSize;
+        const marginTop = Const.CFFMarginTop;
+        const s = this._scale
+        let nextX = -(dotSize >> 1) + this._left * s
+        let nextY = -(dotSize >> 1) + marginTop + this._top * s;
+        const posArr = this._posArr = [];
+        let rest = 5
+        posArr.push([nextX, nextY])
+        while (rest--) {
+            if (rest % 2 == 0) {
+                nextX += this._width * s;
+                nextY += this._height * s
+            } else {
+                nextX += this._gap * s
+                nextY -= this._height * s
+            }
+            posArr.push([nextX, nextY])
+        }
+        posArr.forEach((pos, idx) => {
+            this._dots[idx].css("left", pos[0] + "px")
+            this._dots[idx].css("top", pos[1] + "px")
+        })
+        clearTimeout(this._cutTimer)
+        this._cutTimer = setTimeout(this._cut.bind(this), 100)
+    }
+
+    private _cut() {
+        const preview = this._previewImg[0];
+        if (!preview.src.startsWith("data:")) {
+            return;
+        }
+
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const posArr = this._posArr
+        const w = this._width;
+        const h = this._height;
+        const s = this._scale;
+        const cutedImgs = [this._cutedImg1, this._cutedImg2, this._cutedImg3]
+        canvas.width = w * s;
+        canvas.height = h * s;
+        for (var i = 0; i < 3; i++) {
+            var [x, y] = posArr[i * 2]
+            var [rbX, rbY] = posArr[i * 2 + 1]
+            y -= Const.CFFMarginTop
+            rbY -= Const.CFFMarginTop
+            var __img = cutedImgs[i]
+            var __w = rbX - x;
+            var __h = rbY - y;
+            ctx.drawImage(preview, x, y, __w, __h, 0, 0, __w, __h);
+            __img.attr("src", canvas.toDataURL("image/png"));
+        }
+    }
+
+    public show() {
+        this._node.removeClass("hide");
+    }
+
+    public hide() {
+        this._node.addClass("hide");
+    }
+}
 
 const cardListWrap = new CardListWrap($(".FCardBox"), "fCardKey");
 const eCardListWrap = new CardListWrap($(".ECardBox"), "eCardKey");
@@ -775,6 +1085,8 @@ const searchWrap = new CardSearchWrap($(".CardSearch"));
 const cardlibWrap = new CardLibWrap($(".CardLib"))
 const feedbackWrap = new FeedbackWrap($(".Feedback"))
 const loadingWrap = new LoadingWrap($(".Loading"))
+const consoleWrap = new ConsoleWrap($(".Console"))
+const cffWrap = new CardFaceFactoryWrap($(".CardFaceFactory"))
 const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap, cardlibWrap, feedbackWrap);
 new ECardBoxTitle($(".enemyCardBoxTitle"), eCardListWrap);
 let activeWrap: CardListWrap;

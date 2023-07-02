@@ -16,6 +16,8 @@
   <link href="./css/Cardlib.css" rel="stylesheet">
   <link href="./css/Feedback.css" rel="stylesheet">
   <link href="./css/Loading.css" rel="stylesheet">
+  <link href="./css/Console.css" rel="stylesheet">
+  <link href="./css/CardFaceFactory.css" rel="stylesheet">
   <link href="./css/main.css" rel="stylesheet">
   <title>奕仙牌计算器</title>
 </head>
@@ -33,6 +35,7 @@
     <button class="openCardlib">卡库</button>
     <button class="feedback">问题反馈</button>
     <button class="fix">一键修复</button>
+    <button class="console">控制台</button>
     <!-- <button class="debug">测试</button> -->
   </div>
   <div class="CardBoxTitle selfCardBoxTitle">
@@ -103,6 +106,26 @@
     <p>推荐牌战报增加标识(赢/输 多少回合)</p>
     <p>设置自己/对手属性</p>
   </div>
+  <div class="Console hide">
+    <table border=1>
+      <tr>
+        <td>7</td>
+        <td>8</td>
+        <td>9</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>5</td>
+        <td>6</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>2</td>
+        <td>3</td>
+      </tr>
+    </table>
+    <button class="back">返回</button>
+  </div>
   <div class="CardLib hide">
     <button class="close">关闭</button>
     <button class="feedback">问题反馈</button>
@@ -134,8 +157,32 @@
       <p class="tip"></p>
     </div>
   </div>
-  <div class="Loading hide">
-    <img src="sprite/lod.png"></img>
+  <div class="CardFaceFactory hide">
+    <div class="ctrl">
+      <input id="card" type="file" accept="image/png,image/jpeg" name="inputFile" />
+      <br />
+      scale <input type="text" type="number" class="scale" />
+      <br />
+      x <input type="text" type="number" class="x" />
+      y <input type="text" type="number" class="y" />
+      <br />
+      width <input type="text" type="number" class="w" />
+      height <input type="text" type="number" class="h" />
+      gap <input type="text" type="number" class="gap" />
+      <br />
+      <input id="cardname" type="text" /><input id="export" type="button" value="导出">
+    </div>
+    <img src="" id="CFFPreviewImg" />
+    <br />
+    <img src="" id="CFFCutedImg1">
+    <img src="" id="CFFCutedImg2">
+    <img src="" id="CFFCutedImg3">
+    <div class="dot dot1"></div>
+    <div class="dot dot1rb"></div>
+    <div class="dot dot2"></div>
+    <div class="dot dot2rb"></div>
+    <div class="dot dot3"></div>
+    <div class="dot dot3rb"></div>
   </div>
   <div class="Hub">
     <div class="Card">
@@ -160,7 +207,9 @@
       普通攻击
     </button>
   </div>
-
+  <div class="Loading hide">
+    <img src="sprite/lod.png"></img>
+  </div>
   <!-- You can also require other files to run in this process -->
   <script src="./Brower/renderer.js"></script>
 </body>
