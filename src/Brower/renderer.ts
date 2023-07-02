@@ -121,6 +121,7 @@ const Cfg = {
 }
 const Const = {
     FeedbackDefaultItem: "无",
+    FeedbackLostCard: "缺卡",
     FeedbackContentMinLen: 3,
     MaxFileSize: 1024 * 2,
     // MaxFileSize: 100,
@@ -495,6 +496,10 @@ class CardLibWrap {
         _node.children(".close").on("click", () => {
             this.hide();
         });
+        _node.children(".feedback").on("click", () => {
+            FeedbackWrap.last.show()
+            FeedbackWrap.last.item.val(Const.FeedbackLostCard)
+        });
         this._body = _node.children(".body")
         this._blue = $(".Hub .CardLibItem");
         window.electronAPI.getAllCards().then((allcards: Array<string>) => {
@@ -516,7 +521,9 @@ class CardLibWrap {
 }
 
 class FeedbackWrap {
-    private get _item() {
+    public static last: FeedbackWrap;
+
+    public get item() {
         return this._node.find(".body form select")
     }
 
@@ -532,6 +539,7 @@ class FeedbackWrap {
     constructor(
         private _node: JQuery<HTMLElement>,
     ) {
+        FeedbackWrap.last = this;
         this._cd = 0
         const tip = this._tip = _node.find(".body .tip")
         const inputFile = this._inputFile = _node.find(".body .file_upload input") as JQuery<HTMLInputElement>
@@ -548,8 +556,8 @@ class FeedbackWrap {
             setTimeout(() => {
                 this._cd--;
             }, 1333);
-            if (this._item.val() == Const.FeedbackDefaultItem) {
-                this._item
+            if (this.item.val() == Const.FeedbackDefaultItem) {
+                this.item
                     .css({
                         borderColor: "red"
                     })
@@ -559,7 +567,7 @@ class FeedbackWrap {
                     .animate({
                         'borderWidth': '1px',
                     }, 400, () => {
-                        this._item.css({
+                        this.item.css({
                             borderColor: "black"
                         })
                     })
@@ -580,7 +588,7 @@ class FeedbackWrap {
                     .animate({
                         'borderWidth': '1px',
                     }, 400, () => {
-                        this._item.css({
+                        this.item.css({
                             borderColor: "black"
                         })
                     })
@@ -638,7 +646,7 @@ class FeedbackWrap {
             this._clean()
             this.hide()
         })
-        const item = this._item.val() as string;
+        const item = this.item.val() as string;
         const content = this._content.val() as string
         window.electronAPI.feedback(item, content, fileName, fileBianryStr)
             .then(() => {
@@ -652,7 +660,7 @@ class FeedbackWrap {
     private _clean() {
         this._tip.val("");
         this._content.val("");
-        this._item.val("")
+        this.item.val("")
         this._inputFile.val("")
         this._previewImg.removeAttr("src");
     }
