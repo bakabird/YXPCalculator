@@ -46,6 +46,7 @@
 }
 .CardLibItem {
   width: 16.5%;
+  margin-bottom: 25px;
 }
 .CardLibItem .cardFace {
   width: 100%;

@@ -206,10 +206,33 @@ class CardWrap {
 }
 
 class CardLibItemWrap {
+    private _cardFace: JQuery<HTMLImageElement>;
+    private _levelG: JQuery<HTMLElement>;
+    private _level: number;
+    public get level(): number {
+        return this._level;
+    }
+    public set level(v: number) {
+        this._level = v;
+        this.uptFace();
+    }
     constructor(private _node: JQuery<HTMLElement>, private _cardname: string) {
-        const _cardFace = _node.find(".cardFace") as JQuery<HTMLImageElement>;
-        _cardFace.attr("src", `./img/${_cardname}_1级.png`);
+        this._levelG = _node.find(".levelG");
+        this._cardFace = _node.find(".cardFace") as JQuery<HTMLImageElement>;
         _node.find("p").text(_cardname);
+        const allLevelBtn = this._levelG.find("*");
+        allLevelBtn.each((index, btn) => {
+            const btnIndex = index;
+            $(btn).on("click", () => {
+                this.level = btnIndex;
+            });
+        })
+        this.level = 0;
+    }
+    public uptFace() {
+        this._cardFace.attr("src", `./img/${this._cardname}_${this._level + 1}级.png`);
+        this._levelG.children().removeClass("on");
+        $(this._levelG.children().get(this.level)).addClass("on");
     }
 }
 
