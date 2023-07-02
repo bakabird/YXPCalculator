@@ -122,6 +122,8 @@ const Cfg = {
 const Const = {
     FeedbackDefaultItem: "无",
     FeedbackContentMinLen: 3,
+    MaxFileSize: 1024 * 2,
+    // MaxFileSize: 100,
 }
 class Eventer {
     private _listDict: Record<string, Array<(...arg: any) => void>> = {};
@@ -602,8 +604,15 @@ class FeedbackWrap {
         })
         inputFile.on("change", () => {
             const fileObj = inputFile[0].files[0]
+            const fileSize = (fileObj.size / 1024) >> 0
             const reader = new FileReader();   // 读取文件并以数据 URI 形式保存在 result 属性中
             reader.readAsDataURL(fileObj);   // 在文件加载成功后触发 load 事件
+
+            if (fileSize > Const.MaxFileSize) {
+                this._inputFile.val("")
+                alert(`请上传小于 ${Const.MaxFileSize / 1024}MB 的图片`)
+                return;
+            }
 
             // readAsBinaryString [file] 将文件读取为二进制码
             // readAsDataURL [file] 将文件读取为 DataURL
