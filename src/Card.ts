@@ -183,6 +183,15 @@ export enum CardName {
 
     // #endregion
 
+    // #region 阵法
+    // 引雷阵
+    YinLeiZhen = "引雷阵",
+    // 碎杀阵
+    SuiShaZhen = "碎杀阵",
+    // 冲击阵纹
+    ChongJiZhenWen = "冲击阵纹",
+    // #endregion
+
     // #region 角色卡
     Youranhl = "悠然葫芦",
     // #endregion
@@ -339,6 +348,9 @@ export abstract class ACard {
             if (!me.CheckBuff(BuffId.DecalEcho, 1)) {
                 me.CardList.CostCur();
             }
+        }
+        if (this.onGetIsKeeping()) {
+            me.AddBuffById(BuffId.Record_KeepingCardUseTime, 1, "KeepingCardUse");
         }
         if (muAct && me.isMu) {
             muAct(me, he);

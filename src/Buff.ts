@@ -23,6 +23,7 @@ export enum BO {
 export enum BuffId {
     MoveAgainIng = "再动进行中",
     Record_AtkTime = "攻击次数",
+    Record_KeepingCardUseTime = "持续牌使用次数",
 
     Mana = "灵气",
     MoveAgain = "再动",
@@ -79,6 +80,13 @@ export enum BuffId {
     Qiandun = "潜遁", // 百分比减伤
     Hebahuan = "合八荒",
 
+    // #region 阵
+    // 引雷
+    Yinlei = "引雷",
+    // 碎杀
+    Suisha = "碎杀",
+    // #endregion
+
     Huntianyin = "浑天印",
     Hunyuanwuji = "混元无极",
     Wuxingtiansui = "五行天髓",
@@ -125,6 +133,10 @@ abstract class EmptyBuff extends ABuff {
 
 export class Record_AtkTime extends EmptyBuff {
     id: BuffId = BuffId.Record_AtkTime;
+}
+
+export class Record_KeepingCardUseTime extends EmptyBuff {
+    id: BuffId = BuffId.Record_KeepingCardUseTime;
 }
 
 export class MeiKaiBuff extends ABuff {
@@ -760,13 +772,36 @@ export class Qiandun extends ABuff {
     }
 }
 
+export class Yinlei extends ABuff {
+    id: BuffId = BuffId.Yinlei;
+    private _hurt: number = 4;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.RoundEnd) {
+            return BO.First
+        } else {
+            return BO.None
+        }
+    }
+    effect(stage: BES) {
+        if (this._num > 0) {
+            if (stage == BES.RoundEnd) {
+                this._owner.GetAnother().SimpleGetHit(this._hurt, this.id);
+                this.ModNum(-1);
+            }
+        }
+    }
+
+}
+
+export class Suisha extends EmptyBuff { id: BuffId = BuffId.Suisha; }
+
 export class Hebahuan extends EmptyBuff { id: BuffId = BuffId.Hebahuan; }
 export class Hunyuanwuji extends EmptyBuff { id: BuffId = BuffId.Hunyuanwuji; }
 export class Wuxingtiansui extends EmptyBuff { id: BuffId = BuffId.Wuxingtiansui; }
 
 
 var AllBuffType = [
-    Record_AtkTime, MoveAgainIng,
+    Record_AtkTime, Record_KeepingCardUseTime, MoveAgainIng,
     PosionBuff, ManaBuff, DCBuff, MeiKaiBuff, MoveAgainBuff,
     HuangQueBuff, ProtectBuff, YunJianBuff, ShieldBuff,
     PierceBuff, SwordMenaingBuff, CrazySwordBuff, YunSoftBuff,
@@ -779,6 +814,7 @@ var AllBuffType = [
     TuZhenBuff, JinZhenBuff, MuZhenBuff, HuoZhenBuff, ShuiZhenBuff,
     WaterFlowBuff, SharpBuff, Duanya, Tiegu, Quanyong, Qiandun, Hebahuan,
     Huntianyin, Hunyuanwuji, Wuxingtiansui,
+    Yinlei, Suisha,
 ]
 
 export class BuffFactory {

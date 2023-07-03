@@ -6,8 +6,44 @@ import LogEncode from "./LogEncode";
 
 
 
+/**
+ * 炼气
+ */
+export class YinLeiZhenCard extends ACard {
+    cardName: CardName = CardName.YinLeiZhen;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.Yinlei, this._lvlVal(2, 3, 4), this.cardName);
+    }
+    protected onGetIsKeeping(): boolean {
+        return true
+    }
+}
 
 
+export class SuiShaZhenCard extends ACard {
+    cardName: CardName = CardName.SuiShaZhen;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.Suisha, this._lvlVal(2, 3, 4), this.cardName);
+    }
+    protected onGetIsKeeping(): boolean {
+        return true
+    }
+
+}
+
+export class ChongJiZhenWenCard extends ACard {
+    cardName: CardName = CardName.ChongJiZhenWen;
+    cardState: CardState = CardState.LianQi;
+    protected onEffect(me: Human, he: Human) {
+        const add = me.CheckBuff(BuffId.Record_KeepingCardUseTime, 1) ? this._lvlVal(2, 3, 4) : 0;
+        he.GetHit(this._lvlVal(6, 8, 10) + add, me, this.cardName);
+    }
+}
+
+// export class BCard extends ACard {}
+// export class BCard extends ACard {}
 
 
 

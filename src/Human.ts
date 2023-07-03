@@ -5,6 +5,7 @@ import { FightReport, FROption } from "./FightReport";
 import { FightConst } from "./FightConst";
 import { Fight } from "./Fight";
 import LogEncode from "./LogEncode";
+import BuffCfg from "./BuffCfg";
 
 export class Human {
     //卡牌
@@ -251,6 +252,7 @@ export class Human {
         const fromBanSharp = from.GetBuff(BuffId.BanSharp);
         const fromSuiyan = from.GetBuff(BuffId.Suiyan)
         const fromQuanyong = from.GetBuff(BuffId.Quanyong);
+        const fromSuiSha = from.GetBuff(BuffId.Suisha)
         const meCountershock = this.GetBuff(BuffId.Countershock);
         const meFlaw = this.GetBuff(BuffId.Flaw);
         const meShield = this.GetBuff(BuffId.Shield);
@@ -260,6 +262,9 @@ export class Human {
         }
         if (fromPower) {
             hurt += fromPower.num;
+        }
+        if (fromSuiSha) {
+            hurt += BuffCfg.SuiSha_ExtraPower;
         }
         if (fromDepower) {
             hurt = Math.max(1, hurt - fromDepower.num);
@@ -274,11 +279,11 @@ export class Human {
         if (fromPierce) {
             from.AddBuff(BuffFactory.me.Produce(BuffId.Pierce, from, -1), log);
         } else if (meShield) {
-            if (fromSuiyan) hurt *= 2;
+            if (fromSuiyan || fromSuiSha) hurt *= 2;
             const shiledOut = Math.min(meShield.num, hurt);
             this.AddBuff(BuffFactory.me.Produce(BuffId.Shield, this, -shiledOut), log);
             hurt -= shiledOut;
-            if (fromSuiyan) hurt = Math.ceil(hurt / 2);
+            if (fromSuiyan || fromSuiSha) hurt = Math.ceil(hurt / 2);
         }
         if (hurt > 0) {
             if (!fromBanSharp) {
@@ -306,6 +311,7 @@ export class Human {
             from.SimpleGetHit(meCountershock.num, meCountershock.id);
         }
         from.AddBuffById(BuffId.Record_AtkTime, 1, "GetHit" + LogEncode.Ignore)
+        if (fromSuiSha) from.AddBuffById(BuffId.Suisha, -1, "SuiShaHitOver")
         return Math.max(0, hurt);
     }
 
