@@ -1,4 +1,5 @@
 
+import BuffCfg from "./BuffCfg";
 import { Human } from "./Human";
 
 
@@ -85,6 +86,10 @@ export enum BuffId {
     Yinlei = "引雷",
     // 碎杀
     Suisha = "碎杀",
+    // 龟甲
+    Guijia = "龟甲",
+    // 邪蛊
+    Xiegu = "邪蛊",
     // #endregion
 
     Huntianyin = "浑天印",
@@ -774,7 +779,6 @@ export class Qiandun extends ABuff {
 
 export class Yinlei extends ABuff {
     id: BuffId = BuffId.Yinlei;
-    private _hurt: number = 4;
     getEffectOrder(stage: BES): BO {
         if (stage == BES.RoundEnd) {
             return BO.First
@@ -785,7 +789,49 @@ export class Yinlei extends ABuff {
     effect(stage: BES) {
         if (this._num > 0) {
             if (stage == BES.RoundEnd) {
-                this._owner.GetAnother().SimpleGetHit(this._hurt, this.id);
+                this._owner.GetAnother().SimpleGetHit(BuffCfg.YinLei_Hurt, this.id);
+                this.ModNum(-1);
+            }
+        }
+    }
+
+}
+
+export class Guijia extends ABuff {
+    id: BuffId = BuffId.Guijia;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.RoundEnd) {
+            return BO.First
+        } else {
+            return BO.None
+        }
+    }
+    effect(stage: BES) {
+        if (this._num > 0) {
+            if (stage == BES.RoundEnd) {
+                this._owner.AddBuffById(BuffId.Shield, BuffCfg.Guijia_Shield, BuffId.Guijia);
+                this.ModNum(-1);
+            }
+        }
+    }
+
+}
+
+export class Xiegu extends ABuff {
+    id: BuffId = BuffId.Xiegu;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.RoundStart) {
+            return BO.First
+        } else {
+            return BO.None
+        }
+    }
+    effect(stage: BES) {
+        if (this._num > 0) {
+            if (stage == BES.RoundStart) {
+                this._owner
+                    .GetAnother()
+                    .AddBuffById(BuffId.Posion, BuffCfg.Xiegu_Poison, BuffId.Xiegu);
                 this.ModNum(-1);
             }
         }
@@ -794,7 +840,6 @@ export class Yinlei extends ABuff {
 }
 
 export class Suisha extends EmptyBuff { id: BuffId = BuffId.Suisha; }
-
 export class Hebahuan extends EmptyBuff { id: BuffId = BuffId.Hebahuan; }
 export class Hunyuanwuji extends EmptyBuff { id: BuffId = BuffId.Hunyuanwuji; }
 export class Wuxingtiansui extends EmptyBuff { id: BuffId = BuffId.Wuxingtiansui; }
@@ -814,7 +859,7 @@ var AllBuffType = [
     TuZhenBuff, JinZhenBuff, MuZhenBuff, HuoZhenBuff, ShuiZhenBuff,
     WaterFlowBuff, SharpBuff, Duanya, Tiegu, Quanyong, Qiandun, Hebahuan,
     Huntianyin, Hunyuanwuji, Wuxingtiansui,
-    Yinlei, Suisha,
+    Yinlei, Suisha, Guijia, Xiegu,
 ]
 
 export class BuffFactory {

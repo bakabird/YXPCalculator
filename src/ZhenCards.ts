@@ -42,10 +42,52 @@ export class ChongJiZhenWenCard extends ACard {
     }
 }
 
-// export class BCard extends ACard {}
-// export class BCard extends ACard {}
 
 
+
+
+
+
+
+/**
+ * 筑基期
+ */
+
+export class GuiJiaZhenCard extends ACard {
+    cardName: CardName = CardName.GuiJiaZhen;
+    cardState: CardState = CardState.ZhuJi;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.Guijia, this._lvlVal(4, 6, 8), this.cardName);
+    }
+    protected onGetIsKeeping(): boolean {
+        return true
+    }
+}
+
+
+export class XieGuZhenCard extends ACard {
+    cardName: CardName = CardName.XieGuZhen;
+    cardState: CardState = CardState.ZhuJi;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.Xiegu, this._lvlVal(2, 3, 4), this.cardName)
+    }
+    protected onGetIsKeeping(): boolean {
+        return true
+    }
+}
+export class LiaoYuZhenWenCard extends ACard {
+    cardName: CardName = CardName.LiaoYuZhenWen;
+    cardState: CardState = CardState.ZhuJi;
+    protected onEffect(me: Human, he: Human) {
+        if (me.CheckBuff(BuffId.Record_KeepingCardUseTime, 1)) {
+            me.AddMaxHp(this._lvlVal(6, 9, 12), this.cardName);
+        }
+        me.AddHp(this._lvlVal(7, 11, 15), this.cardName)
+    }
+}
+
+
+// export class BCard extends ACard {}
 
 
 
@@ -85,5 +127,7 @@ export class ZhenMillionFlower extends ACard {
 
 
 export var Zhen_LIST = [
-    DecalEchoCard, ZhenMillionFlower
+    YinLeiZhenCard, SuiShaZhenCard, ChongJiZhenWenCard,
+    GuiJiaZhenCard, XieGuZhenCard, LiaoYuZhenWenCard,
+    DecalEchoCard, ZhenMillionFlower,
 ]

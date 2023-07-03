@@ -190,6 +190,16 @@ export enum CardName {
     SuiShaZhen = "碎杀阵",
     // 冲击阵纹
     ChongJiZhenWen = "冲击阵纹",
+
+
+
+    // 龟甲阵
+    GuiJiaZhen = "龟甲阵",
+    // 邪蛊阵
+    XieGuZhen = "邪蛊阵",
+    // 疗愈阵纹
+    LiaoYuZhenWen = "疗愈阵纹",
+
     // #endregion
 
     // #region 角色卡
