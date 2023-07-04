@@ -31,7 +31,7 @@ export class TongXinCard extends ACard {
     protected onEffect(me: Human, he: Human) {
         me.EachBuff((buff) => {
             if (ABuff.IsDebuff(buff.id)) {
-                he.AddBuff(BuffFactory.me.Produce(buff.id, he, buff.num), this.cardName);
+                he.AddBuffById(buff.id, buff.num, this.cardName);
             }
         });
     }

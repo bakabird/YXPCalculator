@@ -132,6 +132,14 @@ export class Human {
     //#region Buff
 
     AddBuff(buff: ABuff, log: string) {
+        const mePixie = this.GetBuff(BuffId.Pixie);
+        const isDebuff = ABuff.IsDebuff(buff.id);
+        if (isDebuff && buff.num > 0 && mePixie.num > 0) {
+            const costPixie = Math.min(buff.num, mePixie.num);
+            buff.ModNum(-costPixie);
+            this.AddBuffById(BuffId.Pixie, -costPixie, "抵消");
+        }
+        if (buff.num == 0) return;
         var findRlt = this._BuffList.find(b => b.id == buff.id);
         if (findRlt) {
             findRlt.ModNum(buff.num);

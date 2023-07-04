@@ -575,25 +575,22 @@ export class CrazyMoveTwoCard extends ACard {
 
 }
 
-export class YunCrashSnowCard extends ACard {
-    cardName: CardName = CardName.YunCrashSnow;
-    cardState: CardState = CardState.YuanYing;
-    protected onEffect(me: Human, he: Human) {
-        if (!me.CheckBuff(BuffId.YunJian, 1)) {
-            he.GetHit(2, me, this.cardName)
-        }
-    }
-    protected onGetYunAct(): CardEffect {
-        return (me: Human, he: Human) => {
-            if (me.CheckBuff(BuffId.YunJian, 1)) {
-                he.GetHit(
-                    2 + this._lvlVal(4, 5, 6) * me.GetBuff(BuffId.YunJian).num,
-                    me, this.cardName
-                );
-            }
-        }
-    }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -748,7 +745,7 @@ export var JianZong_LIST = [
 
     YunFlashingWindCard, YunMoonShadowCard, ManaGatherMentalCard, BNLJFormulaCard,
     EgretManaSwordCard, GiantKunManaSwordCard, InspirationSwordCard, LiuyunChaoticSwordCard,
-    WaterMoonSwordArrayCard, CrazyMoveTwoCard, YunCrashSnowCard,
+    WaterMoonSwordArrayCard, CrazyMoveTwoCard,
 
     YunYouLongCard, YunLingboCard, FlyingSpiritFlashingShadowSwordCard,
     TenThousandWayManaSwordCard, SwordMenaingStirringCard, YukongSwordArrayCard,

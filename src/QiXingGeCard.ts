@@ -293,23 +293,8 @@ export class ImbuedRainbowCard extends ACard {
 
 }
 
-export class FeiTaCard extends ACard {
-    cardName: CardName = CardName.FeiTa;
-    cardState: CardState = CardState.ZhuJi;
-    protected onEffect(me: Human, he: Human) {
-        var buff = new ManaBuff();
-        buff.init(me, this._lvlVal(3, 3, 4));
-        me.AddBuff(buff, this.cardName);
-        if (!this.onGetSecondAct()) {
-            me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1), this.cardName);
-        }
-    }
-    protected onGetSecondAct(): CardEffect {
-        return this._lvlVal((me: Human, he: Human) => {
-            me.AddBuff(BuffFactory.me.Produce(BuffId.MoveAgain, me, 1), this.cardName);
-        }, null, null);
-    }
-}
+
+
 
 
 
@@ -777,7 +762,6 @@ export var QiXing_LIST = [
 
     FlyingStarCard, XingDianCard, XingLiCard, GuaGenCard, GuaKanCard, ThunderCard,
     DigRootCard, OneFootCard, MindMentalCard, FallingFlowerCard, ImbuedRainbowCard,
-    FeiTaCard,
 
     StarAroundMoonCard, XingDaCard, GuaDuiCard, WhiteSnakeCard, ThunderGuaFormulaCard,
     LiangyiArrayCard, FlowingWaterCard, QiRecoverCard, DryTreeCard, TangLangCard,

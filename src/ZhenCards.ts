@@ -3,12 +3,18 @@ import { ACard, CardLevel, CardName, CardState } from "./Card";
 import { CardListFactory } from "./CardListFactory";
 import { Human } from "./Human";
 import LogEncode from "./LogEncode";
+import { GenPush2Arr } from "./decorator";
 
+
+export var Zhen_LIST = []
+
+var Zhen = GenPush2Arr(Zhen_LIST)
 
 
 /**
  * 炼气
  */
+@Zhen
 export class YinLeiZhenCard extends ACard {
     cardName: CardName = CardName.YinLeiZhen;
     cardState: CardState = CardState.LianQi;
@@ -20,7 +26,7 @@ export class YinLeiZhenCard extends ACard {
     }
 }
 
-
+@Zhen
 export class SuiShaZhenCard extends ACard {
     cardName: CardName = CardName.SuiShaZhen;
     cardState: CardState = CardState.LianQi;
@@ -33,6 +39,7 @@ export class SuiShaZhenCard extends ACard {
 
 }
 
+@Zhen
 export class ChongJiZhenWenCard extends ACard {
     cardName: CardName = CardName.ChongJiZhenWen;
     cardState: CardState = CardState.LianQi;
@@ -52,7 +59,7 @@ export class ChongJiZhenWenCard extends ACard {
 /**
  * 筑基期
  */
-
+@Zhen
 export class GuiJiaZhenCard extends ACard {
     cardName: CardName = CardName.GuiJiaZhen;
     cardState: CardState = CardState.ZhuJi;
@@ -64,7 +71,7 @@ export class GuiJiaZhenCard extends ACard {
     }
 }
 
-
+@Zhen
 export class XieGuZhenCard extends ACard {
     cardName: CardName = CardName.XieGuZhen;
     cardState: CardState = CardState.ZhuJi;
@@ -75,6 +82,8 @@ export class XieGuZhenCard extends ACard {
         return true
     }
 }
+
+@Zhen
 export class LiaoYuZhenWenCard extends ACard {
     cardName: CardName = CardName.LiaoYuZhenWen;
     cardState: CardState = CardState.ZhuJi;
@@ -87,14 +96,71 @@ export class LiaoYuZhenWenCard extends ACard {
 }
 
 
+/**
+ * 金丹
+ */
+@Zhen
+export class JuLingZhenCard extends ACard {
+    cardName: CardName = CardName.JuLingZhen;
+    cardState: CardState = CardState.JinDan;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.Juling, this._lvlVal(2, 3, 4), this.cardName)
+    }
+    protected onGetIsKeeping(): boolean {
+        return true
+    }
+
+}
+@Zhen
+export class ZhouTianJianZhenCard extends ACard {
+    cardName: CardName = CardName.ZhouTianJianZhen;
+    cardState: CardState = CardState.JinDan;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.Zhoutianjian, this._lvlVal(2, 3, 4), this.cardName)
+    }
+    protected onGetIsKeeping(): boolean {
+        return true
+    }
+
+}
+
+@Zhen
+export class PiXieZhenWenCard extends ACard {
+    cardName: CardName = CardName.PiXieZhenWen;
+    cardState: CardState = CardState.JinDan;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.Shield, this._lvlVal(10, 14, 18), this.cardName);
+        if (me.CheckBuff(BuffId.Record_KeepingCardUseTime, 1)) {
+            me.AddBuffById(BuffId.Pixie, this._lvlVal(3, 4, 5), this.cardName);
+        }
+    }
+
+}
+
+
+
+
+
+
+
+/**
+ * 元婴
+ */
 // export class BCard extends ACard {}
+// export class BCard extends ACard {}
+// export class BCard extends ACard {}
+
+
+
+
+
 
 
 
 /**
  * 化神
  */
-
+@Zhen
 export class DecalEchoCard extends ACard {
     cardName: CardName = CardName.DecalEcho;
     cardState: CardState = CardState.HuaShen;
@@ -113,6 +179,7 @@ export class DecalEchoCard extends ACard {
 
 }
 
+@Zhen
 export class ZhenMillionFlower extends ACard {
     cardName: CardName = CardName.ZhenMillionFlower;
     cardState: CardState = CardState.HuaShen;
@@ -124,10 +191,3 @@ export class ZhenMillionFlower extends ACard {
     }
 }
 
-
-
-export var Zhen_LIST = [
-    YinLeiZhenCard, SuiShaZhenCard, ChongJiZhenWenCard,
-    GuiJiaZhenCard, XieGuZhenCard, LiaoYuZhenWenCard,
-    DecalEchoCard, ZhenMillionFlower,
-]

@@ -1,5 +1,13 @@
-import { BES, BuffFactory, BuffId, SwordMenaingBuff } from "./Buff";
-import { Human } from "./Human"
+import { BES, BuffFactory, BuffId } from "./Buff";
+import BuffCfg from "./BuffCfg";
+import { Human } from "./Human";
+import LogEncode from "./LogEncode";
+import { GenPush2Arr } from "./decorator";
+
+export var GongCards = []
+
+/**带“攻”的卡 */
+export var Gong = GenPush2Arr(GongCards);
 
 //#region CARD
 
@@ -184,6 +192,7 @@ export enum CardName {
     // #endregion
 
     // #region 阵法
+
     // 引雷阵
     YinLeiZhen = "引雷阵",
     // 碎杀阵
@@ -199,6 +208,26 @@ export enum CardName {
     XieGuZhen = "邪蛊阵",
     // 疗愈阵纹
     LiaoYuZhenWen = "疗愈阵纹",
+
+
+
+    // 聚灵阵
+    JuLingZhen = "聚灵阵",
+    // 周天剑阵
+    ZhouTianJianZhen = "周天剑阵",
+    // 辟邪阵纹
+    PiXieZhenWen = "辟邪阵纹",
+
+
+
+    // 天罡聚力阵
+    TianGangJuLiZhen = "天罡聚力阵",
+    // 八门金锁阵
+    BaMenJinSuoZhen = "八门金锁阵",
+    // 不动金刚阵
+    BuDongJinGangZhen = "不动金刚阵",
+
+
 
     // #endregion
 
@@ -297,11 +326,16 @@ export abstract class ACard {
         const meHuoZhenNum = me.GetBuff(BuffId.HuoZhen)?.num ?? 0;
         const meShuiZhenNum = me.GetBuff(BuffId.ShuiZhen)?.num ?? 0;
         const meRecord_AtkTime = me.GetBuff(BuffId.Record_AtkTime)?.num ?? 0;
+        const meZhoutianjianNum = me.GetBuff(BuffId.Zhoutianjian)?.num ?? 0;
         const oldHeHp = he.hp;
         const onStar = me.CardList.IsOnStar();
         // 前处理
         if (this.isCrazy && meCrazyMoveNum > 0) {
             me.AddBuffById(BuffId.HpSteal, meCrazyMoveNum, BuffId.CrazyMoveZero);
+        }
+        if (meZhoutianjianNum > 0) {
+            // 周天剑阵
+            me.AddBuffById(BuffId.Power, BuffCfg.Zhoutianjian_ExtraPower, BuffId.Zhoutianjian)
         }
         if (onStar && meStarPowerNum > 0) {
             me.AddBuffById(BuffId.Power, meStarPowerNum, BuffId.StarPower);
@@ -360,7 +394,7 @@ export abstract class ACard {
             }
         }
         if (this.onGetIsKeeping()) {
-            me.AddBuffById(BuffId.Record_KeepingCardUseTime, 1, "KeepingCardUse");
+            me.AddBuffById(BuffId.Record_KeepingCardUseTime, 1, "KeepingCardUse" + LogEncode.Ignore);
         }
         if (muAct && me.isMu) {
             muAct(me, he);
@@ -378,6 +412,7 @@ export abstract class ACard {
             jinAct(me, he);
         }
         // 后处理
+        const everAttack = me.NumOf(BuffId.Record_AtkTime) != meRecord_AtkTime
         if (this.cardName.startsWith("云剑")) {
             const yunSoftBuff = me.GetBuff(BuffId.YunSoft);
             yunSoftBuff && me.AddHp(yunSoftBuff.num, yunSoftBuff.id);
@@ -394,9 +429,15 @@ export abstract class ACard {
         if (onStar && meStarPowerNum > 0) {
             me.AddBuffById(BuffId.Power, -meStarPowerNum, BuffId.StarPower);
         }
-        if (
-            this.isWuxing
-            && me.NumOf(BuffId.Record_AtkTime) == meRecord_AtkTime
+        if (meZhoutianjianNum > 0) {
+            // 周天剑阵
+            if (everAttack) {
+                me.AddBuffById(BuffId.Zhoutianjian, -1, BuffId.Zhoutianjian)
+            }
+            me.AddBuffById(BuffId.Power, -BuffCfg.Zhoutianjian_ExtraPower, BuffId.Zhoutianjian);
+        }
+        if (this.isWuxing
+            && !everAttack
             && me.CheckBuff(BuffId.Wuxingtiansui, 1)
             && !me.CheckBuff(BuffId.MoveAgainIng, 1)) {
             me.AddBuffById(BuffId.Wuxingtiansui, -1, "五行天髓·发");

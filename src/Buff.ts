@@ -1,6 +1,7 @@
 
 import BuffCfg from "./BuffCfg";
 import { Human } from "./Human";
+import { GenPush2Arr } from "./decorator";
 
 
 //BuffEfectStage
@@ -90,12 +91,21 @@ export enum BuffId {
     Guijia = "龟甲",
     // 邪蛊
     Xiegu = "邪蛊",
+    // 聚灵
+    Juling = "聚灵",
+    // 周天剑
+    Zhoutianjian = "周天剑",
+    // 辟邪
+    Pixie = "辟邪",
     // #endregion
 
     Huntianyin = "浑天印",
     Hunyuanwuji = "混元无极",
     Wuxingtiansui = "五行天髓",
 }
+
+var AllBuffType = []
+var Buff = GenPush2Arr(AllBuffType)
 
 export abstract class ABuff {
     abstract id: BuffId;
@@ -136,14 +146,17 @@ abstract class EmptyBuff extends ABuff {
 
 }
 
+@Buff
 export class Record_AtkTime extends EmptyBuff {
     id: BuffId = BuffId.Record_AtkTime;
 }
 
+@Buff
 export class Record_KeepingCardUseTime extends EmptyBuff {
     id: BuffId = BuffId.Record_KeepingCardUseTime;
 }
 
+@Buff
 export class MeiKaiBuff extends ABuff {
     id: BuffId = BuffId.MeiKai;
     getEffectOrder(stage: BES): BO {
@@ -153,6 +166,7 @@ export class MeiKaiBuff extends ABuff {
     }
 }
 
+@Buff
 export class ProtectBuff extends ABuff {
     id: BuffId = BuffId.Protect;
     getEffectOrder(stage: BES): BO {
@@ -161,7 +175,7 @@ export class ProtectBuff extends ABuff {
     effect(stage: BES) {
     }
 }
-
+@Buff
 export class PosionBuff extends ABuff {
     id = BuffId.Posion;
     getEffectOrder(stage: BES): BO {
@@ -182,7 +196,7 @@ export class PosionBuff extends ABuff {
         }
     }
 }
-
+@Buff
 export class DCBuff extends ABuff {
     id: BuffId = BuffId.DC;
     getEffectOrder(stage: BES): BO {
@@ -202,6 +216,7 @@ export class DCBuff extends ABuff {
 
 }
 
+@Buff
 export class ManaBuff extends ABuff {
     id: BuffId = BuffId.Mana;
     getEffectOrder(stage: BES): BO {
@@ -213,6 +228,7 @@ export class ManaBuff extends ABuff {
 
 }
 
+@Buff
 export class MoveAgainBuff extends ABuff {
     id: BuffId = BuffId.MoveAgain;
     getEffectOrder(stage: BES): BO {
@@ -226,10 +242,12 @@ export class MoveAgainBuff extends ABuff {
     }
 }
 
+@Buff
 export class MoveAgainIng extends EmptyBuff {
     id: BuffId = BuffId.MoveAgainIng;
 }
 
+@Buff
 export class HuangQueBuff extends ABuff {
     id: BuffId = BuffId.HuangQue;
     getEffectOrder(stage: BES): BO {
@@ -239,6 +257,7 @@ export class HuangQueBuff extends ABuff {
     }
 }
 
+@Buff
 export class YunJianBuff extends ABuff {
     id: BuffId = BuffId.YunJian;
     getEffectOrder(stage: BES): BO {
@@ -248,6 +267,7 @@ export class YunJianBuff extends ABuff {
     }
 }
 
+@Buff
 export class ShieldBuff extends ABuff {
     id: BuffId = BuffId.Shield;
     getEffectOrder(stage: BES): BO {
@@ -267,6 +287,7 @@ export class ShieldBuff extends ABuff {
 
 }
 
+@Buff
 export class PierceBuff extends ABuff {
     id: BuffId = BuffId.Pierce;
     getEffectOrder(stage: BES): BO {
@@ -277,6 +298,7 @@ export class PierceBuff extends ABuff {
 
 }
 
+@Buff
 export class SwordMenaingBuff extends ABuff {
     private _effectedNum: number = 0;
     id: BuffId = BuffId.SwordMenaing;
@@ -301,6 +323,7 @@ export class SwordMenaingBuff extends ABuff {
 
 }
 
+@Buff
 export class CrazySwordBuff extends ABuff {
     id: BuffId = BuffId.CrazySword;
     getEffectOrder(stage: BES): BO {
@@ -311,6 +334,7 @@ export class CrazySwordBuff extends ABuff {
 
 }
 
+@Buff
 export class YunSoftBuff extends ABuff {
     id: BuffId = BuffId.YunSoft;
     getEffectOrder(stage: BES): BO {
@@ -321,6 +345,7 @@ export class YunSoftBuff extends ABuff {
 
 }
 
+@Buff
 export class InternalShieldBuff extends ABuff {
     id: BuffId = BuffId.InternalShield;
     getEffectOrder(stage: BES): BO {
@@ -338,6 +363,7 @@ export class InternalShieldBuff extends ABuff {
 
 }
 
+@Buff
 export class PowerBuff extends ABuff {
     id: BuffId = BuffId.Power;
     getEffectOrder(stage: BES): BO {
@@ -348,6 +374,7 @@ export class PowerBuff extends ABuff {
 
 }
 
+@Buff
 export class DepowerBuff extends ABuff {
     id: BuffId = BuffId.Depower;
     getEffectOrder(stage: BES): BO {
@@ -358,6 +385,7 @@ export class DepowerBuff extends ABuff {
 
 }
 
+@Buff
 export class ManaGatherSlowBuff extends ABuff {
     id: BuffId = BuffId.ManaGatherSlow;
     private _count: number = 0;
@@ -378,6 +406,7 @@ export class ManaGatherSlowBuff extends ABuff {
     }
 }
 
+@Buff
 export class ManaGatherBuff extends ABuff {
     id: BuffId = BuffId.ManaGather
     getEffectOrder(stage: BES): BO {
@@ -393,6 +422,7 @@ export class ManaGatherBuff extends ABuff {
     }
 }
 
+@Buff
 export class BNLJBuff extends ABuff {
     id: BuffId = BuffId.BNLJ;
     getEffectOrder(stage: BES): BO {
@@ -404,6 +434,7 @@ export class BNLJBuff extends ABuff {
 
 }
 
+@Buff
 export class WaterMoonBuff extends ABuff {
     id: BuffId = BuffId.WaterMoon;
     getEffectOrder(stage: BES): BO {
@@ -418,6 +449,7 @@ export class WaterMoonBuff extends ABuff {
 
 }
 
+@Buff
 export class CrazyMoveZeroBuff extends ABuff {
     id: BuffId = BuffId.CrazyMoveZero;
     getEffectOrder(stage: BES): BO {
@@ -428,6 +460,7 @@ export class CrazyMoveZeroBuff extends ABuff {
 
 }
 
+@Buff
 export class HpStealBuff extends ABuff {
     id: BuffId = BuffId.HpSteal;
     getEffectOrder(stage: BES): BO {
@@ -439,6 +472,7 @@ export class HpStealBuff extends ABuff {
 
 }
 
+@Buff
 export class StarPowerBuff extends ABuff {
     id: BuffId = BuffId.StarPower;
     getEffectOrder(stage: BES): BO {
@@ -450,6 +484,7 @@ export class StarPowerBuff extends ABuff {
 
 }
 
+@Buff
 export class GuaBuff extends ABuff {
     id: BuffId = BuffId.Gua;
     getEffectOrder(stage: BES): BO {
@@ -462,6 +497,7 @@ export class GuaBuff extends ABuff {
     }
 }
 
+@Buff
 export class WeakBuff extends ABuff {
     id: BuffId = BuffId.Weak;
     getEffectOrder(stage: BES): BO {
@@ -476,6 +512,7 @@ export class WeakBuff extends ABuff {
 
 }
 
+@Buff
 export class MindBuff extends ABuff {
     id: BuffId = BuffId.Mind;
     getEffectOrder(stage: BES): BO {
@@ -486,6 +523,7 @@ export class MindBuff extends ABuff {
 
 }
 
+@Buff
 export class FlawBuff extends ABuff {
     id: BuffId = BuffId.Flaw;
     getEffectOrder(stage: BES): BO {
@@ -500,6 +538,7 @@ export class FlawBuff extends ABuff {
 
 }
 
+@Buff
 export class SixyaoBuff extends ABuff {
     id: BuffId = BuffId.Sixyao;
     getEffectOrder(stage: BES): BO {
@@ -511,6 +550,7 @@ export class SixyaoBuff extends ABuff {
 
 }
 
+@Buff
 export class CountershockBuff extends ABuff {
     id: BuffId = BuffId.Countershock;
     getEffectOrder(stage: BES): BO {
@@ -522,6 +562,7 @@ export class CountershockBuff extends ABuff {
 
 }
 
+@Buff
 export class XingDuanBuff extends ABuff {
     id: BuffId = BuffId.XingDuan;
     getEffectOrder(stage: BES): BO {
@@ -541,6 +582,7 @@ export class XingDuanBuff extends ABuff {
 
 }
 
+@Buff
 export class DecalEchoBuff extends ABuff {
     id: BuffId = BuffId.DecalEcho;
     getEffectOrder(stage: BES): BO {
@@ -551,6 +593,7 @@ export class DecalEchoBuff extends ABuff {
 
 }
 
+@Buff
 export class ZhenMillionFlowerBuff extends ABuff {
     id: BuffId = BuffId.ZhenMillionFlower;
     getEffectOrder(stage: BES): BO {
@@ -568,6 +611,7 @@ export class ZhenMillionFlowerBuff extends ABuff {
 
 }
 
+@Buff
 export class MuBuff extends ABuff {
     id: BuffId = BuffId.Mu;
     getEffectOrder(stage: BES): BO {
@@ -577,6 +621,8 @@ export class MuBuff extends ABuff {
 
     }
 }
+
+@Buff
 export class TuBuff extends ABuff {
     id: BuffId = BuffId.Tu;
     getEffectOrder(stage: BES): BO {
@@ -585,6 +631,8 @@ export class TuBuff extends ABuff {
     effect(stage: BES) {
     }
 }
+
+@Buff
 export class HuoBuff extends ABuff {
     id: BuffId = BuffId.Huo;
     getEffectOrder(stage: BES): BO {
@@ -593,6 +641,8 @@ export class HuoBuff extends ABuff {
     effect(stage: BES) {
     }
 }
+
+@Buff
 export class ShuiBuff extends ABuff {
     id: BuffId = BuffId.Shui;
     getEffectOrder(stage: BES): BO {
@@ -602,6 +652,8 @@ export class ShuiBuff extends ABuff {
 
     }
 }
+
+@Buff
 export class JinBuff extends ABuff {
     id: BuffId = BuffId.Jin;
     getEffectOrder(stage: BES): BO {
@@ -611,6 +663,7 @@ export class JinBuff extends ABuff {
     }
 }
 
+@Buff
 export class WaterFlowBuff extends ABuff {
     id: BuffId = BuffId.WaterFlow;
     getEffectOrder(stage: BES): BO {
@@ -630,6 +683,7 @@ export class WaterFlowBuff extends ABuff {
 
 }
 
+@Buff
 export class SharpBuff extends ABuff {
     id: BuffId = BuffId.Sharp;
     getEffectOrder(stage: BES): BO {
@@ -640,6 +694,7 @@ export class SharpBuff extends ABuff {
 
 }
 
+@Buff
 export class BanSharp extends ABuff {
     id: BuffId = BuffId.BanSharp;
     getEffectOrder(stage: BES): BO {
@@ -650,6 +705,7 @@ export class BanSharp extends ABuff {
 
 }
 
+@Buff
 export class TuZhenBuff extends ABuff {
     id: BuffId = BuffId.TuZhen;
     getEffectOrder(stage: BES): BO {
@@ -661,6 +717,7 @@ export class TuZhenBuff extends ABuff {
 
 }
 
+@Buff
 export class JinZhenBuff extends ABuff {
     id: BuffId = BuffId.JinZhen;
     getEffectOrder(stage: BES): BO {
@@ -672,6 +729,7 @@ export class JinZhenBuff extends ABuff {
 
 }
 
+@Buff
 export class MuZhenBuff extends ABuff {
     id: BuffId = BuffId.MuZhen;
     getEffectOrder(stage: BES): BO {
@@ -682,6 +740,7 @@ export class MuZhenBuff extends ABuff {
 
 }
 
+@Buff
 export class HuoZhenBuff extends ABuff {
     id: BuffId = BuffId.HuoZhen;
     getEffectOrder(stage: BES): BO {
@@ -692,6 +751,7 @@ export class HuoZhenBuff extends ABuff {
 
 }
 
+@Buff
 export class ShuiZhenBuff extends ABuff {
     id: BuffId = BuffId.ShuiZhen;
     getEffectOrder(stage: BES): BO {
@@ -702,6 +762,7 @@ export class ShuiZhenBuff extends ABuff {
 
 }
 
+@Buff
 export class Huntianyin extends ABuff {
     id: BuffId = BuffId.Huntianyin;
     getEffectOrder(stage: BES): BO {
@@ -713,6 +774,7 @@ export class Huntianyin extends ABuff {
 
 }
 
+@Buff
 export class Suiyan extends ABuff {
     id: BuffId = BuffId.Suiyan;
     getEffectOrder(stage: BES): BO {
@@ -724,6 +786,7 @@ export class Suiyan extends ABuff {
 
 }
 
+@Buff
 export class Duanya extends ABuff {
     id: BuffId = BuffId.Duanya;
     getEffectOrder(stage: BES): BO {
@@ -734,10 +797,10 @@ export class Duanya extends ABuff {
 
 }
 
-
-
+@Buff
 export class Quanyong extends EmptyBuff { id: BuffId = BuffId.Quanyong; }
 
+@Buff
 export class Tiegu extends ABuff {
     id: BuffId = BuffId.Tiegu;
     getEffectOrder(stage: BES): BO {
@@ -754,6 +817,7 @@ export class Tiegu extends ABuff {
 
 }
 
+@Buff
 export class Qiandun extends ABuff {
     id: BuffId = BuffId.Qiandun;
     getEffectOrder(stage: BES): BO {
@@ -777,6 +841,7 @@ export class Qiandun extends ABuff {
     }
 }
 
+@Buff
 export class Yinlei extends ABuff {
     id: BuffId = BuffId.Yinlei;
     getEffectOrder(stage: BES): BO {
@@ -797,6 +862,7 @@ export class Yinlei extends ABuff {
 
 }
 
+@Buff
 export class Guijia extends ABuff {
     id: BuffId = BuffId.Guijia;
     getEffectOrder(stage: BES): BO {
@@ -817,6 +883,7 @@ export class Guijia extends ABuff {
 
 }
 
+@Buff
 export class Xiegu extends ABuff {
     id: BuffId = BuffId.Xiegu;
     getEffectOrder(stage: BES): BO {
@@ -839,28 +906,39 @@ export class Xiegu extends ABuff {
 
 }
 
+@Buff
+export class Juling extends ABuff {
+    id: BuffId = BuffId.Juling;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.RoundStart) {
+            return BO.First
+        } else {
+            return BO.None
+        }
+    }
+    effect(stage: BES) {
+        if (stage == BES.RoundStart) {
+            if (this._num > 0) {
+                this._owner.RecoverMana(BuffCfg.Juling_Mana)
+                this.ModNum(-1);
+            }
+        }
+    }
+
+}
+
+@Buff
 export class Suisha extends EmptyBuff { id: BuffId = BuffId.Suisha; }
+@Buff
 export class Hebahuan extends EmptyBuff { id: BuffId = BuffId.Hebahuan; }
+@Buff
 export class Hunyuanwuji extends EmptyBuff { id: BuffId = BuffId.Hunyuanwuji; }
+@Buff
 export class Wuxingtiansui extends EmptyBuff { id: BuffId = BuffId.Wuxingtiansui; }
-
-
-var AllBuffType = [
-    Record_AtkTime, Record_KeepingCardUseTime, MoveAgainIng,
-    PosionBuff, ManaBuff, DCBuff, MeiKaiBuff, MoveAgainBuff,
-    HuangQueBuff, ProtectBuff, YunJianBuff, ShieldBuff,
-    PierceBuff, SwordMenaingBuff, CrazySwordBuff, YunSoftBuff,
-    InternalShieldBuff, PowerBuff, BNLJBuff, ManaGatherBuff,
-    ManaGatherSlowBuff, WaterMoonBuff, CrazyMoveZeroBuff, HpStealBuff,
-    StarPowerBuff, GuaBuff, WeakBuff, MindBuff, FlawBuff, SixyaoBuff,
-    CountershockBuff, XingDuanBuff, DecalEchoBuff, ZhenMillionFlowerBuff,
-    DepowerBuff, Suiyan, BanSharp,
-    MuBuff, JinBuff, ShuiBuff, HuoBuff, TuBuff,
-    TuZhenBuff, JinZhenBuff, MuZhenBuff, HuoZhenBuff, ShuiZhenBuff,
-    WaterFlowBuff, SharpBuff, Duanya, Tiegu, Quanyong, Qiandun, Hebahuan,
-    Huntianyin, Hunyuanwuji, Wuxingtiansui,
-    Yinlei, Suisha, Guijia, Xiegu,
-]
+@Buff
+export class Zhoutianjian extends EmptyBuff { id: BuffId = BuffId.Zhoutianjian; }
+@Buff
+export class Pixie extends EmptyBuff { id: BuffId = BuffId.Pixie }
 
 export class BuffFactory {
     private static _me: BuffFactory;

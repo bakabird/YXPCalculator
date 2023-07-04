@@ -1,6 +1,6 @@
 import { ACard, CardInfo, CardName, HitCard, } from "./Card";
 import CardList from "./CardList";
-import { WuXingzhi_LIST } from "./Character";
+import { TanShuYan_LIST, WuXingzhi_LIST, YanXue_LIST } from "./Character";
 import { QiXing_LIST } from "./QiXingGeCard";
 import { Qin_LIST } from "./QinCards";
 import { WuXing_LIST } from "./WuXingDaoMengCards";
@@ -18,6 +18,8 @@ var AllCardType = [
     ...WuXing_LIST,
     // 角色卡
     ...WuXingzhi_LIST,
+    ...TanShuYan_LIST,
+    ...YanXue_LIST,
     // 职业卡
     ...Zhen_LIST,
     ...Qin_LIST,
@@ -38,6 +40,8 @@ function getCareerByType(type): Career {
 
 function getRoleByType(type): Role {
     if (WuXingzhi_LIST.includes(type)) return Role.Wxz
+    else if (TanShuYan_LIST.includes(type)) return Role.Tsy
+    else if (YanXue_LIST.includes(type)) return Role.Yx
     else return Role.NON
 }
 
