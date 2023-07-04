@@ -4,3 +4,9 @@ export function GenPush2Arr(tar: Array<any>) {
         tar.push(_class)
     }
 }
+
+export function Keeping(_class: any, arg: any) {
+    _class.prototype.onGetIsKeeping = function () {
+        return true
+    }
+}

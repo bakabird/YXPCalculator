@@ -17,12 +17,14 @@ export class Action {
         me.EffectCard(he);
         if (this.anyDead) return;
         if (me.CheckBuff(BuffId.MoveAgain, 1)) {
+            me.EffectBuff(BES.MoveAgain);
+            if (this.anyDead) return;
             me.AddBuffById(BuffId.MoveAgainIng, 1, LogEncode.Ignore)
             me.EffectCard(he);
-            me.RemoveBuff(BuffId.MoveAgainIng, LogEncode.Ignore);
             if (this.anyDead) return;
         }
         me.EffectBuff(BES.RoundEnd);
+        me.RemoveBuff(BuffId.MoveAgainIng, LogEncode.Ignore);
     }
 
     private get anyDead() {

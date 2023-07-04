@@ -3,7 +3,7 @@ import { ACard, CardLevel, CardName, CardState } from "./Card";
 import { CardListFactory } from "./CardListFactory";
 import { Human } from "./Human";
 import LogEncode from "./LogEncode";
-import { GenPush2Arr } from "./decorator";
+import { GenPush2Arr, Keeping } from "./decorator";
 
 
 export var Zhen_LIST = []
@@ -143,11 +143,39 @@ export class PiXieZhenWenCard extends ACard {
 
 
 
+
+
 /**
  * 元婴
  */
-// export class BCard extends ACard {}
-// export class BCard extends ACard {}
+@Zhen
+@Keeping
+export class TianGangJuLiZhenCard extends ACard {
+    cardName: CardName = CardName.TianGangJuLiZhen;
+    cardState: CardState = CardState.YuanYing;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.Juli, this._lvlVal(2, 3, 4), this.cardName)
+    }
+}
+@Keeping
+@Zhen
+export class BaMenJinSuoZhenCard extends ACard {
+    cardName: CardName = CardName.BaMenJinSuoZhen;
+    cardState: CardState = CardState.YuanYing;
+    protected onEffect(me: Human, he: Human) {
+        he.AddBuffById(BuffId.Bamenjinsuo, this._lvlVal(2, 3, 4), this.cardName)
+    }
+}
+@Keeping
+@Zhen
+export class BuDongJinGangZhenCard extends ACard {
+    cardName: CardName = CardName.BuDongJinGangZhen;
+    cardState: CardState = CardState.YuanYing;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.Budongjingang, this._lvlVal(2, 3, 4), this.cardName);
+    }
+
+}
 // export class BCard extends ACard {}
 
 

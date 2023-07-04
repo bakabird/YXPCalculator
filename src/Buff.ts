@@ -10,6 +10,7 @@ export enum BES {
     RoundEnd,
     BeforeHitOther,
     AnyCardEffectOver,
+    MoveAgain,
     CALL_BY_CODE,
 }
 
@@ -97,6 +98,12 @@ export enum BuffId {
     Zhoutianjian = "周天剑",
     // 辟邪
     Pixie = "辟邪",
+    // 聚力
+    Juli = "聚力",
+    // 八门金锁
+    Bamenjinsuo = "八门金锁",
+    // 不动金刚
+    Budongjingang = "不动金刚",
     // #endregion
 
     Huntianyin = "浑天印",
@@ -922,6 +929,67 @@ export class Juling extends ABuff {
                 this._owner.RecoverMana(BuffCfg.Juling_Mana)
                 this.ModNum(-1);
             }
+        }
+    }
+
+}
+
+export class Juli extends ABuff {
+    id: BuffId = BuffId.Juli;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.RoundStart) {
+            return BO.First;
+        } else {
+            return BO.None
+        }
+    }
+    effect(stage: BES) {
+        if (stage == BES.RoundStart) {
+            if (this._num > 0) {
+                this._owner.AddBuffById(BuffId.Power, BuffCfg.Juli_Power, BuffId.Juli);
+                this.ModNum(-1);
+            }
+        }
+    }
+
+}
+
+@Buff
+export class Bamenjinsuo extends ABuff {
+    id: BuffId = BuffId.Bamenjinsuo;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.MoveAgain) {
+            return BO.Third;
+        } else {
+            return BO.None;
+        }
+    }
+    effect(stage: BES) {
+        if (stage == BES.MoveAgain) {
+            this._owner.SimpleGetHit(BuffCfg.Bamenjinsuo_Hurt, this.id);
+            this.ModNum(-1);
+        }
+    }
+
+}
+
+@Buff
+export class Budongjingang extends ABuff {
+    id: BuffId = BuffId.Budongjingang;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.RoundEnd) {
+            return BO.Third;
+        }
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if (stage == BES.RoundEnd) {
+            this._owner.AddBuffById(BuffId.Shield, BuffCfg.Budongjingang_Shield, this.id)
+            if (this._owner.CheckBuff(BuffId.MoveAgainIng, 1)) {
+                this._owner.AddMaxHp(BuffCfg.Budongjingang_Hp, this.id)
+                this._owner.AddHp(BuffCfg.Budongjingang_Hp, this.id);
+            }
+            this.ModNum(-1)
         }
     }
 
