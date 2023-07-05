@@ -188,6 +188,18 @@ export class BuDongJinGangZhenCard extends ACard {
 /**
  * 化神
  */
+
+@Zhen
+@Keeping
+export class ZhenMillionFlower extends ACard {
+    cardName: CardName = CardName.ZhenMillionFlower;
+    cardState: CardState = CardState.HuaShen;
+    protected onEffect(me: Human, he: Human) {
+        me.AddBuffById(BuffId.ZhenMillionFlower, this._lvlVal(2, 3, 4), this.cardName);
+    }
+}
+
+
 @Zhen
 export class DecalEchoCard extends ACard {
     cardName: CardName = CardName.DecalEcho;
@@ -208,14 +220,17 @@ export class DecalEchoCard extends ACard {
 }
 
 @Zhen
-export class ZhenMillionFlower extends ACard {
-    cardName: CardName = CardName.ZhenMillionFlower;
+export class XuMiZhenWenCard extends ACard {
+    cardName: CardName = CardName.XuMiZhenWen;
     cardState: CardState = CardState.HuaShen;
     protected onEffect(me: Human, he: Human) {
-        me.AddBuffById(BuffId.ZhenMillionFlower, this._lvlVal(2, 3, 4), this.cardName);
+        let count = this._lvlVal(1, 2, 3);
+        while (count--) {
+            me.ShiftCard()
+        }
+        if (me.CheckBuff(BuffId.Record_KeepingCardUseTime, 1)) {
+            me.AddBuffById(BuffId.MoveAgain, 1, this.cardName);
+        }
     }
-    protected onGetIsKeeping(): boolean {
-        return true;
-    }
-}
 
+}

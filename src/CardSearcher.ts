@@ -50,6 +50,12 @@ export default class CardSearcher {
                 onlyCareer,
                 onlyRole
             } = r.record
+            if (onlyMen == Men.NON
+                && onlyCareer == Career.NON
+                && onlyRole == Role.NON) {
+                // 通用卡
+                return true;
+            }
             if (filter.men == onlyMen) {
                 return true
             } else if (filter.career == onlyCareer) {

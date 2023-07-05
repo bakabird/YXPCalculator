@@ -123,9 +123,6 @@ export enum CardName {
     FiveThunder = "五雷轰顶",
     PurpleMana = "紫气东来",
 
-    DecalEcho = "回响阵纹",
-    ZhenMillionFlower = "万花迷魂阵",
-
     // #region 五行道盟
 
     // 炼器期
@@ -228,6 +225,10 @@ export enum CardName {
     BuDongJinGangZhen = "不动金刚阵",
 
 
+    DecalEcho = "回响阵纹",
+    ZhenMillionFlower = "万花迷魂阵",
+    // 须弥阵纹
+    XuMiZhenWen = "须弥阵纹",
 
     // #endregion
 
