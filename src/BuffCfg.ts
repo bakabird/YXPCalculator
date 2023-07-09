@@ -9,4 +9,5 @@ export default {
     Bamenjinsuo_Hurt: 12,
     Budongjingang_Shield: 7,
     Budongjingang_Hp: 7,
+    Quxiedan_cut: 3,
 }

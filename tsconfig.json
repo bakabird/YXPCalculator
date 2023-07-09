@@ -8,6 +8,7 @@
         "module": "commonjs",
         "outDir": "",
         "esModuleInterop": true,
+        "experimentalDecorators": true
     },
     "include": [
         "src/*.ts",

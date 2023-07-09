@@ -26,6 +26,7 @@ const tsConfig = {
     target: "es2017",
     module: "commonjs",
     esModuleInterop: true,
+    experimentalDecorators: true,
 };
 function lessWatch(cb) {
     gulp_1.default.src(lessPath)

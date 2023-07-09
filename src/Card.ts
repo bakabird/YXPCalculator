@@ -232,6 +232,49 @@ export enum CardName {
 
     // #endregion
 
+    // #region 丹
+
+    // 地灵丹
+    DiLingDan = "地灵丹",
+    // 培元丹
+    PeiYuanDan = "培元丹",
+    // 小还丹
+    XiaoHuanDan = "小还丹",
+
+
+    // 锻体丹
+    DuanTiDan = "锻体丹",
+    // 飞云丹
+    FeiYunDan = "飞云丹",
+    // 驱邪丹
+    QuXieDan = "驱邪丹",
+
+
+    // 还魂丹
+    HuanHunDan = "还魂丹",
+    // 疗伤丹
+    LiaoShangDan = "疗伤丹",
+    // 神力丹
+    ShenLiDan = "神力丹",
+
+
+    // 大还丹
+    DaHuanDan = "大还丹",
+    // 聚灵丹
+    JuLingDan = "聚灵丹",
+    // 洗髓丹
+    XiSuiDan = "洗髓丹",
+
+
+    // 冰灵护体丹
+    BingLingHuTiDan = "冰灵护体丹",
+    // 锻体玄丹
+    DuanTiXuanDan = "锻体玄丹",
+    // 悟道丹
+    WuDaoDan = "悟道丹",
+
+    // #endregion
+
     // #region 角色卡
     Youranhl = "悠然葫芦",
     // #endregion

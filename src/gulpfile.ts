@@ -21,6 +21,7 @@ const tsConfig = {
     target: "es2017",
     module: "commonjs",
     esModuleInterop: true,
+    experimentalDecorators: true,
 }
 
 

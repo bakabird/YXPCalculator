@@ -1,6 +1,7 @@
 import { ACard, CardInfo, CardName, HitCard, } from "./Card";
 import CardList from "./CardList";
 import { TanShuYan_LIST, WuXingzhi_LIST, YanXue_LIST } from "./Character";
+import { Dan_LIST } from "./DanCards";
 import { QiXing_LIST } from "./QiXingGeCard";
 import { Qin_LIST } from "./QinCards";
 import { WuXing_LIST } from "./WuXingDaoMengCards";
@@ -22,6 +23,7 @@ var AllCardType = [
     ...YanXue_LIST,
     // 职业卡
     ...Zhen_LIST,
+    ...Dan_LIST,
     ...Qin_LIST,
 ]
 
@@ -35,6 +37,7 @@ function getMenByType(type): Men {
 function getCareerByType(type): Career {
     if (Zhen_LIST.includes(type)) return Career.Zhen
     else if (Qin_LIST.includes(type)) return Career.Qin
+    else if (Dan_LIST.includes(type)) return Career.Dan
     else return Career.NON
 }
 
