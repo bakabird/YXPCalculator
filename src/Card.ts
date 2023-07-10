@@ -1,5 +1,6 @@
 import { BES, BuffFactory, BuffId } from "./Buff";
 import BuffCfg from "./BuffCfg";
+import Go from "./Go";
 import { Human } from "./Human";
 import LogEncode from "./LogEncode";
 import { GenPush2Arr } from "./decorator";
@@ -13,9 +14,7 @@ export var Gong = GenPush2Arr(GongCards);
 
 export enum CardName {
     Hit = "普通攻击",
-    DCTune = "断肠曲",
     FeiTa = "飞鸿踏雪",
-    TongXin = "同心曲",
     MeiKai = "梅开二度",
     HuangQue = "黄雀在后",
 
@@ -322,6 +321,54 @@ export enum CardName {
 
     // #endregion
 
+    // #region 琴师
+
+    // 破音
+    PoYing = "破音",
+    // 土行曲
+    TuXingQu = "土行曲",
+    // 逍遥曲
+    XiaoYaoQu = "逍遥曲",
+
+
+
+    // 慈念曲
+    CiNianQu = "慈念曲",
+    // 幻音曲
+    HuanYinQu = "幻音曲",
+    // 天灵曲
+    TianLingQu = "天灵曲",
+
+
+
+    // 断肠曲
+    DuanChangQu = "断肠曲",
+    // 狂舞曲
+    KuangWuQu = "狂舞曲",
+    // 轮指连音
+    LunZhiLianYin = "轮指连音",
+
+
+
+    // 回春曲
+    HuiChunQu = "回春曲",
+    // 九煞破灵曲
+    JiuShaPoLingQu = "九煞破灵曲",
+    // 同心曲
+    TongXinQu = "同心曲",
+
+
+
+    // 天音困仙曲
+    TianYinKunXianQu = "天音困仙曲",
+    // 幽绪乱心曲
+    YouXuLuanXinQu = "幽绪乱心曲",
+    // 转弦合调
+    ZhuanXianHeDiao = "转弦合调",
+
+
+    // #endregion
+
     // #region 角色卡
     Youranhl = "悠然葫芦",
     // #endregion
@@ -365,6 +412,7 @@ export abstract class ACard {
     public get initLevel(): number {
         return this._level;
     }
+
     // 狂?
     public get isCrazy(): boolean {
         return this.cardName.startsWith("狂剑")
@@ -386,6 +434,9 @@ export abstract class ACard {
     }
     public get isWuxing(): boolean {
         return this.isTu || this.isHuo || this.isJin || this.isShui || this.isMu;
+    }
+    public get isQin(): boolean {
+        return Go.Qin_LIST.includes(this);
     }
     // 持续卡?
     public get isKeeping(): boolean {
@@ -484,9 +535,6 @@ export abstract class ACard {
                 me.CardList.CostCur();
             }
         }
-        if (this.onGetIsKeeping()) {
-            me.AddBuffById(BuffId.Record_KeepingCardUseTime, 1, "KeepingCardUse" + LogEncode.Ignore);
-        }
         if (muAct && me.isMu) {
             muAct(me, he);
         }
@@ -504,6 +552,12 @@ export abstract class ACard {
         }
         // 后处理
         const everAttack = me.NumOf(BuffId.Record_AtkTime) != meRecord_AtkTime
+        if (this.onGetIsKeeping()) {
+            me.AddBuffById(BuffId.Record_KeepingCardUseTime, 1, "KeepingCardUse" + LogEncode.Ignore);
+        }
+        if (this.isQin) {
+            me.AddBuffById(BuffId.Record_QinCardUseTime, 1, "QinCardUse" + LogEncode.Ignore);
+        }
         if (this.cardName.startsWith("云剑")) {
             const yunSoftBuff = me.GetBuff(BuffId.YunSoft);
             yunSoftBuff && me.AddHp(yunSoftBuff.num, yunSoftBuff.id);
@@ -643,6 +697,6 @@ export class HitCard extends ACard {
     cardState: CardState = CardState.LianQi;
     cardName: CardName = CardName.Hit;
     onEffect(me: Human, he: Human) {
-        he.GetHit(3, me, this.cardName);
+        he.GetHit(3 + me.NumOf(BuffId.Xiaoyao), me, this.cardName);
     }
 }

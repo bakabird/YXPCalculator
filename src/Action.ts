@@ -16,7 +16,7 @@ export class Action {
         me.EffectBuff(BES.RoundStart);
         me.EffectCard(he);
         if (this.anyDead) return;
-        if (me.CheckBuff(BuffId.MoveAgain, 1)) {
+        if (me.CheckBuff(BuffId.MoveAgain, 1) && !me.CheckBuff(BuffId.Tianyinkunxian, 0)) {
             me.EffectBuff(BES.MoveAgain);
             if (this.anyDead) return;
             me.AddBuffById(BuffId.MoveAgainIng, 1, LogEncode.Ignore)

@@ -1,11 +1,11 @@
-import { ACard, CardName } from "./Card"
-import { BES, BO, BuffId, ABuff, ManaBuff, BuffFactory, Qiandun } from "./Buff";
-import CardList from "./CardList";
-import { FightReport, FROption } from "./FightReport";
-import { FightConst } from "./FightConst";
-import { Fight } from "./Fight";
-import LogEncode from "./LogEncode";
+import { ABuff, BES, BO, BuffFactory, BuffId, Qiandun } from "./Buff";
 import BuffCfg from "./BuffCfg";
+import { ACard } from "./Card";
+import CardList from "./CardList";
+import { Fight } from "./Fight";
+import { FightConst } from "./FightConst";
+import { FROption, FightReport } from "./FightReport";
+import LogEncode from "./LogEncode";
 
 export class Human {
     //卡牌
@@ -250,6 +250,7 @@ export class Human {
      */
     public GetHit(hurt: number, from: Human, log: string): number {
         if (hurt <= 0) throw "invalid arg";
+        if (from.isDead) return 0;
         const fromWeak = from.GetBuff(BuffId.Weak);
         const fromPierce = from.GetBuff(BuffId.Pierce);
         const fromPower = from.GetBuff(BuffId.Power);
@@ -261,15 +262,20 @@ export class Human {
         const fromSuiyan = from.GetBuff(BuffId.Suiyan)
         const fromQuanyong = from.GetBuff(BuffId.Quanyong);
         const fromSuiSha = from.GetBuff(BuffId.Suisha)
+        const fromKuangwu = from.GetBuff(BuffId.Kuangwu)
         const meCountershock = this.GetBuff(BuffId.Countershock);
         const meFlaw = this.GetBuff(BuffId.Flaw);
         const meShield = this.GetBuff(BuffId.Shield);
         from.EffectBuff(BES.BeforeHitOther);
+        if (from.isDead) return 0;
         if (fromSwordMenaing) {
             hurt += fromSwordMenaing.num;
         }
         if (fromPower) {
             hurt += fromPower.num;
+        }
+        if (fromKuangwu) {
+            hurt += fromKuangwu.num;
         }
         if (fromSuiSha) {
             hurt += BuffCfg.SuiSha_ExtraPower;

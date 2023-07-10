@@ -27,12 +27,12 @@ export enum BuffId {
     MoveAgainIng = "再动进行中",
     Record_AtkTime = "攻击次数",
     Record_KeepingCardUseTime = "持续牌使用次数",
+    Record_QinCardUseTime = "琴卡使用次数",
 
     Mana = "灵气",
     MoveAgain = "再动",
     Shield = "护甲",
     Posion = "毒",
-    DC = "断肠",
     MeiKai = "梅开",
     HuangQue = "黄雀",
     Protect = "护体",
@@ -82,6 +82,23 @@ export enum BuffId {
     Tiegu = "铁骨", // 绝对值减伤
     Qiandun = "潜遁", // 百分比减伤
     Hebahuan = "合八荒",
+
+    // #region 琴 
+    // 逍遥
+    Xiaoyao = "逍遥",
+    // 幻音
+    Huanyin = "幻音",
+    // 断肠
+    DuanChang = "断肠",
+    // 狂舞
+    Kuangwu = "狂舞",
+    // 回春
+    Huichun = "回春",
+    // 天音困仙
+    Tianyinkunxian = "天音困仙",
+    // 幽绪乱心
+    Youxuluaxin = "幽绪乱心",
+    // #endregion
 
     // #region 阵
     // 引雷
@@ -164,6 +181,12 @@ export class Record_KeepingCardUseTime extends EmptyBuff {
 }
 
 @Buff
+export class Record_QinCardUseTime extends EmptyBuff {
+    id: BuffId = BuffId.Record_QinCardUseTime;
+}
+
+
+@Buff
 export class MeiKaiBuff extends ABuff {
     id: BuffId = BuffId.MeiKai;
     getEffectOrder(stage: BES): BO {
@@ -204,8 +227,8 @@ export class PosionBuff extends ABuff {
     }
 }
 @Buff
-export class DCBuff extends ABuff {
-    id: BuffId = BuffId.DC;
+export class DuanChang extends ABuff {
+    id: BuffId = BuffId.DuanChang;
     getEffectOrder(stage: BES): BO {
         if (stage == BES.RoundStart) {
             return BO.First;
@@ -996,6 +1019,60 @@ export class Budongjingang extends ABuff {
 }
 
 @Buff
+export class Huanyin extends ABuff {
+    id: BuffId = BuffId.Huanyin;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.RoundStart) {
+            return BO.Third;
+        }
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if (stage == BES.RoundStart) {
+            this._owner.CutHp(this._num, this.id);
+            this._owner.AddBuffById(BuffId.Shield, this._num, this.id);
+        }
+    }
+
+}
+
+@Buff
+export class Huichun extends ABuff {
+    id: BuffId = BuffId.Huichun;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.RoundEnd) {
+            return BO.Third;
+        }
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if (stage == BES.RoundEnd) {
+            this._owner.AddMaxHp(this._num, this.id);
+            this._owner.AddHp(this._num, this.id);
+        }
+    }
+
+}
+
+@Buff
+export class Youxuluaxin extends ABuff {
+    id: BuffId = BuffId.Youxuluaxin;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.BeforeHitOther) {
+            return BO.Third;
+        }
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if (stage == BES.BeforeHitOther) {
+            this._owner.CutHp(this._num, this.id);
+        }
+    }
+
+}
+
+
+@Buff
 export class Suisha extends EmptyBuff { id: BuffId = BuffId.Suisha; }
 @Buff
 export class Hebahuan extends EmptyBuff { id: BuffId = BuffId.Hebahuan; }
@@ -1007,6 +1084,20 @@ export class Wuxingtiansui extends EmptyBuff { id: BuffId = BuffId.Wuxingtiansui
 export class Zhoutianjian extends EmptyBuff { id: BuffId = BuffId.Zhoutianjian; }
 @Buff
 export class Pixie extends EmptyBuff { id: BuffId = BuffId.Pixie }
+@Buff
+export class Xiaoyao extends EmptyBuff {
+    id: BuffId = BuffId.Xiaoyao;
+}
+@Buff
+export class Kuangwu extends EmptyBuff {
+    id: BuffId = BuffId.Kuangwu;
+
+}
+@Buff
+export class Tianyinkunxian extends EmptyBuff {
+    id: BuffId = BuffId.Tianyinkunxian;
+
+}
 
 export class BuffFactory {
     private static _me: BuffFactory;

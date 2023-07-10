@@ -3,6 +3,7 @@ import CardList from "./CardList";
 import { TanShuYan_LIST, WuXingzhi_LIST, YanXue_LIST } from "./Character";
 import { Dan_LIST } from "./DanCards";
 import { Fu_LIST } from "./FuCards";
+import Go from "./Go";
 import { QiXing_LIST } from "./QiXingGeCard";
 import { Qin_LIST } from "./QinCards";
 import { WuXing_LIST } from "./WuXingDaoMengCards";
@@ -28,6 +29,8 @@ var AllCardType = [
     ...Qin_LIST,
     ...Fu_LIST,
 ]
+
+Go.Qin_LIST = Qin_LIST;
 
 function getMenByType(type): Men {
     if (QiXing_LIST.includes(type)) return Men.QXG
