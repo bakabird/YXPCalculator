@@ -275,6 +275,53 @@ export enum CardName {
 
     // #endregion
 
+    // #region 符师
+
+    // 奔雷符
+    BenLeiFu = "奔雷符",
+    // 护灵符
+    HuLingFu = "护灵符",
+    // 锐金符
+    RuiJinFu = "锐金符",
+
+
+
+    // 火云符
+    HuoYunFu = "火云符",
+    // 清心咒
+    QingXinZhou = "清心咒",
+    // 水气符
+    ShuiQiFu = "水气符",
+
+
+
+    // 寒冰咒
+    HanBingZhou = "寒冰咒",
+    // 吸灵符
+    XiLingFu = "吸灵符",
+    // 瘴气符
+    ZhangQiFu = "瘴气符",
+
+
+
+    // 聚气咒
+    JuQiZhou = "聚气咒",
+    // 扰心符
+    RaoXinFu = "扰心符",
+    // 弱体符
+    RuoTiFu = "弱体符",
+
+
+
+    // 镇魂封元符
+    ZhenHunFengYuanFu = "镇魂封元符",
+    // 千里神行符
+    QianLiShenXingFu = "千里神行符",
+    // 万邪入体咒
+    WanXieRuTiZhou = "万邪入体咒",
+
+    // #endregion
+
     // #region 角色卡
     Youranhl = "悠然葫芦",
     // #endregion
