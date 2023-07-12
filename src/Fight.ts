@@ -4,8 +4,11 @@ import { Round } from "./Round";
 import { CardInfo } from "./Card";
 import { CardListFactory } from "./CardListFactory";
 import { FightConst } from "./FightConst";
+require = require("esm")(module);
+const gnfun = require("gnfun")
+import { Role } from "./_share_code_";
 
-export type CutCheck = (fr: FightReport)=>boolean
+export type CutCheck = (fr: FightReport) => boolean
 
 //每场战斗
 export class Fight {
@@ -28,7 +31,9 @@ export class Fight {
         fightReport.heRoundHp = heRoundHp;
         fightReport.heRoundMaxHp = heRoundMaxHp;
         fightReport.meUseCard.push([]);
-        
+
+
+        fightReport.apeendLog(`${this._me.name}|${gnfun.getEnumName(Role, this._me.role)} VS ${this._he.name}|${gnfun.getEnumName(Role, this._he.role)}`);
         while (index < FightConst.MAX_ROUND && !this._me.isDead && !this._he.isDead) {
             fightReport.apeendLog(`\n：：：第${index + 1}轮：：：`);
             var round = new Round(index, this._me, this._he);
@@ -46,14 +51,14 @@ export class Fight {
     }
 
     public GetAnother(me: Human): Human {
-        if(me == this._me) return this._he
+        if (me == this._me) return this._he
         else return this._me;
     }
 
     public static BuildRun(
         me: Human, meCard: Array<CardInfo>,
         he: Human, heCard: Array<CardInfo>,
-        cutCheck: CutCheck = ()=>false,
+        cutCheck: CutCheck = () => false,
     ): FightReport {
         var meCardList = CardListFactory.me.FormList(meCard)
         var heCardList = CardListFactory.me.FormList(heCard)
@@ -68,13 +73,13 @@ export class Fight {
     public static BuildRun2(
         meArg: Array<any>, meCard: Array<CardInfo>,
         heArg: Array<any>, heCard: Array<CardInfo>,
-        cutCheck: CutCheck = ()=>false,
+        cutCheck: CutCheck = () => false,
     ): FightReport {
-        const [meName, meMaxHp, meSpeed] = meArg;
-        const [heName, heMaxHp, heSpeed] = heArg;
+        const [meName, meMaxHp, meSpeed, meRole] = meArg;
+        const [heName, heMaxHp, heSpeed, heRole] = heArg;
         return this.BuildRun(
-            new Human(meName, meMaxHp, meSpeed), meCard,
-            new Human(heName, heMaxHp, heSpeed), heCard,
+            new Human(meName, meMaxHp, meSpeed, meRole), meCard,
+            new Human(heName, heMaxHp, heSpeed, heRole), heCard,
             cutCheck
         );
     }

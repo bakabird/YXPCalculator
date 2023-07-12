@@ -369,6 +369,54 @@ export enum CardName {
 
     // #endregion
 
+    // #region 画师
+
+    // 调色
+    TiaoSe = "调色",
+    // 练笔
+    LianBi = "练笔",
+    // 研墨
+    YanMo = "研墨",
+
+
+
+    // 笔走龙蛇
+    BiZouLongShe = "笔走龙蛇",
+    // 画饼充饥
+    HuaBingChongJi = "画饼充饥",
+    // 画蛇添足
+    HuaSheTianZu = "画蛇添足",
+
+
+
+    // 挥毫泼墨
+    HuiHaoPoMo = "挥毫泼墨",
+    // 灵感迸发
+    LingGanBengFa = "灵感迸发",
+    // 以画入道
+    YiHuaRuDao = "以画入道",
+
+
+
+    // 触类旁通
+    ChuLeiPangTong = "触类旁通",
+    // 神来之笔
+    ShenLaiZhiBi = "神来之笔",
+    // 落纸云烟
+    LuoZhiYunYan = "落纸云烟",
+
+
+
+    // 运笔如飞
+    YunBiRuFei = "运笔如飞",
+    // 画龙点睛
+    HuaLongDianJing = "画龙点睛",
+    // 妙笔生花
+    MiaoBiShengHua = "妙笔生花",
+
+
+    // #endregion
+
     // #region 角色卡
     Youranhl = "悠然葫芦",
     // #endregion
@@ -407,10 +455,16 @@ export abstract class ACard {
     abstract cardName: CardName;
     abstract cardState: CardState;
     private _level: CardLevel;
+    private _extraLevel: number;
     private _useNum: number;
     // 初始化时被赋予的卡牌等级
     public get initLevel(): number {
         return this._level;
+    }
+
+    // 现在的卡牌等级
+    public get CurLevel(): number {
+        return Math.min(this._level + this._extraLevel, CardLevel.Legend);
     }
 
     // 狂?
@@ -442,13 +496,21 @@ export abstract class ACard {
     public get isKeeping(): boolean {
         return this.onGetIsKeeping();
     }
+
+    private _IncExtraLevel() {
+        this._extraLevel++;
+    }
+
     init(level: CardLevel) {
         this._level = level;
+        this._extraLevel = 0;
         this._useNum = 0;
     };
+
     public decUseNum() {
         this._useNum--;
     }
+
     public effect(me: Human, he: Human) {
         const secondAct = this.onGetSecondAct();
         const starAct = this.onGetStarAct();
@@ -462,6 +524,7 @@ export abstract class ACard {
         const meCrazyMoveNum = me.GetBuff(BuffId.CrazyMoveZero)?.num ?? 0;
         const meStarPowerNum = me.GetBuff(BuffId.StarPower)?.num ?? 0;
         const meHuntianNum = me.GetBuff(BuffId.Huntianyin)?.num ?? 0;
+        const meHualong = me.NumOf(BuffId.Hualongdianjing)
         const meTuZhenNum = me.GetBuff(BuffId.TuZhen)?.num ?? 0;
         const meJinZhenNum = me.GetBuff(BuffId.JinZhen)?.num ?? 0;
         const meMuZhenNum = me.GetBuff(BuffId.MuZhen)?.num ?? 0;
@@ -472,6 +535,10 @@ export abstract class ACard {
         const oldHeHp = he.hp;
         const onStar = me.CardList.IsOnStar();
         // 前处理
+        if (meHualong > 0) {
+            this._IncExtraLevel();
+            me.AddBuffById(BuffId.Hualongdianjing, -1, "消耗");
+        }
         if (this.isCrazy && meCrazyMoveNum > 0) {
             me.AddBuffById(BuffId.HpSteal, meCrazyMoveNum, BuffId.CrazyMoveZero);
         }
@@ -595,8 +662,12 @@ export abstract class ACard {
     // 获取卡牌的实际耗蓝
     public getMana(me: Human, he: Human): number {
         let mana = this.onGetMana(me);
+        let meLinggan = me.NumOf(BuffId.Linggan);
         if (this.cardName.endsWith("灵剑") && me.CheckBuff(BuffId.BNLJ, 1)) {
             mana = Math.max(0, mana - me.GetBuff(BuffId.BNLJ).num);
+        }
+        if (meLinggan > 0 && mana > 0) {
+            mana = Math.max(0, mana - meLinggan);
         }
         return mana;
     }
@@ -652,7 +723,7 @@ export abstract class ACard {
     }
 
     protected _lvlVal<T>(normal: T, rare: T, legend: T): T {
-        switch (this._level) {
+        switch (this.CurLevel) {
             case CardLevel.Normal:
                 return normal;
             case CardLevel.Rare:
@@ -662,7 +733,7 @@ export abstract class ACard {
         }
     }
     protected _lvlMethod(normal: Function, rare: Function, legend: Function) {
-        switch (this._level) {
+        switch (this.CurLevel) {
             case CardLevel.Normal:
                 normal && normal();
                 break;

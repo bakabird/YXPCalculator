@@ -107,7 +107,7 @@ interface Window {
             role: any
         }): Promise<Array<string>>;
         getAllCards(): Promise<Array<string>>;
-        createReport(key: string, eKey: string, threadNum: number): void;
+        createReport(key: string, role: number, eKey: string, eRole: number, threadNum: number): void;
         feedback(item: string, content: string, fileName?: string, fileBuffer?: ArrayBuffer): Promise<void>;
         viewReport(fightReport: any): void;
         doDebug(): void;
@@ -490,6 +490,11 @@ class CardSearchWrap {
     private _avatarSelector: AvatarSelector;
     private _careerSelector: CareerSelector;
     private _key: string;
+
+    public get curRole() {
+        return this._avatarSelector.role;
+    }
+
     constructor(private _node: JQuery<HTMLElement>) {
         this._engRegxp = new RegExp('[A-z]');
         this._numRegxp = new RegExp("[0-9]");
@@ -789,11 +794,14 @@ class BarWrap {
         private _fCardListWrap: CardListWrap,
         private _eCardListWrap: CardListWrap,
         private _libWrap: CardLibWrap,
-        private _feedbackWrap: FeedbackWrap
+        private _feedbackWrap: FeedbackWrap,
+        private _cardSearch: CardSearchWrap,
     ) {
         _node.children(".analysis").on("click", () => {
             const threadNum = parseInt(_node.children("select")[0].value);
-            window.electronAPI.createReport(this._fCardListWrap.key, this._eCardListWrap.key, threadNum);
+            window.electronAPI.createReport(
+                this._fCardListWrap.key, this._cardSearch.curRole,
+                this._eCardListWrap.key, Share2Renderer.Role.Dly, threadNum);
         });
         _node.children(".openCardlib").on("click", () => {
             this._libWrap.show();
@@ -1087,7 +1095,7 @@ const feedbackWrap = new FeedbackWrap($(".Feedback"))
 const loadingWrap = new LoadingWrap($(".Loading"))
 const consoleWrap = new ConsoleWrap($(".Console"))
 const cffWrap = new CardFaceFactoryWrap($(".CardFaceFactory"))
-const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap, cardlibWrap, feedbackWrap);
+const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap, cardlibWrap, feedbackWrap, searchWrap);
 new ECardBoxTitle($(".enemyCardBoxTitle"), eCardListWrap);
 let activeWrap: CardListWrap;
 const onClickFace = (wrap: CardListWrap) => {

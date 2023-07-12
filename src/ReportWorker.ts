@@ -12,12 +12,14 @@ const {
 } = require('node:worker_threads');
 
 const cardKey = workerData.cardKey;
+const role = workerData.role;
 const eCardKey = workerData.eCardKey;
+const eRole = workerData.eRole;
 const threadNum = workerData.threadNum;
 const possibleSet = new PossibleCardSet(cardKey);
 const sum: Sumamry = new Sumamry();
-const heManArg = ["胖虎", 110, 100];
-const meManArg = ["大雄", 110, 50];
+const heManArg = ["胖虎", 110, 100, eRole];
+const meManArg = ["大雄", 110, 50, role];
 const heCardInfos = CardListFactory.me.SplitCode(eCardKey);
 const allMiri: Array<MiriWorker> = [];
 

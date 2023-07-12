@@ -12,6 +12,7 @@ const {
 } = require('node:worker_threads');
 const { app, Menu, BrowserWindow, ipcMain } = require('electron')
 import path from 'path'
+import { Role } from "./_share_code_";
 const isMac = process.platform === 'darwin'
 
 const template = [
@@ -90,7 +91,7 @@ function createWindow() {
   // mainWindow.webContents.openDevTools()
 }
 
-function CreateReport(_, key: string, eKey: string, threadNum: number) {
+function CreateReport(_, key: string, role: Role, eKey: string, eRole: Role, threadNum: number) {
   // Create the browser window.
   const reportWindow = new BrowserWindow({
     width: 600,
@@ -103,7 +104,9 @@ function CreateReport(_, key: string, eKey: string, threadNum: number) {
   const reportWorker = new Worker("./ReportWorker.js", {
     workerData: {
       cardKey: key,
+      role,
       eCardKey: eKey,
+      eRole,
       threadNum,
     }
   });

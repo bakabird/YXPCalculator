@@ -6,6 +6,8 @@ import { Fight } from "./Fight";
 import { FightConst } from "./FightConst";
 import { FROption, FightReport } from "./FightReport";
 import LogEncode from "./LogEncode";
+import MenUtil from "./MenUtil";
+import { Men, Role } from "./_share_code_";
 
 export class Human {
     //卡牌
@@ -19,7 +21,9 @@ export class Human {
     // 修为
     private _speed: number;
     // 名字
-    private _name: string
+    private _name: string;
+    // 角色
+    private _role: Role;
 
     private _fight: Fight;
 
@@ -31,10 +35,11 @@ export class Human {
     private _frOption: FROption;
     private _lastUseCard: ACard;
 
-    constructor(name: string, hp: number, speed: number) {
+    constructor(name: string, hp: number, speed: number, role: Role) {
         this._name = name;
         this._maxHp = hp;
         this._speed = speed;
+        this._role = role;
         this.Reset();
     }
 
@@ -55,6 +60,14 @@ export class Human {
 
     public get name(): string {
         return this._name;
+    }
+
+    public get role(): Role {
+        return this._role;
+    }
+
+    public get men(): Men {
+        return MenUtil.MenOf(this._role);
     }
 
     public get guaCostNum(): number {
@@ -249,7 +262,10 @@ export class Human {
      * @return {number} how many hp actual hit
      */
     public GetHit(hurt: number, from: Human, log: string): number {
-        if (hurt <= 0) throw "invalid arg";
+        if (hurt <= 0) {
+            console.trace("GetHit invalid arg");
+            throw "GetHit invalid arg";
+        }
         if (from.isDead) return 0;
         const fromWeak = from.GetBuff(BuffId.Weak);
         const fromPierce = from.GetBuff(BuffId.Pierce);
@@ -333,7 +349,7 @@ export class Human {
      * 只考虑自己的情况
      */
     public SimpleGetHit(hurt: number, log: string) {
-        if (hurt <= 0) throw "invalid arg";
+        if (hurt <= 0) throw "SimpleGetHit invalid arg";
         const meFlaw = this.GetBuff(BuffId.Flaw);
         const meShield = this.GetBuff(BuffId.Shield);
         hurt = Qiandun.apply(this, hurt)
@@ -354,7 +370,7 @@ export class Human {
 
     //削减生命（不考虑护甲）
     public CutHp(hp: number, log: string): number {
-        if (hp <= 0) throw "invalid arg";
+        if (hp <= 0) throw "CutHp invalid arg";
         if (this.CheckBuff(BuffId.Tiegu, 1)) {
             hp = Math.max(1, hp - 5);
         }
@@ -370,7 +386,7 @@ export class Human {
 
     public AddMaxHp(maxHp: number, log: string) {
         if (maxHp == 0) return;
-        if (maxHp < 0) throw "invalid arg";
+        if (maxHp < 0) throw "AddMaxHp invalid arg";
         this._frOption.hpChg && this._connectingFr.apeendLog(
             `【${log}】${this._name} 加血上限 ${maxHp}`);
         this._maxHp += maxHp;
@@ -378,7 +394,7 @@ export class Human {
 
     public CutMaxHp(cut: number, log: string) {
         if (cut == 0) return;
-        if (cut < 0) throw "invalid arg"
+        if (cut < 0) throw "CutMaxHp invalid arg"
         this._frOption.hpChg && this._connectingFr.apeendLog(
             `【${log}】${this._name} 减血上限 ${cut}`);
         this._maxHp -= cut;
@@ -387,7 +403,7 @@ export class Human {
 
     public AddHp(hp: number, log: string) {
         if (hp == 0) return;
-        if (hp < 0) throw "invalid arg";
+        if (hp < 0) throw "AddHp invalid arg";
         const newHp = Math.min(this._hp + hp, this._maxHp);
         this._hpEverAdd += newHp - this._hp;
         this._frOption.hpChg && this._connectingFr.apeendLog(
@@ -409,22 +425,28 @@ export class Human {
 
     public EffectCard(_target: Human) {
         var useMeiKai = this.CheckBuff(BuffId.MeiKai, 1);
+        var useLinggan = this.CheckBuff(BuffId.Linggan, 1);
         var card = this.GetCurCard();
         var cardmana = card.getMana(this, _target);
-        if (this.CostMana(cardmana)) {
-            this._frOption.cardUseLog && this._connectingFr?.apeendLog(`【卡牌使用】${this.name} 使用 ${card.cardName}`);
-            card.effect(this, _target);
-            this._frOption.cardUse && this._connectingFr?.appendUse(card.cardName);
-            if (this.isDead) return;
-            if (useMeiKai) {
+        do {
+            if (this.CostMana(cardmana)) {
                 this._frOption.cardUseLog && this._connectingFr?.apeendLog(`【卡牌使用】${this.name} 使用 ${card.cardName}`);
                 card.effect(this, _target);
                 this._frOption.cardUse && this._connectingFr?.appendUse(card.cardName);
-                if (this.isDead) return;
-                this.AddBuff(BuffFactory.me.Produce(BuffId.MeiKai, this, -1), "梅开二度");
+                if (this.isDead) break;
+                if (useMeiKai) {
+                    this._frOption.cardUseLog && this._connectingFr?.apeendLog(`【卡牌使用】${this.name} 使用 ${card.cardName}`);
+                    card.effect(this, _target);
+                    this._frOption.cardUse && this._connectingFr?.appendUse(card.cardName);
+                    if (this.isDead) break;
+                    this.AddBuff(BuffFactory.me.Produce(BuffId.MeiKai, this, -1), "梅开二度");
+                }
+                this._lastUseCard = card;
+                this.ShiftCard();
             }
-            this._lastUseCard = card;
-            this.ShiftCard();
+        } while (false)
+        if (useLinggan) {
+            this.AddBuffById(BuffId.Linggan, -1, BuffId.Linggan + "消耗");
         }
     }
 
@@ -502,7 +524,7 @@ export class Human {
         this._connectingFr = null;
     }
 
-    public appendLog(log: string) {
-        this._connectingFr?.apeendLog(`【${this.name}】${log}`);
+    public appendLog(TAG: string, log: string) {
+        this._connectingFr?.apeendLog(`【${TAG}】${this.name} ${log}`);
     }
 }

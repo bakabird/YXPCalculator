@@ -554,7 +554,7 @@ export class Tu_juebiCard extends ACard {
     }
     protected onGetTuAct(): CardEffect {
         return (me, he) => {
-            var val = Math.floor(me.shieldEverCut / this._lvlVal(6, 5, 4))
+            var val = Math.floor(-me.shieldEverCut / this._lvlVal(6, 5, 4))
             if (val > 0) {
                 me.AddBuffById(BuffId.Shield, val, this.cardName);
             }
@@ -567,7 +567,7 @@ export class Tu_liushaCard extends ACard {
     protected onEffect(me: Human, he: Human) {
         var extra = 0;
         if (me.isTu) {
-            extra = Math.floor(me.shieldEverCut / this._lvlVal(6, 5, 3));
+            extra = Math.floor(-me.shieldEverCut / this._lvlVal(6, 5, 3));
         }
         he.GetHit(9 + extra, me, this.cardName)
     }

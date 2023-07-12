@@ -9,7 +9,10 @@ export enum BES {
     RoundStart,
     RoundEnd,
     BeforeHitOther,
+    // 【任意卡牌生效后】考虑 神来之笔/回响阵纹 的情况噢。
     AnyCardEffectOver,
+    // 【任意卡牌行动后】
+    AnyCardActionOver,
     MoveAgain,
     CALL_BY_CODE,
 }
@@ -59,7 +62,6 @@ export enum BuffId {
     Countershock = "反震",
     XingDuan = "星断",
     DecalEcho = "回响阵纹",
-    ZhenMillionFlower = "万花迷魂阵",
 
     Mu = "木灵",
     Huo = "火灵",
@@ -121,6 +123,18 @@ export enum BuffId {
     Bamenjinsuo = "八门金锁",
     // 不动金刚
     Budongjingang = "不动金刚",
+    // 万花迷魂阵
+    ZhenMillionFlower = "万花迷魂阵",
+    // #endregion
+
+    // #region 画
+    // 灵感
+    Linggan = "灵感",
+    // 运笔如飞
+    Yunbirufei = "运笔如飞",
+    YunbirufeiWait = "运笔如飞·蓄",
+    // 画龙点睛
+    Hualongdianjing = "画龙点睛",
     // #endregion
 
     Huntianyin = "浑天印",
@@ -152,8 +166,10 @@ export abstract class ABuff {
         return `${this.id}(${this._num}层)`
     }
 
+    public static Debuffs: Array<BuffId> = [BuffId.Posion, BuffId.Weak, BuffId.Flaw, BuffId.Depower]
+
     public static IsDebuff(buffId: BuffId) {
-        return [BuffId.Posion, BuffId.Weak, BuffId.Flaw].indexOf(buffId) != -1;
+        return this.Debuffs.indexOf(buffId) != -1;
     }
     public static IsActiveWuxing(buffId: BuffId) {
         return [BuffId.Jin, BuffId.Mu, BuffId.Shui, BuffId.Huo, BuffId.Tu].indexOf(buffId) != -1;
@@ -1071,6 +1087,41 @@ export class Youxuluaxin extends ABuff {
 
 }
 
+@Buff
+export class YunbirufeiWait extends ABuff {
+    id: BuffId = BuffId.YunbirufeiWait;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.AnyCardActionOver) {
+            return BO.Third;
+        }
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if (stage == BES.AnyCardActionOver) {
+            this._owner.AddBuffById(BuffId.Yunbirufei, this._num, this.id);
+            this._owner.RemoveBuff(this.id, "耗尽");
+        }
+    }
+
+}
+
+@Buff
+export class Yunbirufei extends ABuff {
+    id: BuffId = BuffId.Yunbirufei;
+    getEffectOrder(stage: BES): BO {
+        if (stage == BES.AnyCardActionOver) {
+            return BO.First;
+        }
+        return BO.None;
+    }
+    effect(stage: BES) {
+        if (stage == BES.AnyCardActionOver) {
+            this._owner.AddBuffById(BuffId.MoveAgain, 1, this.id);
+            this._owner.AddBuffById(this.id, -1, "消耗");
+        }
+    }
+
+}
 
 @Buff
 export class Suisha extends EmptyBuff { id: BuffId = BuffId.Suisha; }
@@ -1097,6 +1148,10 @@ export class Kuangwu extends EmptyBuff {
 export class Tianyinkunxian extends EmptyBuff {
     id: BuffId = BuffId.Tianyinkunxian;
 
+}
+@Buff
+export class Hualongdianjing extends EmptyBuff {
+    id: BuffId = BuffId.Hualongdianjing;
 }
 
 export class BuffFactory {

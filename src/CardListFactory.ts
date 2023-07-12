@@ -4,12 +4,15 @@ import { TanShuYan_LIST, WuXingzhi_LIST, YanXue_LIST } from "./Character";
 import { Dan_LIST } from "./DanCards";
 import { Fu_LIST } from "./FuCards";
 import Go from "./Go";
+import { Hua_LIST } from "./HuaCards";
 import { QiXing_LIST } from "./QiXingGeCard";
 import { Qin_LIST } from "./QinCards";
 import { WuXing_LIST } from "./WuXingDaoMengCards";
 import { JianZong_LIST } from "./YunLingJianCards";
 import { Zhen_LIST } from "./ZhenCards";
 import { Career, Men, Role } from "./_share_code_";
+require = require("esm")(module);
+const { pick } = require("gnfun");
 
 
 var AllCardType = [
@@ -28,6 +31,7 @@ var AllCardType = [
     ...Dan_LIST,
     ...Qin_LIST,
     ...Fu_LIST,
+    ...Hua_LIST,
 ]
 
 Go.Qin_LIST = Qin_LIST;
@@ -44,6 +48,7 @@ function getCareerByType(type): Career {
     else if (Qin_LIST.includes(type)) return Career.Qin
     else if (Dan_LIST.includes(type)) return Career.Dan
     else if (Fu_LIST.includes(type)) return Career.Fu
+    else if (Hua_LIST.includes(type)) return Career.Hua
     else return Career.NON
 }
 
@@ -124,10 +129,35 @@ export class CardListFactory {
         return card;
     }
 
+    public NewCardByType(type: { new(): ACard }, level: number) {
+        var card = new type();
+        card.init(level);
+        return card;
+    }
+
     public EachRecord(walk: (record: CardRecord) => void) {
         Object.values(this._dict).forEach(record => {
             walk(record);
         });
+    }
+
+    /**
+     * 从对应的门派中任意抽卡
+     * @param men 
+     */
+    public PickFromMen<T extends ACard>(men: Men): { new(): T } {
+        let pool = [];
+        if (men == Men.QLJJ) {
+            pool = JianZong_LIST;
+        } else if (men == Men.QXG) {
+            pool = QiXing_LIST;
+        } else if (men == Men.WXDM) {
+            pool = WuXing_LIST;
+        }
+        if (pool.length > 0) {
+            return pick(pool);
+        }
+        return null;
     }
 }
 

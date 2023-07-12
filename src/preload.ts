@@ -19,8 +19,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   feedback: (item: string, content: string, fileName?: string, fileBuffer?: ArrayBuffer) => {
     return ipcRenderer.invoke('Main.Feedback', item, content, fileName, fileBuffer)
   },
-  createReport: (key: string, eKey: string, threadNum: number) => {
-    ipcRenderer.send("Main.Report", key, eKey, threadNum);
+  createReport: (key: string, role: number, eKey: string, eRole: number, threadNum: number) => {
+    ipcRenderer.send("Main.Report", key, role, eKey, eRole, threadNum);
   },
   viewReport: (fightReport: any) => {
     ipcRenderer.send("Main.ViewReport", fightReport)

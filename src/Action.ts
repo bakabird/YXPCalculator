@@ -15,12 +15,14 @@ export class Action {
         if (this.anyDead) return;
         me.EffectBuff(BES.RoundStart);
         me.EffectCard(he);
+        me.EffectBuff(BES.AnyCardActionOver);
         if (this.anyDead) return;
         if (me.CheckBuff(BuffId.MoveAgain, 1) && !me.CheckBuff(BuffId.Tianyinkunxian, 0)) {
             me.EffectBuff(BES.MoveAgain);
             if (this.anyDead) return;
             me.AddBuffById(BuffId.MoveAgainIng, 1, LogEncode.Ignore)
             me.EffectCard(he);
+            me.EffectBuff(BES.AnyCardActionOver);
             if (this.anyDead) return;
         }
         me.EffectBuff(BES.RoundEnd);

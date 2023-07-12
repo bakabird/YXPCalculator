@@ -429,7 +429,7 @@ export class DryTreeCard extends ACard {
     cardName: CardName = CardName.DryTree;
     cardState: CardState = CardState.JinDan;
     protected onEffect(me: Human, he: Human) {
-        me.appendLog("累积回血 " + me.hpEverAdd);
+        me.appendLog("累积回血", me.hpEverAdd.toString());
         const exAtk = Math.floor(me.hpEverAdd / this._lvlVal(5, 4, 3));
         he.GetHit(10 + exAtk, me, this.cardName);
     }
