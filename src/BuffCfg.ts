@@ -10,4 +10,5 @@ export default {
     Budongjingang_Shield: 7,
     Budongjingang_Hp: 7,
     Quxiedan_cut: 3,
+    Yingzhizhu_shiled2atk: 3,
 }

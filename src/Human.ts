@@ -7,6 +7,7 @@ import { FightConst } from "./FightConst";
 import { FROption, FightReport } from "./FightReport";
 import LogEncode from "./LogEncode";
 import MenUtil from "./MenUtil";
+import { KongJianLingTianCard } from "./ZhiCards";
 import { Men, Role } from "./_share_code_";
 
 export class Human {
@@ -145,10 +146,10 @@ export class Human {
     //#region Buff
 
     AddBuff(buff: ABuff, log: string) {
-        const mePixie = this.GetBuff(BuffId.Pixie);
+        const mePixieNum = this.NumOf(BuffId.Pixie);
         const isDebuff = ABuff.IsDebuff(buff.id);
-        if (isDebuff && buff.num > 0 && mePixie.num > 0) {
-            const costPixie = Math.min(buff.num, mePixie.num);
+        if (isDebuff && buff.num > 0 && mePixieNum > 0) {
+            const costPixie = Math.min(buff.num, mePixieNum);
             buff.ModNum(-costPixie);
             this.AddBuffById(BuffId.Pixie, -costPixie, "抵消");
         }
@@ -279,6 +280,7 @@ export class Human {
         const fromQuanyong = from.GetBuff(BuffId.Quanyong);
         const fromSuiSha = from.GetBuff(BuffId.Suisha)
         const fromKuangwu = from.GetBuff(BuffId.Kuangwu)
+        const fromYerenhua = from.GetBuff(BuffId.Yerenhua);
         const meCountershock = this.GetBuff(BuffId.Countershock);
         const meFlaw = this.GetBuff(BuffId.Flaw);
         const meShield = this.GetBuff(BuffId.Shield);
@@ -309,11 +311,11 @@ export class Human {
         if (fromPierce) {
             from.AddBuff(BuffFactory.me.Produce(BuffId.Pierce, from, -1), log);
         } else if (meShield) {
-            if (fromSuiyan || fromSuiSha) hurt *= 2;
+            if (fromSuiyan || fromSuiSha || fromYerenhua) hurt *= 2;
             const shiledOut = Math.min(meShield.num, hurt);
             this.AddBuff(BuffFactory.me.Produce(BuffId.Shield, this, -shiledOut), log);
             hurt -= shiledOut;
-            if (fromSuiyan || fromSuiSha) hurt = Math.ceil(hurt / 2);
+            if (fromSuiyan || fromSuiSha || fromYerenhua) hurt = Math.ceil(hurt / 2);
         }
         if (hurt > 0) {
             if (!fromBanSharp) {
@@ -377,9 +379,24 @@ export class Human {
         if (this.CheckBuff(BuffId.Protect, 1)) {
             this.AddBuff(BuffFactory.me.Produce(BuffId.Protect, this, -1), "扣血");
         } else {
+            if (this.CheckBuff(BuffId.Yedunhua, 1)) {
+                const curShiled = this.NumOf(BuffId.Shield);
+                if (curShiled > 0) {
+                    const halfHurt = Math.floor(hp / 2);
+                    const shiledOut = Math.min(curShiled, halfHurt);
+                    if (shiledOut > 0) {
+                        hp -= shiledOut;
+                        this.AddBuffById(BuffId.Shield, -shiledOut, BuffId.Yedunhua);
+                    }
+                }
+            }
             this._frOption.hpChg && this._connectingFr.apeendLog(
                 `【${log}】${this._name} 扣血 ${hp}`);
             this._hp -= hp;
+            if (this.CheckBuff(BuffId.BingFengXueLian, 1)) {
+                this.AddBuffById(BuffId.Shield, hp, BuffId.BingFengXueLian)
+                this.AddBuffById(BuffId.BingFengXueLian, -1, "消耗");
+            }
         }
         return hp;
     }
@@ -427,6 +444,11 @@ export class Human {
         var useMeiKai = this.CheckBuff(BuffId.MeiKai, 1);
         var useLinggan = this.CheckBuff(BuffId.Linggan, 1);
         var card = this.GetCurCard();
+        while (card.getIsSkip(this, _target)) {
+            card.incSkipTime();
+            this.ShiftCard();
+            card = this.GetCurCard()
+        }
         var cardmana = card.getMana(this, _target);
         do {
             if (this.CostMana(cardmana)) {

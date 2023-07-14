@@ -17,13 +17,24 @@ export class Action {
         me.EffectCard(he);
         me.EffectBuff(BES.AnyCardActionOver);
         if (this.anyDead) return;
-        if (me.CheckBuff(BuffId.MoveAgain, 1) && !me.CheckBuff(BuffId.Tianyinkunxian, 0)) {
-            me.EffectBuff(BES.MoveAgain);
-            if (this.anyDead) return;
-            me.AddBuffById(BuffId.MoveAgainIng, 1, LogEncode.Ignore)
-            me.EffectCard(he);
-            me.EffectBuff(BES.AnyCardActionOver);
-            if (this.anyDead) return;
+        if (me.CheckBuff(BuffId.MoveAgain, 1)) {
+            if (!me.CheckBuff(BuffId.Shufu, 1)) {
+                if (!me.CheckBuff(BuffId.Tianyinkunxian, 1)) {
+                    me.EffectBuff(BES.MoveAgain);
+                    if (this.anyDead) return;
+                    me.AddBuffById(BuffId.MoveAgainIng, 1, LogEncode.Ignore)
+                    me.EffectCard(he);
+                    me.EffectBuff(BES.AnyCardActionOver);
+                    if (this.anyDead) return;
+                } else {
+                    me.appendLog(BuffId.Tianyinkunxian, "无法再动")
+                }
+            } else {
+                me.appendLog(BuffId.Shufu, "无法再动")
+                if (me.CheckBuff(BuffId.FuXianGuTeng, 1)) {
+                    me.AddBuffById(BuffId.Weak, me.NumOf(BuffId.FuXianGuTeng), BuffId.FuXianGuTeng);
+                }
+            }
         }
         me.EffectBuff(BES.RoundEnd);
         me.RemoveBuff(BuffId.MoveAgainIng, LogEncode.Ignore);

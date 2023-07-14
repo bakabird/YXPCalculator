@@ -705,7 +705,7 @@ export class ChainSwordArrayCard extends ACard {
             if (start) {
                 if (card.cardName.endsWith("剑阵")) {
                     card.effect(me, he);
-                    card.decUseNum();
+                    card.DecUseNum();
                     end = true;
                 }
             }

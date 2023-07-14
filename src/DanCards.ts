@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto";
 import { ABuff, BuffId } from "./Buff";
 import BuffCfg from "./BuffCfg";
 import { ACard, CardName, CardState } from "./Card";
@@ -91,7 +92,7 @@ export class QuXieDanCard extends ACard {
                 }
             })
             if (tmp.length > 0) {
-                const cutbuff = tmp[me.Gua(0, tmp.length - 1)];
+                const cutbuff = tmp[randomInt(0, tmp.length)];
                 me.AddBuffById(cutbuff.id, BuffCfg.Quxiedan_cut, this.cardName);
             }
         }

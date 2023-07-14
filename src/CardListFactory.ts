@@ -10,6 +10,7 @@ import { Qin_LIST } from "./QinCards";
 import { WuXing_LIST } from "./WuXingDaoMengCards";
 import { JianZong_LIST } from "./YunLingJianCards";
 import { Zhen_LIST } from "./ZhenCards";
+import { Zhi_LIST } from "./ZhiCards";
 import { Career, Men, Role } from "./_share_code_";
 require = require("esm")(module);
 const { pick } = require("gnfun");
@@ -32,6 +33,7 @@ var AllCardType = [
     ...Qin_LIST,
     ...Fu_LIST,
     ...Hua_LIST,
+    ...Zhi_LIST
 ]
 
 Go.Qin_LIST = Qin_LIST;
@@ -49,6 +51,7 @@ function getCareerByType(type): Career {
     else if (Dan_LIST.includes(type)) return Career.Dan
     else if (Fu_LIST.includes(type)) return Career.Fu
     else if (Hua_LIST.includes(type)) return Career.Hua
+    else if (Zhi_LIST.includes(type)) return Career.Zhi
     else return Career.NON
 }
 

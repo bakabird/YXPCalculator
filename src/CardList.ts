@@ -22,6 +22,10 @@ export default class CardList {
         return this._cardOrder;
     }
 
+    public get curCardIndex(): number {
+        return this._curCardIndex;
+    }
+
     public get cardInfos(): Array<CardInfo> {
         return this._item.map(i => {
             return {

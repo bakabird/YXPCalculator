@@ -417,6 +417,75 @@ export enum CardName {
 
     // #endregion
 
+    // #region 灵植
+    // 归元草
+    GuiYuanCao = "归元草",
+    // 归岩草
+    GuiYanCao = "归岩草",
+    // 金梭兰
+    JinSuolan = "金梭兰",
+    // 火梭兰
+    HuoSuolan = "火梭兰",
+    // 剑枝竹
+    JianZhiZhu = "剑枝竹",
+    // 硬枝竹
+    YingZhiZhu = "硬枝竹",
+
+
+
+    // 神力草
+    ShenLiCao = "神力草",
+    // 失力草
+    ShiLiCao = "失力草",
+    // 神秘种子
+    ShenMiZhongzi = "神秘种子",
+    // 叶盾花
+    YeDunHua = "叶盾花",
+    // 叶刃花
+    YeRenHua = "叶刃花",
+
+
+
+    // 愈甘菊
+    YuGanJu = "愈甘菊",
+    // 清甘菊
+    QingGanJu = "清甘菊",
+    // 灵植浇灌
+    LingZhiJiaoGuan = "灵植浇灌",
+    // 向灵葵
+    XiangLingKui = "向灵葵",
+    // 邪灵葵
+    XieLingKui = "邪灵葵",
+
+
+
+    // 飞枭灵芝
+    FeiXiaoLingZhi = "飞枭灵芝",
+    // 影枭灵芝
+    YingXiaoLingZhi = "影枭灵芝",
+    // 穿肠紫蕨
+    ChuanChangZiJue = "穿肠紫蕨",
+    // 清肠紫蕨
+    QingChangZiJue = "清肠紫蕨",
+    // 冰封雪莲
+    BingFengXueLian = "冰封雪莲",
+    // 冰封血莲
+    BingFengXieLian = "冰封血莲",
+
+
+
+    // 玄韵道果
+    XuanYunDaoGuo = "玄韵道果",
+    // 魔韵道果
+    MoYunDaoGuo = "魔韵道果",
+    // 空间灵田
+    KongJianLingTian = "空间灵田",
+    // 缚仙古藤
+    FuXianGuTeng = "缚仙古藤",
+    // 噬仙古藤
+    ShiXianGuTeng = "噬仙古藤",
+    // #endregion
+
     // #region 角色卡
     Youranhl = "悠然葫芦",
     // #endregion
@@ -457,16 +526,15 @@ export abstract class ACard {
     private _level: CardLevel;
     private _extraLevel: number;
     private _useNum: number;
+    private _skipNum: number;
     // 初始化时被赋予的卡牌等级
     public get initLevel(): number {
         return this._level;
     }
-
     // 现在的卡牌等级
     public get CurLevel(): number {
         return Math.min(this._level + this._extraLevel, CardLevel.Legend);
     }
-
     // 狂?
     public get isCrazy(): boolean {
         return this.cardName.startsWith("狂剑")
@@ -497,17 +565,26 @@ export abstract class ACard {
         return this.onGetIsKeeping();
     }
 
-    private _IncExtraLevel() {
+    protected get skipNum(): number {
+        return this._skipNum;
+    }
+
+    private _incExtraLevel() {
         this._extraLevel++;
+    }
+
+    public incSkipTime() {
+        this._skipNum++;
     }
 
     init(level: CardLevel) {
         this._level = level;
         this._extraLevel = 0;
         this._useNum = 0;
+        this._skipNum = 0;
     };
 
-    public decUseNum() {
+    public DecUseNum() {
         this._useNum--;
     }
 
@@ -536,7 +613,7 @@ export abstract class ACard {
         const onStar = me.CardList.IsOnStar();
         // 前处理
         if (meHualong > 0) {
-            this._IncExtraLevel();
+            this._incExtraLevel();
             me.AddBuffById(BuffId.Hualongdianjing, -1, "消耗");
         }
         if (this.isCrazy && meCrazyMoveNum > 0) {
@@ -671,6 +748,9 @@ export abstract class ACard {
         }
         return mana;
     }
+    public getIsSkip(me: Human, he: Human): boolean {
+        return this.onGetIsSkip(me, he);
+    }
     // 卡牌卡面耗蓝
     protected onGetMana(me: Human): number {
         return 0;
@@ -681,6 +761,10 @@ export abstract class ACard {
     }
     // 是否持续
     protected onGetIsKeeping(): boolean {
+        return false;
+    }
+    // 是否跳过
+    protected onGetIsSkip(me: Human, he: Human): boolean {
         return false;
     }
     // 卡牌效果
