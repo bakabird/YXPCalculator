@@ -696,7 +696,13 @@ export class ZhenMillionFlowerBuff extends ABuff {
     }
     effect(stage: BES) {
         if (stage == BES.RoundEnd) {
-            this._owner.GetAnother().AddBuffById(BuffId.Depower, 1, this.id)
+            const he = this._owner.GetAnother();
+            he.AddBuffById(BuffId.Depower, 1, this.id);
+            const num = he.NumOf(BuffId.Depower);
+            if (num > 0) {
+                he.CutHp(num, this.id);
+                this._owner.AddHp(num, this.id);
+            }
             this._owner.AddBuffById(this.id, -1, "消耗");
         }
     }
