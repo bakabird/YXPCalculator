@@ -123,6 +123,7 @@ const Const = {
     FeedbackDefaultItem: "无",
     FeedbackLostCard: "缺卡",
     FeedbackContentMinLen: 3,
+    FeedbackContentMaxLen: 250,
     MaxFileSize: 1024 * 2,
     CFFDotSize: 4,
     CFFMarginTop: 150,
@@ -654,8 +655,9 @@ class FeedbackWrap {
                     })
                 return
             }
-            if (this._content.val().toString().length < Const.FeedbackContentMinLen) {
-                tip.text("反馈内容过短")
+            const contentTip = this._checkContent();
+            if (contentTip) {
+                tip.text(contentTip)
                 setInterval(() => {
                     tip.text("")
                 }, 3000);
@@ -669,13 +671,12 @@ class FeedbackWrap {
                     .animate({
                         'borderWidth': '1px',
                     }, 400, () => {
-                        this.item.css({
+                        this._content.css({
                             borderColor: "black"
                         })
                     })
                 return;
             }
-            LoadingWrap.last.show()
             const input = inputFile[0]
             if (input.files.length > 0) {
                 const f = input.files[0]
@@ -717,7 +718,16 @@ class FeedbackWrap {
         })
     }
 
+    private _checkContent() {
+        if (this._content.val().toString().length < Const.FeedbackContentMinLen) {
+            return "反馈内容过短。"
+        } else if (this._content.val().toString().length > Const.FeedbackContentMaxLen) {
+            return "反馈内容过多。"
+        }
+    }
+
     private _post(fileName?: string, fileBianryStr?: ArrayBuffer) {
+        LoadingWrap.last.show()
         this._cd++
         setTimeout(() => {
             this._cd--;
@@ -731,7 +741,12 @@ class FeedbackWrap {
         const content = this._content.val() as string
         window.electronAPI.feedback(item, content, fileName, fileBianryStr)
             .then(() => {
+                alert("反馈成功")
                 cd()
+            })
+            .catch(err => {
+                alert("反馈失败\n" + err)
+                cd();
             })
         setTimeout(() => {
             cd()

@@ -165,15 +165,20 @@ function GetAllCards(): Array<string> {
 }
 
 function Feedback(_, item: string, content: string, fileName?: string, fileBuffer?: ArrayBuffer) {
-  AliKit.me.post({
-    item,
-    content,
-    attachment: !fileName ? null : {
-      fileExt: path.extname(fileName),
-      fileBuffer,
-    }
+  return new Promise<void>((rso, rje) => {
+    AliKit.me.post({
+      item,
+      content,
+      attachment: !fileName ? null : {
+        fileExt: path.extname(fileName),
+        fileBuffer,
+      }
+    }).then(() => {
+      rso()
+    }).catch((err) => {
+      rje(err)
+    })
   })
-  return true
 }
 
 function SearchCard(_event, inKey: string, filter: SearchFilter): Array<string> {

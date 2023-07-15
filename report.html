@@ -8,6 +8,7 @@
     content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
   <script src="./jquery.js"></script>
   <link href="./css/report.css" rel="stylesheet">
+  <link href="./css/ReportFeedback.css" rel="stylesheet">
   <title>分析报告</title>
 </head>
 
@@ -16,6 +17,7 @@
     <p>分析中...</p>
   </div>
   <div class="body hide">
+    <button class="feedback">意见反馈</button>
     <div class="cards">
       <img class="role" src="" alt="">
     </div>
@@ -30,6 +32,17 @@
     <div class="rcmd">
       <h3>推荐牌序(伤害优先)</h3>
       <button class="view">战报详情</button>
+    </div>
+  </div>
+  <div class="Feedback hide">
+    <button class="close">关闭</button>
+    <div class="body">
+      <textarea placeholder="第X轮异常...
+《XXXX》卡异常..." name="" id="" cols="30" rows="10"></textarea>
+      <br>
+      <center>已携带当前战报信息！</center>
+      <button class="confirm">提交</button>
+      <p class="tip"></p>
     </div>
   </div>
   <div class="Hub hide">

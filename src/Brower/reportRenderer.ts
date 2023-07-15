@@ -113,6 +113,12 @@ namespace Share2ReportRenderer {
 }
 
 namespace reportRenderer {
+    var lastSummary = {};
+    const Const = {
+        FeedbackContentMinLen: 3,
+        FeedbackContentMaxLen: 250,
+    }
+
     class CardListWrap {
         private _img: JQuery<HTMLImageElement>;
         private _cardBlue: JQuery<HTMLElement>;
@@ -150,7 +156,6 @@ namespace reportRenderer {
             item.children(".huseCard").text("使用卡牌");
             item.children(".heChg").text("敌方生命变化")
             this._node.append(item);
-            console.log(fr);
             fr.meRoundHp.forEach((_, idx) => {
                 var item = this._itemBlue.clone();
                 item.children(".roundIdx").text(idx);
@@ -194,6 +199,100 @@ namespace reportRenderer {
         }
     }
 
+    class FeedbackBtnWrap {
+        constructor(private _node: JQuery<HTMLElement>) {
+            this._node.on("click", () => {
+                FeedbackWrap.last.show()
+            })
+        }
+    }
+
+    class FeedbackWrap {
+        public static last: FeedbackWrap;
+
+        private _cd: number
+        private _tip: JQuery<HTMLElement>
+
+        private get _content() {
+            return this._node.find(".body textarea")
+        }
+
+        constructor(private _node: JQuery<HTMLElement>) {
+            FeedbackWrap.last = this;
+            const tip = this._tip = _node.find(".body .tip")
+            this._cd = 0
+            _node.children(".close").on("click", () => {
+                this.hide();
+            });
+            _node.find(".body .confirm").on("click", () => {
+                if (this._cd > 0) {
+                    alert("请稍等片刻后重试~")
+                    return;
+                }
+                this._cd++;
+                setTimeout(() => {
+                    this._cd--;
+                }, 1333);
+                const contentTip = this._checkContent();
+                if (contentTip) {
+                    tip.text(contentTip)
+                    setInterval(() => {
+                        tip.text("")
+                    }, 3000);
+                    this._content
+                        .css({
+                            borderColor: "red"
+                        })
+                        .animate({
+                            'borderWidth': '3px',
+                        }, 500)
+                        .animate({
+                            'borderWidth': '1px',
+                        }, 400, () => {
+                            this._content.css({
+                                borderColor: "black"
+                            })
+                        })
+                    return;
+                }
+                this._post()
+            })
+        }
+        private _post() {
+            this._cd++
+            setTimeout(() => {
+                this._cd--;
+            }, 10 * 1000);
+            const content = this._content.val() as string
+            window.electronAPI.feedback("分析报告意见反馈", content + "\n\n" + JSON.stringify(lastSummary))
+                .then(() => {
+                    alert("反馈成功")
+                })
+                .catch((err) => {
+                    alert("反馈失败\n" + err);
+                })
+            this._clean()
+            this.hide()
+        }
+        private _checkContent() {
+            if (this._content.val().toString().length < Const.FeedbackContentMinLen) {
+                return "反馈内容过短。"
+            } else if (this._content.val().toString().length > Const.FeedbackContentMaxLen) {
+                return "反馈内容过多。"
+            }
+        }
+        private _clean() {
+            this._tip.val("");
+            this._content.val("");
+        }
+        public show() {
+            this._node.removeClass("hide");
+        }
+        public hide() {
+            this._node.addClass("hide");
+        }
+    }
+
     window.electronAPI.onProcessOver((_, sumamry) => {
         $(".waiting").addClass("hide");
         $(".body").removeClass("hide");
@@ -201,6 +300,9 @@ namespace reportRenderer {
         var eclw = new CardListWrap($(".body .eCards"));
         var rdw = new ReportDetailWrap($(".body .curFightReport"))
         var rw = new RecommendWrap($(".rcmd"));
+        var feedbackBtn = new FeedbackBtnWrap($(".feedback"))
+        var feedback = new FeedbackWrap($(".Feedback"));
+        lastSummary = sumamry;
         clw.build(sumamry.cur.meRole, sumamry.cur.meCards);
         eclw.build(sumamry.cur.heRole, sumamry.cur.heCards);
         rdw.build(sumamry.cur);
@@ -209,6 +311,7 @@ namespace reportRenderer {
             rw.build(sumamry.dmgBest);
         } else {
             rw.hide();
+            $(".shortwin").css("max-height", "470px")
         }
     });
 }
