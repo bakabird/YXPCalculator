@@ -18,8 +18,8 @@ const eRole = workerData.eRole;
 const threadNum = workerData.threadNum;
 const possibleSet = new PossibleCardSet(cardKey);
 const sum: Sumamry = new Sumamry();
-const heManArg = ["胖虎", 110, 100, eRole];
-const meManArg = ["大雄", 110, 50, role];
+const heManArg = ["敌方", 110, 100, eRole];
+const meManArg = ["己方", 110, 50, role];
 const heCardInfos = CardListFactory.me.SplitCode(eCardKey);
 const allMiri: Array<MiriWorker> = [];
 

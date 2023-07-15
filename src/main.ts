@@ -94,8 +94,8 @@ function createWindow() {
 function CreateReport(_, key: string, role: Role, eKey: string, eRole: Role, threadNum: number) {
   // Create the browser window.
   const reportWindow = new BrowserWindow({
-    width: 600,
-    height: 800,
+    width: 800,
+    height: 900,
     webPreferences: {
       nodeIntegrationInWorker: true,
       preload: path.join(__dirname, 'preload.js'),
@@ -137,8 +137,8 @@ function CreateReport(_, key: string, role: Role, eKey: string, eRole: Role, thr
 function ViewReport(_, fightReport: FightReport) {
   // Create the browser window.
   const reportWindow = new BrowserWindow({
-    width: 600,
-    height: 800,
+    width: 800,
+    height: 900,
     webPreferences: {
       nodeIntegrationInWorker: true,
       preload: path.join(__dirname, 'preload.js'),

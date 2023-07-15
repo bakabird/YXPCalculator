@@ -454,12 +454,14 @@ export class Human {
             if (this.CostMana(cardmana)) {
                 this._frOption.cardUseLog && this._connectingFr?.apeendLog(`【卡牌使用】${this.name} 使用 ${card.cardName}`);
                 card.effect(this, _target);
-                this._frOption.cardUse && this._connectingFr?.appendUse(card.cardName);
+                this._frOption.meCardUse && this._connectingFr?.appendMeUse(card.cardName);
+                this._frOption.heCardUse && this._connectingFr?.appendHeUse(card.cardName);
                 if (this.isDead) break;
                 if (useMeiKai) {
                     this._frOption.cardUseLog && this._connectingFr?.apeendLog(`【卡牌使用】${this.name} 使用 ${card.cardName}`);
                     card.effect(this, _target);
-                    this._frOption.cardUse && this._connectingFr?.appendUse(card.cardName);
+                    this._frOption.meCardUse && this._connectingFr?.appendMeUse(card.cardName);
+                    this._frOption.heCardUse && this._connectingFr?.appendHeUse(card.cardName);
                     if (this.isDead) break;
                     this.AddBuff(BuffFactory.me.Produce(BuffId.MeiKai, this, -1), "梅开二度");
                 }

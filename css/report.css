@@ -2,7 +2,16 @@
     display: none;
 }
 
+.role {
+    width: 60px;
+    height: 60px;
+}
+
 .cards {
+    display: flex;
+}
+
+.eCards {
     display: flex;
 }
 
@@ -10,9 +19,10 @@
     flex: 1;
 }
 
+
 .Card img {
     width: 100%;
-    height: 21vw;
+    height: calc((100vw - 60px) * 1.66 / 8);
 }
 
 
@@ -21,7 +31,9 @@
     line-height: 1.6em;
 }
 
-
+.rcmd h3 {
+    margin: 5px;
+}
 
 
 

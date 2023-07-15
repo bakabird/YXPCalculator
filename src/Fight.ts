@@ -18,7 +18,7 @@ export class Fight {
     }
     Play(cutCheck: CutCheck): FightReport {
         var index = 0;
-        var fightReport = new FightReport();
+        var fightReport = new FightReport(this._me.role, this._he.role);
         var meRoundHp = [this._me.hp];
         var meRoundMaxHp = [this._me.maxHp];
         var heRoundHp = [this._he.hp];
@@ -31,9 +31,8 @@ export class Fight {
         fightReport.heRoundHp = heRoundHp;
         fightReport.heRoundMaxHp = heRoundMaxHp;
         fightReport.meUseCard.push([]);
+        fightReport.heUseCard.push([]);
 
-
-        fightReport.apeendLog(`${this._me.name}|${gnfun.getEnumName(Role, this._me.role)} VS ${this._he.name}|${gnfun.getEnumName(Role, this._he.role)}`);
         while (index < FightConst.MAX_ROUND && !this._me.isDead && !this._he.isDead) {
             fightReport.apeendLog(`\n：：：第${index + 1}轮：：：`);
             var round = new Round(index, this._me, this._he);

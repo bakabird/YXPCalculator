@@ -9,13 +9,14 @@ export class Round {
     }
     effect(fr: FightReport) {
         fr.meUseCard.push([]);
+        fr.heUseCard.push([]);
         var meAct = new Action(this._me, this._he);
         var heAct = new Action(this._he, this._me);
         this._me.connectReport(fr, {
-            cardUse: true, hpChg: true, buffChg: true, cardUseLog: true
+            heCardUse: false, meCardUse: true, hpChg: true, buffChg: true, cardUseLog: true
         });
         this._he.connectReport(fr, {
-            cardUse: false, hpChg: true, buffChg: true, cardUseLog: true
+            heCardUse: true, meCardUse: false, hpChg: true, buffChg: true, cardUseLog: true
         });
         if (this._me.speed > this._he.speed) {
             meAct.effect();
