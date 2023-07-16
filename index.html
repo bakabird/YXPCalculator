@@ -11,7 +11,8 @@
     style-src * 'self' 'unsafe-inline'; 
     img-src * 'self' data: content:; 
     connect-src * blob:;">
-  <script src="./jquery.js"></script>
+  <script src="./BrowerLibs/clipboard.min.js"></script>
+  <script src="./BrowerLibs/jquery.js"></script>
   <link href="./css/Bar.css" rel="stylesheet">
   <link href="./css/Cardlib.css" rel="stylesheet">
   <link href="./css/Feedback.css" rel="stylesheet">
@@ -25,8 +26,8 @@
 <body>
   <div class="Bar">
     <button class="analysis">分析卡组</button>
-    线程数
-    <select class="threadNum">
+    <span class="hide">线程数</span>
+    <select class="threadNum hide">
       <option>1</option>
       <option>3</option>
       <option>5</option>
@@ -34,6 +35,9 @@
     </select>
     <button class="openCardlib">卡库</button>
     <button class="feedback">意见反馈</button>
+    <button class="qqGroup hide">
+
+    </button>
     <button class="fix">一键修复</button>
     <button class="console">控制台</button>
     <!-- <button class="debug">测试</button> -->
@@ -59,14 +63,15 @@
     </div>
     <div class="selection"></div>
   </div>
-  <p>增加Q群提示</p>
+  <p>一键修复增加二次确认</p>
+  <p>设置自己/对手属性</p>
+  <p>增加应用图标</p>
   <p>搜索器+开关：切换详细/简略。详细描述下会附带快捷键</p>
   <p></p>
   <div class="hide">
     <p>----</p>
     <p>增加候牌区()</p>
     <p>推荐牌战报增加标识(赢/输 多少回合)</p>
-    <p>设置自己/对手属性</p>
     <p>优化角色使用和职业使用</p>
   </div>
   <div class="Console hide">

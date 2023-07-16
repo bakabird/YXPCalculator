@@ -181,6 +181,18 @@ function Feedback(_, item: string, content: string, fileName?: string, fileBuffe
   })
 }
 
+function GetCfg(_event) {
+  return new Promise<any>((rso, rje) => {
+    AliKit.me.get({
+      filename: "Cfg.json"
+    }).then((content) => {
+      rso(JSON.parse(content));
+    }).catch(err => {
+      rje(err);
+    });
+  })
+}
+
 function SearchCard(_event, inKey: string, filter: SearchFilter): Array<string> {
   return CardSearcher.me.Search(inKey, filter);
 }
@@ -192,6 +204,7 @@ app.whenReady().then(() => {
   ipcMain.handle("Miri.SearchCard", SearchCard)
   ipcMain.handle("Main.GetAllCards", GetAllCards)
   ipcMain.handle("Main.Feedback", Feedback)
+  ipcMain.handle("Main.GetCfg", GetCfg)
   ipcMain.on("Main.Report", CreateReport)
   ipcMain.on("Main.ViewReport", ViewReport)
   ipcMain.on("Main.Debug", Debug)

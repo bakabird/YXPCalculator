@@ -107,6 +107,7 @@ interface Window {
             role: any
         }): Promise<Array<string>>;
         getAllCards(): Promise<Array<string>>;
+        getCfg(): Promise<any>;
         createReport(key: string, role: number, eKey: string, eRole: number, threadNum: number): void;
         feedback(item: string, content: string, fileName?: string, fileBuffer?: ArrayBuffer): Promise<void>;
         viewReport(fightReport: any): void;
@@ -860,6 +861,7 @@ class BarWrap {
         private _feedbackWrap: FeedbackWrap,
         private _cardSearch: CardSearchWrap,
     ) {
+        const qqGroup = _node.children(".qqGroup");
         _node.children(".analysis").on("click", () => {
             const threadNum = parseInt(_node.children("select")[0].value);
             window.electronAPI.createReport(
@@ -880,6 +882,27 @@ class BarWrap {
         })
         _node.children(".console").on("click", () => {
             ConsoleWrap.last.show();
+        })
+        window.electronAPI.getCfg().then(cfg => {
+            qqGroup.removeClass("hide");
+            qqGroup.attr("data-clipboard-text", cfg.QQGroup);
+            qqGroup.text("QQ群:" + cfg.QQGroup);
+            // @ts-ignore
+            const clipboard = new ClipboardJS('.qqGroup')
+            clipboard.on('success', function (e) {
+                console.info('Action:', e.action);
+                console.info('Text:', e.text);
+                console.info('Trigger:', e.trigger);
+                e.clearSelection();
+                alert("已复制QQ群");
+            });
+            clipboard.on('error', function (e) {
+                console.error('Action:', e.action);
+                console.error('Trigger:', e.trigger);
+                alert("复制失败");
+            });
+        }).catch(err => {
+            alert("配置获取失败啊啊啊\n" + err);
         })
     }
 }

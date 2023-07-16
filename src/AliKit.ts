@@ -35,21 +35,22 @@ const client = new OSS({
 //     }
 // }
 
-// async function getBuffer(filename) {
-//     try {
-//         const result = await client.get(filename);
-//         console.log(result.content.toString());
-//     } catch (e) {
-//         console.log(e);
-//     }
-// }
+async function getBuffer(filename) {
+    try {
+        const result = await client.get(filename);
+        // console.log(result.content.toString());
+        return result.content.toString();
+    } catch (e) {
+        throw e;
+    }
+}
 
 async function putBuffer(filename: string, buffer: Buffer) {
     try {
         const result = await client.put(filename, buffer);
-        // console.log(result);
+        return result
     } catch (e) {
-        console.log(e);
+        throw e;
     }
 }
 
@@ -62,6 +63,11 @@ export default class AliKit {
         return this._me;
     }
     private constructor() { }
+    public get(arg: {
+        filename: string
+    }) {
+        return getBuffer(arg.filename);
+    }
     public post(arg: {
         item: string,
         content: string,

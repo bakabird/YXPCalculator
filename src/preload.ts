@@ -16,6 +16,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getAllCards: () => {
     return ipcRenderer.invoke('Main.GetAllCards')
   },
+  getCfg: () => {
+    return ipcRenderer.invoke('Main.GetCfg');
+  },
   feedback: (item: string, content: string, fileName?: string, fileBuffer?: ArrayBuffer) => {
     return ipcRenderer.invoke('Main.Feedback', item, content, fileName, fileBuffer)
   },
