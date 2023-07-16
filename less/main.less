@@ -17,8 +17,8 @@
     width: 12.5vw;
 
     .cardFace {
-        height: 21vw;
         width: 100%;
+        height: calc((100vw - 80px) * 1.66 / 8);
     }
 
     .arrow {
@@ -55,7 +55,7 @@
 
     .bar00 {
         display: flex;
-        width: calc(100vw - 180px);
+        width: 100vw;
         align-items: flex-end;
     }
 }
@@ -67,16 +67,25 @@
     button {
         height: 35px;
         width: 45%;
+        background: #ffffff;
+        color: #000;
+        border: 1px solid #333;
+    }
+
+    button:hover {
+        background: #333;
+        color: #fff;
     }
 }
 
 .cardBtn {
-    width: 100px;
-    height: 40px;
+    width: 96px;
+    height: 38px;
+    margin: 3px 2px;
 }
 
 .selection {
-    margin-top: 20px;
+    margin-top: 6px;
     width: 100%;
 }
 
@@ -131,7 +140,6 @@
 
 .enemyCardBoxTitle {
     background-color: #6c3636;
-    flex-direction: row-reverse;
 
     .cleanEnemyBox {
         font-size: 12px;
@@ -140,10 +148,47 @@
         margin: 0px 0px;
         background: #361c13;
         color: #d9cece;
-
-        .cleanEnemyBox:hover {
-            background: #e3d8ce;
-            color: #580000;
-        }
     }
+
+    .cleanEnemyBox:hover {
+        background: #e3d8ce;
+        color: #580000;
+    }
+}
+
+.RoleInput {
+    width: 80px;
+    padding: 0 2px;
+    font-size: 12px;
+
+    select {
+        border: none;
+        width: 100%;
+    }
+
+    img {
+        width: 100%;
+    }
+}
+
+button {
+    background: #ffffff;
+    color: #000;
+    border: 1px solid #333;
+}
+
+button:hover {
+    background: #333;
+    color: #fff;
+}
+
+.likeButton {
+    background: #ffffff;
+    color: #000;
+    border: 1px solid #333;
+}
+
+.likeButton:hover {
+    background: #333;
+    color: #fff;
 }

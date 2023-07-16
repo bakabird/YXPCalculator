@@ -25,6 +25,10 @@
   width: 50px;
   height: 50px;
 }
+.CardLib .feedback:hover {
+  background: #481b06;
+  color: #fff;
+}
 .CardLib h1 {
   position: absolute;
   left: 4vw;

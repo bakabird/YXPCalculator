@@ -1,7 +1,13 @@
 .Bar {
-    margin: 10px 0;
+  margin: 6px 0;
 }
-
 .Bar button {
-    font-size: 20px;
+  font-size: 18px;
+  background: #ffffff;
+  color: #000;
+  border: 1px solid #333;
+}
+.Bar button:hover {
+  background: #333;
+  color: #fff;
 }

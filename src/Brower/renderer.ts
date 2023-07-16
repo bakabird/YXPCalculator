@@ -117,7 +117,14 @@ interface Window {
 /**
  * SHARE CODE2 END
  */
-const Cfg = {
+const Global: {
+    cardListWrap: CardListWrap,
+    eCardListWrap: CardListWrap,
+    activeWrap: CardListWrap,
+} = {
+    cardListWrap: null,
+    eCardListWrap: null,
+    activeWrap: null,
 }
 const Const = {
     FeedbackDefaultItem: "无",
@@ -290,14 +297,60 @@ class CardLibItemWrap {
     }
 }
 
+class RoleInputWrap {
+    private _avatarWrap: AvatarSelector;
+    private _careerWrap: CareerSelector;
+    private _onAnyChange: () => void
+
+    public get role() {
+        return this._avatarWrap.role;
+    }
+
+    public get men() {
+        return this._avatarWrap.men;
+    }
+
+    public get career() {
+        return this._careerWrap.career;
+    }
+
+    constructor(private _node: JQuery<HTMLElement>, storageKeyPrefix: string, listener?: {
+        onAvatarChg?: (avatar: Share2Renderer.Role, men: Share2Renderer.Men) => void,
+        onCareerChg?: (carerr: Share2Renderer.Career) => void,
+    }) {
+        this._avatarWrap = new AvatarSelector(_node.children(".avatar"), storageKeyPrefix + "AvatarLast", () => {
+            listener?.onAvatarChg?.(this._avatarWrap.role, this._avatarWrap.men);
+            this._onAnyChange?.();
+        })
+        this._careerWrap = new CareerSelector(_node.children(".career"), storageKeyPrefix + "CareerLast", () => {
+            listener?.onCareerChg?.(this._careerWrap.career);
+            this._onAnyChange?.();
+        })
+    }
+
+    public offAnyChange() {
+        this._onAnyChange = null;
+    }
+
+    public onAnyChange(OnAnyChange: () => void) {
+        this._onAnyChange = OnAnyChange;
+    }
+}
+
 class CardListWrap {
     public eventer: Eventer = new Eventer();
+    private _roleInputBlue: JQuery<HTMLElement>;
     private _blue: JQuery<HTMLElement>;
     private _list: Array<CardWrap>;
     private _curTargetIndex: number = -1;
+    private _roleInputWrap: RoleInputWrap
     constructor(private _node: JQuery<HTMLElement>, private _localKey: string) {
+        this._roleInputBlue = $(".Hub .RoleInput")
         this._blue = $(".Hub .Card");
         this._list = [];
+    }
+    public get roleInputWrap(): RoleInputWrap {
+        return this._roleInputWrap
     }
     public get key(): string {
         return this._list.reduce((p, c) => {
@@ -320,6 +373,9 @@ class CardListWrap {
         })
     }
     public init() {
+        const roleInput = this._roleInputBlue.clone(false, false);
+        const roleInputWrap = this._roleInputWrap = new RoleInputWrap(roleInput, this._localKey);
+        this._node.append(roleInput);
         for (var i = 0; i < 8; i++) {
             const item = this._blue.clone(false, false);
             const cardWrap = new CardWrap(item, i);
@@ -421,11 +477,11 @@ class AvatarSelector {
 
     constructor(
         _node: JQuery<HTMLElement>,
+        storagekey: string,
         private _onChg: () => void,
     ) {
-        const sotragekey = "avatar-choosen";
         const self = this;
-        this._choosen = readKey(sotragekey, "Tsy")
+        this._choosen = readKey(storagekey, "Tsy")
         this._img = _node.find("img");
 
         _node.find(`option`).attr("label", function (i) {
@@ -439,7 +495,7 @@ class AvatarSelector {
             const img = selected.attributes["img"].value
             const label = self._choosen = img;
             self._img.attr("src", `img1/Role/${img}.png`)
-            saveKey(sotragekey, label);
+            saveKey(storagekey, label);
             self._onChg()
         })
     }
@@ -455,11 +511,11 @@ class CareerSelector {
 
     constructor(
         _node: JQuery<HTMLElement>,
+        storagekey: string,
         private _onChg: () => void,
     ) {
-        const sotragekey = "career-choosen";
         const self = this;
-        this._choosen = readKey(sotragekey, "Qin")
+        this._choosen = readKey(storagekey, "Qin")
         this._img = _node.find("img");
 
         _node.find(`option`).attr("label", function (i) {
@@ -473,7 +529,7 @@ class CareerSelector {
             const img = selected.attributes["img"].value
             const label = self._choosen = img;
             self._img.attr("src", `img1/Career/${img}.png`)
-            saveKey(sotragekey, label);
+            saveKey(storagekey, label);
             self._onChg()
         })
     }
@@ -488,13 +544,7 @@ class CardSearchWrap {
     private _lastInputStr: string;
     private _engRegxp: RegExp;
     private _numRegxp: RegExp;
-    private _avatarSelector: AvatarSelector;
-    private _careerSelector: CareerSelector;
     private _key: string;
-
-    public get curRole() {
-        return this._avatarSelector.role;
-    }
 
     constructor(private _node: JQuery<HTMLElement>) {
         this._engRegxp = new RegExp('[A-z]');
@@ -505,8 +555,6 @@ class CardSearchWrap {
         this._chooseList = []
         this._lastInputStr = "";
         this._key = "";
-        this._avatarSelector = new AvatarSelector(_node.find(".avatar"), this._search.bind(this));
-        this._careerSelector = new CareerSelector(_node.find(".career"), this._search.bind(this))
         this._input.on("input", this._onInput.bind(this))
         _node.find(".moveLeft").on("click", this._onMoveLeft.bind(this));
         _node.find(".moveRight").on("click", this._onMoveRight.bind(this));
@@ -518,7 +566,7 @@ class CardSearchWrap {
                 const lastInput = val[val.length - 1];
                 if (this._engRegxp.test(lastInput)) {
                     this._key = val;
-                    this._search();
+                    this.search();
                 } else {
                     this._input.val(val.slice(0, val.length - 1));
                     if (this._numRegxp.test(lastInput)) {
@@ -528,7 +576,7 @@ class CardSearchWrap {
                 }
             } else {
                 this._key = val;
-                this._search();
+                this.search();
             }
         }
         this._lastInputStr = this._input.val().toString();
@@ -539,13 +587,13 @@ class CardSearchWrap {
     private _onMoveRight() {
         this.eventer.event("move", 1);
     }
-    private _search() {
+    public search() {
         const key = this._key
         if (key == "") return;
         window.electronAPI.searchCard(key, {
-            men: this._avatarSelector.men,
-            role: this._avatarSelector.role,
-            career: this._careerSelector.career
+            men: Global.activeWrap.roleInputWrap.men,
+            role: Global.activeWrap.roleInputWrap.role,
+            career: Global.activeWrap.roleInputWrap.career
         }).then(rlt => {
             this.clear();
             rlt.forEach(name => {
@@ -815,8 +863,8 @@ class BarWrap {
         _node.children(".analysis").on("click", () => {
             const threadNum = parseInt(_node.children("select")[0].value);
             window.electronAPI.createReport(
-                this._fCardListWrap.key, this._cardSearch.curRole,
-                this._eCardListWrap.key, Share2Renderer.Role.Dly, threadNum);
+                this._fCardListWrap.key, Global.cardListWrap.roleInputWrap.role,
+                this._eCardListWrap.key, Global.eCardListWrap.roleInputWrap.role, threadNum);
         });
         _node.children(".openCardlib").on("click", () => {
             this._libWrap.show();
@@ -1102,8 +1150,8 @@ class CardFaceFactoryWrap {
     }
 }
 
-const cardListWrap = new CardListWrap($(".FCardBox"), "fCardKey");
-const eCardListWrap = new CardListWrap($(".ECardBox"), "eCardKey");
+const cardListWrap = Global.cardListWrap = new CardListWrap($(".FCardBox"), "fCardKey");
+const eCardListWrap = Global.eCardListWrap = new CardListWrap($(".ECardBox"), "eCardKey");
 const searchWrap = new CardSearchWrap($(".CardSearch"));
 const cardlibWrap = new CardLibWrap($(".CardLib"))
 const feedbackWrap = new FeedbackWrap($(".Feedback"))
@@ -1112,11 +1160,16 @@ const consoleWrap = new ConsoleWrap($(".Console"))
 const cffWrap = new CardFaceFactoryWrap($(".CardFaceFactory"))
 const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap, cardlibWrap, feedbackWrap, searchWrap);
 new ECardBoxTitle($(".enemyCardBoxTitle"), eCardListWrap);
-let activeWrap: CardListWrap;
+
 const onClickFace = (wrap: CardListWrap) => {
-    if (activeWrap != wrap) {
-        activeWrap?.unclick();
-        activeWrap = wrap;
+    if (Global.activeWrap != wrap) {
+        Global.activeWrap?.unclick();
+        Global.activeWrap?.roleInputWrap.offAnyChange();
+        Global.activeWrap = wrap;
+        searchWrap.search();
+        wrap.roleInputWrap.onAnyChange(() => {
+            searchWrap.search();
+        });
     }
 }
 
@@ -1126,10 +1179,10 @@ eCardListWrap.eventer.add("clickFace", onClickFace);
 cardListWrap.eventer.add("clickFace", onClickFace);
 cardListWrap.onClickFace(0);
 searchWrap.eventer.add("chooseDown", (name: string) => {
-    activeWrap.modCard(name);
+    Global.activeWrap.modCard(name);
 });
 searchWrap.eventer.add("move", (step: number) => {
-    activeWrap.moveCard(step);
+    Global.activeWrap.moveCard(step);
 });
 cardListWrap.read();
 eCardListWrap.read();

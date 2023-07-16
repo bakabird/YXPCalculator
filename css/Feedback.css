@@ -50,14 +50,8 @@
   width: 200px;
   height: 32px;
   display: block;
-  background: #4caf50;
-  border: none;
   font-size: 17px;
-  color: #fff;
   margin: 0 auto;
-}
-.Feedback .body button:hover {
-  background: #009688;
 }
 .Feedback .body .tip {
   color: red;
@@ -69,8 +63,6 @@
   line-height: 40px;
   text-align: center;
   border-radius: 6px;
-  background-color: #79d479;
-  color: #fff;
 }
 .Feedback .body .file_upload input {
   position: absolute;
