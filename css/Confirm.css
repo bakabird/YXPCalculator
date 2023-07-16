@@ -1,0 +1,28 @@
+.Confirm {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: #000000b8;
+}
+.Confirm .dlg {
+  width: 300px;
+  height: 160px;
+  background: #fff;
+  margin: 30vh auto;
+}
+.Confirm .dlg .content {
+  display: flex;
+  justify-content: center;
+}
+.Confirm .dlg button {
+  width: 43%;
+  height: 40px;
+  margin: 0 3%;
+}
+.Confirm .dlg p {
+  margin: 0 auto;
+  line-height: 110px;
+  text-align: center;
+}

@@ -14,6 +14,7 @@
   <script src="./BrowerLibs/clipboard.min.js"></script>
   <script src="./BrowerLibs/jquery.js"></script>
   <link href="./css/Bar.css" rel="stylesheet">
+  <link href="./css/Confirm.css" rel="stylesheet">
   <link href="./css/Cardlib.css" rel="stylesheet">
   <link href="./css/Feedback.css" rel="stylesheet">
   <link href="./css/Loading.css" rel="stylesheet">
@@ -35,9 +36,7 @@
     </select>
     <button class="openCardlib">卡库</button>
     <button class="feedback">意见反馈</button>
-    <button class="qqGroup hide">
-
-    </button>
+    <button class="qqGroup hide"></button>
     <button class="fix">一键修复</button>
     <button class="console">控制台</button>
     <!-- <button class="debug">测试</button> -->
@@ -63,7 +62,6 @@
     </div>
     <div class="selection"></div>
   </div>
-  <p>一键修复增加二次确认</p>
   <p>设置自己/对手属性</p>
   <p>增加应用图标</p>
   <p>搜索器+开关：切换详细/简略。详细描述下会附带快捷键</p>
@@ -210,6 +208,15 @@
     <button class="cardBtn">
       普通攻击
     </button>
+  </div>
+  <div class="Confirm hide">
+    <div class="dlg">
+      <div class="content">
+        <p>这是一个测试</p>
+      </div>
+      <button class="no">取消</button>
+      <button class="yes">确认</button>
+    </div>
   </div>
   <div class="Loading hide">
     <img src="sprite/lod.png"></img>

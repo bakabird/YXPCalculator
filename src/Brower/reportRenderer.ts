@@ -14,6 +14,7 @@ interface Window {
         feedback(item: string, content: string, fileName?: string, fileBuffer?: ArrayBuffer): Promise<void>;
         viewReport(fightReport: any): void;
         doDebug(): void;
+        relaunch(): void;
         onProcessOver(callback: (evt: any, data: any) => void): void;
     };
 }

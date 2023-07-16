@@ -112,6 +112,7 @@ interface Window {
         feedback(item: string, content: string, fileName?: string, fileBuffer?: ArrayBuffer): Promise<void>;
         viewReport(fightReport: any): void;
         doDebug(): void;
+        relaunch(): void;
         onProcessOver(callback: (evt: any, data: any) => void): void;
     };
 }
@@ -875,7 +876,16 @@ class BarWrap {
             this._feedbackWrap.show();
         })
         _node.children(".fix").on("click", () => {
-            localStorage.clear();
+            ConfirmWrap.pop({
+                text: "一键修复将清除使用记录。",
+                onYes: () => {
+                    localStorage.clear();
+                    setTimeout(() => {
+                        window.electronAPI.relaunch()
+                    }, 100);
+                },
+                yesTxt: "修复",
+            })
         });
         _node.children(".debug").on("click", () => {
             window.electronAPI.doDebug();
@@ -915,6 +925,55 @@ class ECardBoxTitle {
         _node.children(".cleanEnemyBox").on("click", () => {
             _eCardListWrap.key = null;
         })
+    }
+}
+
+class ConfirmWrap {
+    public static last: ConfirmWrap;
+    public static pop(arg: {
+        text: string,
+        yesTxt?: string,
+        noTxt?: string,
+        onYes: Function,
+        onNo?: Function
+    }) {
+        const last = ConfirmWrap.last;
+        last._textNode.text(arg.text);
+        last._yesNode.text(arg.yesTxt ?? "确认")
+        last._noNode.text(arg.noTxt ?? "取消")
+        last._onYes = arg.onYes;
+        last._onNo = arg.onNo;
+        last.show();
+    }
+
+    private _textNode: JQuery<HTMLElement>;
+    private _yesNode: JQuery<HTMLElement>
+    private _noNode: JQuery<HTMLElement>
+    private _onYes: Function;
+    private _onNo: Function;
+
+    constructor(
+        private _node: JQuery<HTMLElement>
+    ) {
+        ConfirmWrap.last = this;
+        this._textNode = _node.find(".dlg .content p");
+        this._yesNode = _node.find(".dlg .yes");
+        this._noNode = _node.find(".dlg .no")
+        this._yesNode.on("click", () => {
+            this._onYes?.()
+            this.hide();
+        })
+        this._noNode.on("click", () => {
+            this._onNo?.()
+            this.hide();
+        })
+    }
+    public show() {
+        this._node.removeClass("hide");
+    }
+
+    public hide() {
+        this._node.addClass("hide");
     }
 }
 
@@ -1180,6 +1239,7 @@ const cardlibWrap = new CardLibWrap($(".CardLib"))
 const feedbackWrap = new FeedbackWrap($(".Feedback"))
 const loadingWrap = new LoadingWrap($(".Loading"))
 const consoleWrap = new ConsoleWrap($(".Console"))
+const confirmWrap = new ConfirmWrap($(".Confirm"))
 const cffWrap = new CardFaceFactoryWrap($(".CardFaceFactory"))
 const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap, cardlibWrap, feedbackWrap, searchWrap);
 new ECardBoxTitle($(".enemyCardBoxTitle"), eCardListWrap);

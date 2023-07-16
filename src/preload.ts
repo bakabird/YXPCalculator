@@ -31,6 +31,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   doDebug: () => {
     ipcRenderer.send("Main.Debug");
   },
+  relaunch: () => {
+    ipcRenderer.send("Main.Relaunch");
+  },
   onProcessOver: (callback) => {
     ipcRenderer.on("Miri.ProcessOver", callback);
   },

@@ -134,6 +134,11 @@ function CreateReport(_, key: string, role: Role, eKey: string, eRole: Role, thr
   // reportWindow.webContents.openDevTools()
 }
 
+function Relaunch() {
+  app.relaunch();
+  app.exit();
+}
+
 function ViewReport(_, fightReport: FightReport) {
   // Create the browser window.
   const reportWindow = new BrowserWindow({
@@ -205,6 +210,7 @@ app.whenReady().then(() => {
   ipcMain.handle("Main.GetAllCards", GetAllCards)
   ipcMain.handle("Main.Feedback", Feedback)
   ipcMain.handle("Main.GetCfg", GetCfg)
+  ipcMain.on("Main.Relaunch", Relaunch)
   ipcMain.on("Main.Report", CreateReport)
   ipcMain.on("Main.ViewReport", ViewReport)
   ipcMain.on("Main.Debug", Debug)
