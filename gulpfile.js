@@ -10,6 +10,7 @@ const through2_1 = __importDefault(require("through2"));
 const ts = require('gulp-typescript');
 const lessPath = "less/*.less";
 const tsPath = 'src/*.ts';
+const tsHomePath = 'src/Home/*.ts';
 const browerTsPath = "src/Brower/*.ts";
 const hunxiaoTsPath = "src/Hunxiao/*.ts";
 const shareCodePath = "src/_share_code_.ts";
@@ -50,13 +51,26 @@ function lessWatch(cb) {
 function tsWatch(cb) {
     gulp_1.default.src(tsPath)
         .pipe(ts(tsConfig))
-        .pipe(gulp_1.default.dest('./'))
+        .pipe(gulp_1.default.dest('./Main/'))
         .on('error', (e) => {
         console.error(e);
         /* Ignore compiler errors */
     })
         .on("end", () => {
         console.log("TS END");
+        cb();
+    });
+}
+function tsHomeWatch(cb) {
+    gulp_1.default.src(tsHomePath)
+        .pipe(ts(tsConfig))
+        .pipe(gulp_1.default.dest('./'))
+        .on('error', (e) => {
+        console.error(e);
+        /* Ignore compiler errors */
+    })
+        .on("end", () => {
+        console.log("HOME-TS END");
         cb();
     });
 }
@@ -133,10 +147,10 @@ exports.default = function (done) {
     // You can use a single task
     gulp_1.default.watch(lessPath, lessWatch);
     gulp_1.default.watch(tsPath, tsWatch);
+    gulp_1.default.watch(tsHomePath, tsHomeWatch);
     gulp_1.default.watch(browerTsPath, browerTsWatch);
     gulp_1.default.watch(hunxiaoTsPath, hunxiaoTsWatch);
     gulp_1.default.watch(shareCodePath, produceShareCodeWatchFunc(shareCodePath, _shareCodeInjecterTargets, "SHARE CODE START", "SHARE CODE END"));
     gulp_1.default.watch(shareCode2Path, produceShareCodeWatchFunc(shareCode2Path, _shareCodeInjecterTargets, "SHARE CODE2 START", "SHARE CODE2 END"));
-    // TODO: 增加 SHARE_CODE 相关执行
     done();
 };

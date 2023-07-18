@@ -56,6 +56,6 @@ function buildFightTurn(miri: MiriWorker) {
 sum.cur = Fight.BuildRun2(meManArg, CardListFactory.me.SplitCode(cardKey), heManArg, heCardInfos);
 
 for (var i = 0; i < threadNum; i++) {
-  buildFightTurn(new MiriWorker("./FightWorker.js"))(null);
+  buildFightTurn(new MiriWorker("./Main/FightWorker.js"))(null);
 }
 

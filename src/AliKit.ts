@@ -2,7 +2,7 @@ import OSS from "ali-oss"
 import RdmUtil from "./RdmUtil";
 import PenUtil from "./PenUtil";
 // @ts-ignore
-import private from "./privatekey.json"
+import private from "../privatekey.json"
 import Store from "electron-store"
 import { StoreKey } from "./StoreKey";
 

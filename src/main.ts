@@ -15,6 +15,8 @@ import path from 'path'
 import { Role } from "./_share_code_";
 const isMac = process.platform === 'darwin'
 
+const icon = path.join(__dirname, '../Icon.png')
+
 const template = [
   ...(isMac ? [{
     label: app.name,
@@ -79,6 +81,7 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 920,
     height: 920,
+    icon,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     }
@@ -96,12 +99,13 @@ function CreateReport(_, key: string, role: Role, eKey: string, eRole: Role, thr
   const reportWindow = new BrowserWindow({
     width: 800,
     height: 900,
+    icon,
     webPreferences: {
       nodeIntegrationInWorker: true,
       preload: path.join(__dirname, 'preload.js'),
     }
   })
-  const reportWorker = new Worker("./ReportWorker.js", {
+  const reportWorker = new Worker("./Main/ReportWorker.js", {
     workerData: {
       cardKey: key,
       role,
@@ -144,6 +148,7 @@ function ViewReport(_, fightReport: FightReport) {
   const reportWindow = new BrowserWindow({
     width: 800,
     height: 900,
+    icon,
     webPreferences: {
       nodeIntegrationInWorker: true,
       preload: path.join(__dirname, 'preload.js'),

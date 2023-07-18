@@ -13,6 +13,7 @@
     "include": [
         "src/*.ts",
         "src/Brower/*.ts",
-        "src/Hunxiao/*.ts"
+        "src/Hunxiao/*.ts",
+        "src/Home/gulpfile.ts"
     ],
 }
