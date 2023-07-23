@@ -8,12 +8,13 @@
         "module": "commonjs",
         "outDir": "",
         "esModuleInterop": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "resolveJsonModule": true
     },
     "include": [
         "src/*.ts",
         "src/Brower/*.ts",
         "src/Hunxiao/*.ts",
         "src/Home/gulpfile.ts"
-    ],
+, "src/Home/CardPinyinCfg.ts"    ],
 }

@@ -28,6 +28,7 @@ const tsConfig = {
     module: "commonjs",
     esModuleInterop: true,
     experimentalDecorators: true,
+    resolveJsonModule: true
 };
 function lessWatch(cb) {
     gulp_1.default.src(lessPath)
@@ -144,13 +145,36 @@ function shareCodeWatch(cb, shareCodePath, shareCodeInjecterTargets, startMark, 
     }));
 }
 exports.default = function (done) {
+    const theShareCodeWatch = produceShareCodeWatchFunc(shareCodePath, _shareCodeInjecterTargets, "SHARE CODE START", "SHARE CODE END");
+    const theShareCode2Watch = produceShareCodeWatchFunc(shareCode2Path, _shareCodeInjecterTargets, "SHARE CODE2 START", "SHARE CODE2 END");
     // You can use a single task
     gulp_1.default.watch(lessPath, lessWatch);
     gulp_1.default.watch(tsPath, tsWatch);
     gulp_1.default.watch(tsHomePath, tsHomeWatch);
     gulp_1.default.watch(browerTsPath, browerTsWatch);
     gulp_1.default.watch(hunxiaoTsPath, hunxiaoTsWatch);
-    gulp_1.default.watch(shareCodePath, produceShareCodeWatchFunc(shareCodePath, _shareCodeInjecterTargets, "SHARE CODE START", "SHARE CODE END"));
-    gulp_1.default.watch(shareCode2Path, produceShareCodeWatchFunc(shareCode2Path, _shareCodeInjecterTargets, "SHARE CODE2 START", "SHARE CODE2 END"));
+    gulp_1.default.watch(shareCodePath, theShareCodeWatch);
+    gulp_1.default.watch(shareCode2Path, theShareCode2Watch);
     done();
+};
+exports.build = function (done) {
+    const theShareCodeWatch = produceShareCodeWatchFunc(shareCodePath, _shareCodeInjecterTargets, "SHARE CODE START", "SHARE CODE END");
+    const theShareCode2Watch = produceShareCodeWatchFunc(shareCode2Path, _shareCodeInjecterTargets, "SHARE CODE2 START", "SHARE CODE2 END");
+    console.log("--- INIT JOB START");
+    lessWatch(() => {
+        theShareCodeWatch(() => {
+            theShareCode2Watch(() => {
+                hunxiaoTsWatch(() => {
+                    tsHomeWatch(() => {
+                        tsWatch(() => {
+                            browerTsWatch(() => {
+                                console.log("--- INIT JOB FINISHED");
+                                done();
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
 };

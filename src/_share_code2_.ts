@@ -14,4 +14,4 @@ interface Window {
         relaunch(): void;
         onProcessOver(callback: (evt: any, data: any) => void): void;
     };
-}
+} 

@@ -19,10 +19,11 @@ const tsConfig = {
         "ES6",
         "DOM",
     ],
-    target: "es2017",
+    target: "es2017", 
     module: "commonjs",
     esModuleInterop: true,
     experimentalDecorators: true,
+    resolveJsonModule: true
 }
 
 
@@ -149,14 +150,38 @@ function shareCodeWatch(cb, shareCodePath: string, shareCodeInjecterTargets: str
 }
 
 exports.default = function (done) {
+    const theShareCodeWatch = produceShareCodeWatchFunc(shareCodePath, _shareCodeInjecterTargets, "SHARE CODE START", "SHARE CODE END");
+    const theShareCode2Watch = produceShareCodeWatchFunc(shareCode2Path, _shareCodeInjecterTargets, "SHARE CODE2 START", "SHARE CODE2 END");
     // You can use a single task
     gulp.watch(lessPath, lessWatch)
     gulp.watch(tsPath, tsWatch)
     gulp.watch(tsHomePath, tsHomeWatch)
     gulp.watch(browerTsPath, browerTsWatch)
     gulp.watch(hunxiaoTsPath, hunxiaoTsWatch)
-    gulp.watch(shareCodePath, produceShareCodeWatchFunc(shareCodePath, _shareCodeInjecterTargets, "SHARE CODE START", "SHARE CODE END"))
-    gulp.watch(shareCode2Path, produceShareCodeWatchFunc(shareCode2Path, _shareCodeInjecterTargets, "SHARE CODE2 START", "SHARE CODE2 END"))
+    gulp.watch(shareCodePath, theShareCodeWatch)
+    gulp.watch(shareCode2Path, theShareCode2Watch)
     done()
 };
+
+exports.build = function (done) {
+    const theShareCodeWatch = produceShareCodeWatchFunc(shareCodePath, _shareCodeInjecterTargets, "SHARE CODE START", "SHARE CODE END");
+    const theShareCode2Watch = produceShareCodeWatchFunc(shareCode2Path, _shareCodeInjecterTargets, "SHARE CODE2 START", "SHARE CODE2 END");
+    console.log("--- INIT JOB START");
+    lessWatch(()=>{
+        theShareCodeWatch(()=>{
+            theShareCode2Watch(()=>{
+                hunxiaoTsWatch(()=>{
+                    tsHomeWatch(()=>{
+                        tsWatch(()=>{
+                            browerTsWatch(()=>{
+                                console.log("--- INIT JOB FINISHED");
+                                done();
+                            })
+                        })
+                    })
+                })
+            })
+        })
+    })
+}
 

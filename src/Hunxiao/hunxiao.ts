@@ -1,7 +1,9 @@
 // 检索的相对文件夹
-const relativePath = '../'
+const relativePath = '..'
 // 不需要混淆的js或文件夹
-const exitFile = ['node_modules', 'Hunxiao', 'hunxiao.js', 'gulpfile.js', "jquery.js"]
+const exitFile = [
+    'node_modules', 'Hunxiao', "Lib", "Cfgs", "BrowerLibs", "out", ".git", 
+    'geneCardPinyin.js', 'gulpfile.js', "jquery.js"]
 
 
 var fs = require('fs')
@@ -15,7 +17,7 @@ const czFile = []
 var filePath = relativePath
 var arr = new Array()
 readFile(readDir, filePath)
-// 读取相对路径下的所有文件
+// 读取相对路径下的所有文件 
 function readFile(readDir, filePath) {
     if (readDir.length > 0) {
         for (var i = 0; i < readDir.length; i++) {
@@ -24,13 +26,13 @@ function readFile(readDir, filePath) {
     }
 }
 // 扫描文件进行检索出js文件进行混淆
-function scannerFile(file, filePath) {
+function scannerFile(file, filePath) { 
     console.log("file-----" + file);
     var readdirpath = ""
     if (filePath == './') {
-        readdirpath = filePath + file
+        readdirpath = filePath + file 
     } else {
-        readdirpath = filePath + "/" + file
+        readdirpath = filePath + "/" + file 
     }
     if (exitFile.indexOf(file) < 0) {
         console.log('-->Start entering FS');
@@ -50,9 +52,13 @@ function scannerFile(file, filePath) {
                         console.log('-->Start confusing code:' + file);
                         var cmd = ' javascript-obfuscator ' + readdirpath + ' --config hunxiao.json --output ' + readdirpath;
                         process.exec(cmd, function (error, stdout, stderr) {
-                            console.log("error:" + error);
-                            console.log("stdout:" + stdout);
-                            console.log("stderr:" + stderr);
+                            if(error) {
+                                console.log("error:" + error);
+                            }
+                            if(stderr != "") {
+                                console.log("stderr:" + stderr);
+                            }
+                            // console.log("stdout:" + stdout);
                         });
                         arr.push(readdirpath)
                     } else {

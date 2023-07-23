@@ -1,37 +1,79 @@
 {
-  "name": "奕仙牌计算器",
-  "version": "1.0.0",
-  "description": "",
-  "main": "./main.js",
-  "scripts": {
-    "start": "electron .",
-    "less-watch": "less-watch-compiler less css main.less",
-    "ts-watch": "tsc -w",
-    "pack": "cd Hunxiao && node hunxiao.js"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^18.11.16",
-    "electron": "^22.0.0"
-  },
-  "dependencies": {
-    "@types/ali-oss": "^6.16.8",
-    "@types/electron-store": "^3.2.0",
-    "@types/fuzzy-search": "^2.1.2",
-    "@types/gulp": "^4.0.11",
-    "@types/jquery": "^3.5.14",
-    "@types/through2": "^2.0.38",
-    "ali-oss": "^6.17.1",
-    "electron-store": "^8.1.0",
-    "esm": "^3.2.25",
-    "fuzzy-search": "^3.2.1",
-    "gnfun": "^0.0.11",
-    "gulp": "^4.0.2",
-    "gulp-less": "^5.0.0",
-    "gulp-typescript": "^6.0.0-alpha.1",
-    "pinyin": "^3.0.0-alpha.4",
-    "tesseract.js": "^4.0.2",
-    "through2": "^4.0.2"
-  }
+    "name": "YXP",
+    "version": "1.0.0",
+    "description": "YXPCalculater for yixianpai to calculate the fight detail and recommend the best cardorder.",
+    "main": "./Main/main.js",
+    "scripts": {
+        "old-start": "electron .",
+        "less-watch": "less-watch-compiler less css main.less",
+        "ts-watch": "tsc -w",
+        "hunxiao": "cd Hunxiao && node hunxiao.js",
+        "start": "electron-forge start",
+        "package": "electron-forge package",
+        "make": "electron-forge make"
+    },
+    "author": "bakabird",
+    "license": "ISC",
+    "devDependencies": {
+        "@electron-forge/cli": "^6.2.1",
+        "@electron-forge/maker-deb": "^6.2.1",
+        "@electron-forge/maker-rpm": "^6.2.1",
+        "@electron-forge/maker-squirrel": "^6.2.1",
+        "@electron-forge/maker-zip": "^6.2.1",
+        "@types/ali-oss": "^6.16.8",
+        "@types/electron-store": "^3.2.0",
+        "@types/fuzzy-search": "^2.1.2",
+        "@types/gulp": "^4.0.11",
+        "@types/jquery": "^3.5.14",
+        "@types/node": "^18.11.16",
+        "@types/through2": "^2.0.38",
+        "electron": "^22.0.0",
+        "gulp": "^4.0.2",
+        "gulp-less": "^5.0.0",
+        "gulp-typescript": "^6.0.0-alpha.1"
+    },
+    "dependencies": {
+        "ali-oss": "^6.17.1",
+        "electron-store": "^8.1.0",
+        "esm": "^3.2.25",
+        "fuzzy-search": "^3.2.1",
+        "gnfun": "^0.0.11",
+        "through2": "^4.0.2",
+        "typescript": "^5.1.6"
+    },
+    "config": {
+        "forge": {
+            "packagerConfig": {
+                "icon": "Icon",
+                "ignore": [
+                    "src/.*.ts",
+                    "less/.*.less",
+                    "README.md"
+                ]
+            },
+            "makers": [
+                {
+                    "name": "@electron-forge/maker-squirrel",
+                    "config": {
+                        "name": "com.bakabird.yxp.calculater",
+                        "title": "奕仙牌计算器"
+                    }
+                },
+                {
+                    "name": "@electron-forge/maker-zip",
+                    "platforms": [
+                        "darwin"
+                    ]
+                },
+                {
+                    "name": "@electron-forge/maker-deb",
+                    "config": {}
+                },
+                {
+                    "name": "@electron-forge/maker-rpm",
+                    "config": {}
+                }
+            ]
+        }
+    }
 }

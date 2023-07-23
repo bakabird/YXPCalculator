@@ -1,3 +1,8 @@
+// Modules to control application life and create native browser window
+const {
+  Worker, isMainThread, parentPort, workerData
+} = require('node:worker_threads');
+const { app, Menu, BrowserWindow, ipcMain } = require('electron')
 import AliKit from "./AliKit";
 import { CardListFactory, CardRecord } from "./CardListFactory";
 import CardSearcher, { SearchFilter } from "./CardSearcher";
@@ -5,16 +10,10 @@ import { Debug } from "./Debug";
 import { FightReport } from "./FightReport";
 import { Sumamry } from "./Sumamry";
 import WorkerMsg from "./WorkerMsg";
-
-// Modules to control application life and create native browser window
-const {
-  Worker, isMainThread, parentPort, workerData
-} = require('node:worker_threads');
-const { app, Menu, BrowserWindow, ipcMain } = require('electron')
 import path from 'path'
 import { Role } from "./_share_code_";
 const isMac = process.platform === 'darwin'
-
+ 
 const icon = path.join(__dirname, '../Icon.png')
 
 const template = [
