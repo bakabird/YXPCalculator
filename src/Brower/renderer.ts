@@ -917,13 +917,18 @@ class BarWrap {
     }
 }
 
-class ECardBoxTitle {
+class CardBoxTitle {
     constructor(
         _node: JQuery<HTMLElement>,
-        _eCardListWrap: CardListWrap,
+        _cardListWrap: CardListWrap,
     ) {
-        _node.children(".cleanEnemyBox").on("click", () => {
-            _eCardListWrap.key = null;
+        _node.children(".resetBox").on("click", () => {
+            ConfirmWrap.pop({
+                text:"是否确认清空角色卡组？",
+                onYes: () => {
+                    _cardListWrap.key = null;
+                }
+            })
         })
     }
 }
@@ -1242,7 +1247,8 @@ const consoleWrap = new ConsoleWrap($(".Console"))
 const confirmWrap = new ConfirmWrap($(".Confirm"))
 const cffWrap = new CardFaceFactoryWrap($(".CardFaceFactory"))
 const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap, cardlibWrap, feedbackWrap, searchWrap);
-new ECardBoxTitle($(".enemyCardBoxTitle"), eCardListWrap);
+new CardBoxTitle($(".enemyCardBoxTitle"), eCardListWrap);
+new CardBoxTitle($(".selfCardBoxTitle"), cardListWrap);
 
 const onClickFace = (wrap: CardListWrap) => {
     if (Global.activeWrap != wrap) {
