@@ -55,7 +55,20 @@ export enum Role {
     NON,
 }
 
-var JianRole = [
+export interface IHumanData {
+    cardKey: string;
+    role: Role;
+    hp: number,
+    xiuwei: number
+}
+
+export interface IRenderWorkerData { 
+    me: IHumanData,
+    he: IHumanData,
+    threadNum: number
+}
+
+var JianRole =  [
     Role.Dyf, Role.Yx, Role.Ly, Role.Lxy,
 ]
 var QiRole = [

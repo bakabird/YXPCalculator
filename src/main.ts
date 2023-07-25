@@ -11,7 +11,7 @@ import { FightReport } from "./FightReport";
 import { Sumamry } from "./Sumamry";
 import WorkerMsg from "./WorkerMsg";
 import path from 'path'
-import { Role } from "./_share_code_";
+import { IHumanData, IRenderWorkerData, Role } from "./_share_code_";
 const isMac = process.platform === 'darwin'
  
 const icon = path.join(__dirname, '../Icon.png')
@@ -93,7 +93,7 @@ function createWindow() {
   // mainWindow.webContents.openDevTools()
 }
 
-function CreateReport(_, key: string, role: Role, eKey: string, eRole: Role, threadNum: number) {
+function CreateReport(_, me: IHumanData, he: IHumanData, threadNum: number) {
   // Create the browser window.
   const reportWindow = new BrowserWindow({
     width: 800,
@@ -103,16 +103,13 @@ function CreateReport(_, key: string, role: Role, eKey: string, eRole: Role, thr
       nodeIntegrationInWorker: true,
       preload: path.join(__dirname, 'preload.js'),
     }
-  })
-  const reportWorker = new Worker("./Main/ReportWorker.js", {
-    workerData: {
-      cardKey: key,
-      role,
-      eCardKey: eKey,
-      eRole,
-      threadNum,
-    }
   });
+  const workerData: IRenderWorkerData = {
+    me,
+    he,
+    threadNum,
+  }
+  const reportWorker = new Worker("./Main/ReportWorker.js", { workerData });
   reportWorker.on('message', (workerMsg: WorkerMsg) => {
     switch (workerMsg.type) {
       case "process-over":

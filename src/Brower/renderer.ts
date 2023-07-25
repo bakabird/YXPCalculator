@@ -66,7 +66,20 @@ export enum Role {
     NON,
 }
 
-var JianRole = [
+export interface IHumanData {
+    cardKey: string;
+    role: Role;
+    hp: number,
+    xiuwei: number
+}
+
+export interface IRenderWorkerData { 
+    me: IHumanData,
+    he: IHumanData,
+    threadNum: number
+}
+
+var JianRole =  [
     Role.Dyf, Role.Yx, Role.Ly, Role.Lxy,
 ]
 var QiRole = [
@@ -108,7 +121,7 @@ interface Window {
         }): Promise<Array<string>>;
         getAllCards(): Promise<Array<string>>;
         getCfg(): Promise<any>;
-        createReport(key: string, role: number, eKey: string, eRole: number, threadNum: number): void;
+        createReport(me: any, he: any, threadNum: number): void;
         feedback(item: string, content: string, fileName?: string, fileBuffer?: ArrayBuffer): Promise<void>;
         viewReport(fightReport: any): void;
         doDebug(): void;
@@ -346,13 +359,21 @@ class CardListWrap {
     private _list: Array<CardWrap>;
     private _curTargetIndex: number = -1;
     private _roleInputWrap: RoleInputWrap
-    constructor(private _node: JQuery<HTMLElement>, private _localKey: string) {
+    private _boxTitleWrap: CardBoxTitle;
+    constructor(private _node: JQuery<HTMLElement>, private _boxTitleNode: JQuery<HTMLElement>, private _localKey: string) {
         this._roleInputBlue = $(".Hub .RoleInput")
         this._blue = $(".Hub .Card");
         this._list = [];
+        this._boxTitleWrap = new CardBoxTitle(this._boxTitleNode, this);
+    }
+    public get localKey(): string {
+        return this._localKey;
     }
     public get roleInputWrap(): RoleInputWrap {
         return this._roleInputWrap
+    }
+    public get boxTitleWrap(): CardBoxTitle {
+        return this._boxTitleWrap;
     }
     public get key(): string {
         return this._list.reduce((p, c) => {
@@ -865,9 +886,19 @@ class BarWrap {
         const qqGroup = _node.children(".qqGroup");
         _node.children(".analysis").on("click", () => {
             const threadNum = parseInt(_node.children("select")[0].value);
-            window.electronAPI.createReport(
-                this._fCardListWrap.key, Global.cardListWrap.roleInputWrap.role,
-                this._eCardListWrap.key, Global.eCardListWrap.roleInputWrap.role, threadNum);
+            const me: Share2Renderer.IHumanData = {
+                cardKey: this._fCardListWrap.key,
+                role: this._fCardListWrap.roleInputWrap.role,
+                xiuwei: this._fCardListWrap.boxTitleWrap.xiuwei,
+                hp: this._fCardListWrap.boxTitleWrap.hp,
+            }
+            const he: Share2Renderer.IHumanData = {
+                cardKey: this._eCardListWrap.key,
+                role: this._eCardListWrap.roleInputWrap.role,
+                xiuwei: this._eCardListWrap.boxTitleWrap.xiuwei,
+                hp: this._eCardListWrap.boxTitleWrap.hp,
+            }
+            window.electronAPI.createReport(me, he, threadNum);
         });
         _node.children(".openCardlib").on("click", () => {
             this._libWrap.show();
@@ -918,9 +949,23 @@ class BarWrap {
 }
 
 class CardBoxTitle {
+    public get xiuwei(): number {
+        return parseInt(readKey(this._cardListWrap.localKey + "__xiuwei", "20"));
+    }
+    public set xiuwei(v: number) {
+        if(typeof v != "number") return;
+        saveKey(this._cardListWrap.localKey + "__xiuwei", v.toString());
+    }
+    public get hp() {
+        return parseInt(readKey(this._cardListWrap.localKey + "__hp", "60"));
+    }
+    public set hp(v: number) {
+        if(typeof v != "number") return;
+        saveKey(this._cardListWrap.localKey + "__hp", v.toString());
+    }
     constructor(
         _node: JQuery<HTMLElement>,
-        _cardListWrap: CardListWrap,
+        private _cardListWrap: CardListWrap,
     ) {
         _node.children(".resetBox").on("click", () => {
             ConfirmWrap.pop({
@@ -929,6 +974,20 @@ class CardBoxTitle {
                     _cardListWrap.key = null;
                 }
             })
+        })
+        const xiuweiInput = _node.find("span .xiuweiInput");
+        const hpInput = _node.find("span .hpInput");
+        xiuweiInput.val(this.xiuwei);
+        hpInput.val(this.hp);
+        xiuweiInput.on("input", () => {
+            const inV = xiuweiInput.val().toString();
+            if(isNaN(parseInt(inV))) return;
+            this.xiuwei = parseInt(inV);
+        })
+        hpInput.on("input", () => {
+            const inV = hpInput.val().toString();
+            if(isNaN(parseInt(inV))) return;
+            this.hp = parseInt(inV);
         })
     }
 }
@@ -1237,8 +1296,8 @@ class CardFaceFactoryWrap {
     }
 }
 
-const cardListWrap = Global.cardListWrap = new CardListWrap($(".FCardBox"), "fCardKey");
-const eCardListWrap = Global.eCardListWrap = new CardListWrap($(".ECardBox"), "eCardKey");
+const cardListWrap = Global.cardListWrap = new CardListWrap($(".FCardBox"), $(".selfCardBoxTitle"), "fCardKey");
+const eCardListWrap = Global.eCardListWrap = new CardListWrap($(".ECardBox"), $(".enemyCardBoxTitle"), "eCardKey");
 const searchWrap = new CardSearchWrap($(".CardSearch"));
 const cardlibWrap = new CardLibWrap($(".CardLib"))
 const feedbackWrap = new FeedbackWrap($(".Feedback"))
@@ -1247,8 +1306,6 @@ const consoleWrap = new ConsoleWrap($(".Console"))
 const confirmWrap = new ConfirmWrap($(".Confirm"))
 const cffWrap = new CardFaceFactoryWrap($(".CardFaceFactory"))
 const bar = new BarWrap($(".Bar"), cardListWrap, eCardListWrap, cardlibWrap, feedbackWrap, searchWrap);
-new CardBoxTitle($(".enemyCardBoxTitle"), eCardListWrap);
-new CardBoxTitle($(".selfCardBoxTitle"), cardListWrap);
 
 const onClickFace = (wrap: CardListWrap) => {
     if (Global.activeWrap != wrap) {
