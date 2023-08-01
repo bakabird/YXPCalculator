@@ -14,7 +14,6 @@ export var Gong = GenPush2Arr(GongCards);
 
 export enum CardName {
     Hit = "普通攻击",
-    FeiTa = "飞鸿踏雪",
     MeiKai = "梅开二度",
     HuangQue = "黄雀在后",
 
@@ -60,7 +59,6 @@ export enum CardName {
     EgretManaSword = "白鹭灵剑",
     GiantKunManaSword = "巨鲲灵剑",
     InspirationSword = "灵感剑",
-    YunCrashSnow = "云剑·崩雪",
     LiuyunChaoticSword = "流云乱剑",
     WaterMoonSwordArray = "水月剑阵",
     CrazyMoveTwo = "狂剑·二式",
@@ -487,7 +485,70 @@ export enum CardName {
     // #endregion
 
     // #region 角色卡
+    // 云泉道茶
+    YunQuanDaoCha = "云泉道茶",
+
+    // 狂剑·炎舞
+    YunCrashSnow = "云剑·崩雪",
+    KuangJianYanWu = "狂剑·炎舞",
+
+    // 云剑·唤雨
+    YunHuanYu = "云剑·唤雨",
+    // 九霄玲珑镯
+    JiuXiaoLingLongZhuo = "九霄玲珑镯",
+
+    // 云剑·猫爪
+    YunMaoZhua = "云剑·猫爪",
+    // 灵猫乱剑
+    LingMaoLuanJian = "灵猫乱剑",
+
+    // 澄心剑胚
+    ChengXinJianPei = "澄心剑胚",
+
+    // 飞鸿踏雪
+    FeiTa = "飞鸿踏雪",
+
+    // 无极卦盘
+    WuJiGuaPan = "无极卦盘",
+    // 瓮中捉鳖
+    WengZhongZhuoBie = "瓮中捉鳖",
+    // 狂雷电闪
+    KuangLeiDianShan = "狂雷电闪",
+
+    // 灯焰飞舞
+    DengYanFeiWu = "灯焰飞舞",
+    // 旋灯占卦
+    XuanDengZhanGua = "旋灯占卦",
+
+    // 星爆术
+    XingBaoShu = "星爆术",
+    // 七星定魂
+    QiXingDingHun = "七星定魂",
+    
+    // 算无遗策
+    SuanWuYiCe = "算无遗策",
+    // 星月折扇
+    XingYueZheShan = "星月折扇",
+
+    // 悠然葫芦
     Youranhl = "悠然葫芦",
+    // 五行传承
+    WuXingChuanCheng = "五行传承",
+
+    // 双鸢逆克
+    ShuangYuanNiKe = "双鸢逆克",
+
+    // 木灵·桃花印
+    MuLingTaoHuaYin = "木灵·桃花印",
+    // 水灵·春雨
+    ShuiLingChunYu = "水灵·春雨",
+
+    // 锟铻金环
+    KunWuJinHuan = "锟铻金环",
+    // 金灵·刚劲
+    JinLingGangJing = "金灵·刚劲",
+    // 土灵·山崩
+    TuLingShanBeng = "土灵·山崩",
     // #endregion
 
 }
@@ -740,11 +801,15 @@ export abstract class ACard {
     public getMana(me: Human, he: Human): number {
         let mana = this.onGetMana(me);
         let meLinggan = me.NumOf(BuffId.Linggan);
+        let meXingYueZheShan = me.NumOf(BuffId.XingYueZheShan);
         if (this.cardName.endsWith("灵剑") && me.CheckBuff(BuffId.BNLJ, 1)) {
             mana = Math.max(0, mana - me.GetBuff(BuffId.BNLJ).num);
         }
         if (meLinggan > 0 && mana > 0) {
             mana = Math.max(0, mana - meLinggan);
+        }
+        if (meXingYueZheShan > 0 && me.CardList.IsOnStar()) {
+            mana = Math.max(0, mana - meXingYueZheShan);
         }
         return mana;
     }
@@ -836,6 +901,15 @@ export abstract class ACard {
         if (this.isTu) return target.isTu || target.isJin;
         if (this.isJin) return target.isJin || target.isShui;
         if (this.isShui) return target.isShui || target.isMu;
+        return false;
+    }
+    /**是否五行相逆目标卡 */
+    public amIWuxingNi(target: ACard) {
+        if (this.isMu) return target.isTu;
+        if (this.isHuo) return target.isJin;
+        if (this.isTu) return target.isShui;
+        if (this.isJin) return target.isMu;
+        if (this.isShui) return target.isHuo;
         return false;
     }
 

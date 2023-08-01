@@ -113,8 +113,7 @@ function shareCodeWatch(cb, shareCodePath, shareCodeInjecterTargets, startMark, 
         /* Ignore compiler errors */
     })
         .on("end", () => {
-        // console.log("SHARE_CODE STEP2 END")
-        console.log("SHARE_CODE END");
+        console.log(startMark + " " + endMark + " END");
         cb();
     })
         .pipe(through2_1.default.obj(function (file, encode, cb1) {

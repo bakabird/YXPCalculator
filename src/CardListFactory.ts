@@ -1,6 +1,6 @@
 import { ACard, CardInfo, CardName, HitCard, } from "./Card";
 import CardList from "./CardList";
-import { TanShuYan_LIST, WuXingzhi_LIST, YanXue_LIST } from "./Character";
+import { DuLingYuan_LIST, DuYiFeng_LIST, HuaQinrui_LIST, JiangXiMing_LIST, Linxiaoyue_LIST, LongYao_LIST, LuJianxin_LIST, MuHu_LIST, NanGongSheng_LIST, TanShuYan_LIST, WuCe_LIST, WuXingzhi_LIST, YanChen_LIST, YanXue_LIST, YaoLing_LIST } from "./Character";
 import { Dan_LIST } from "./DanCards";
 import { Fu_LIST } from "./FuCards";
 import Go from "./Go";
@@ -27,6 +27,18 @@ var AllCardType = [
     ...WuXingzhi_LIST,
     ...TanShuYan_LIST,
     ...YanXue_LIST,
+    ...DuYiFeng_LIST,
+    ...LongYao_LIST,
+    ...Linxiaoyue_LIST,
+    ...LuJianxin_LIST,
+    ...YanChen_LIST,
+    ...YaoLing_LIST,
+    ...JiangXiMing_LIST,
+    ...WuCe_LIST,
+    ...DuLingYuan_LIST,
+    ...HuaQinrui_LIST,
+    ...MuHu_LIST,
+    ...NanGongSheng_LIST,
     // 职业卡
     ...Zhen_LIST,
     ...Dan_LIST,
@@ -59,6 +71,18 @@ function getRoleByType(type): Role {
     if (WuXingzhi_LIST.includes(type)) return Role.Wxz
     else if (TanShuYan_LIST.includes(type)) return Role.Tsy
     else if (YanXue_LIST.includes(type)) return Role.Yx
+    else if (DuYiFeng_LIST.includes(type)) return Role.Dyf
+    else if (LongYao_LIST.includes(type)) return Role.Ly
+    else if (Linxiaoyue_LIST.includes(type)) return Role.Lxy
+    else if (LuJianxin_LIST.includes(type)) return Role.Ljx
+    else if (YanChen_LIST.includes(type)) return Role.Yc
+    else if (YaoLing_LIST.includes(type)) return Role.Yl
+    else if (JiangXiMing_LIST.includes(type)) return Role.Jxm
+    else if (WuCe_LIST.includes(type)) return Role.Wc
+    else if (DuLingYuan_LIST.includes(type)) return Role.Dly
+    else if (HuaQinrui_LIST.includes(type)) return Role.Hqr
+    else if (MuHu_LIST.includes(type)) return Role.Mh
+    else if (NanGongSheng_LIST.includes(type)) return Role.Ngs
     else return Role.NON
 }
 

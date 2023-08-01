@@ -147,11 +147,15 @@ export class Human {
 
     AddBuff(buff: ABuff, log: string) {
         const mePixieNum = this.NumOf(BuffId.Pixie);
+        const meKunWuJinHuan = this.NumOf(BuffId.KunWuJinHuan)
         const isDebuff = ABuff.IsDebuff(buff.id);
         if (isDebuff && buff.num > 0 && mePixieNum > 0) {
             const costPixie = Math.min(buff.num, mePixieNum);
             buff.ModNum(-costPixie);
             this.AddBuffById(BuffId.Pixie, -costPixie, "抵消");
+        }
+        if ([BuffId.Shield, BuffId.Sharp].includes(buff.id) && meKunWuJinHuan > 0) {
+            buff.ModNum(meKunWuJinHuan);
         }
         if (buff.num == 0) return;
         var findRlt = this._BuffList.find(b => b.id == buff.id);

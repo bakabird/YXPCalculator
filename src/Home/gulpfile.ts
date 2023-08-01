@@ -116,15 +116,14 @@ function shareCodeWatch(cb, shareCodePath: string, shareCodeInjecterTargets: str
             /* Ignore compiler errors */
         })
         .on("end", () => {
-            // console.log("SHARE_CODE STEP2 END")
-            console.log("SHARE_CODE END")
+            console.log(startMark + " " + endMark + " END")
             cb();
         })
         .pipe(through.obj(function (file, encode, cb1) {
             const shareContentLines: Array<string> = file.contents.toString().split("\n")
             gulp.src(shareCodeInjecterTargets)
                 .pipe(through.obj(function (_file, _encode, cb2) {
-                    const targetContent: string = _file.contents.toString()
+                    const targetContent: string = _file.contents.toString() 
                     const targetContentLines = targetContent.split("\n")
                     const shareCodeStartIndex = targetContentLines.findIndex((line: string) => {
                         return line.includes(startMark)
@@ -178,7 +177,7 @@ exports.build = function (done) {
                                 done();
                             })
                         })
-                    })
+                    }) 
                 })
             })
         })

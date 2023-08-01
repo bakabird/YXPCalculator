@@ -11,8 +11,13 @@ export class Action {
     public effect() {
         var me = this._actor;
         var he = this._target;
+        var meQiXingDingHun = me.NumOf(BuffId.QiXingDingHun);
 
         if (this.anyDead) return;
+        if (meQiXingDingHun > 0) {
+            me.AddBuffById(BuffId.QiXingDingHun, -1 , BuffId.QiXingDingHun + " 消耗");
+            return;
+        }
         me.EffectBuff(BES.RoundStart);
         me.EffectCard(he);
         me.EffectBuff(BES.AnyCardActionOver);

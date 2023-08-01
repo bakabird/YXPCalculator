@@ -51,6 +51,12 @@ export enum Role {
     Hqr,
     // 慕虎
     Mh,
+    // 陆剑心
+    Ljx,
+    // 吴策
+    Wc,
+    // 南宫生
+    Ngs,
     /**无 */
     NON,
 }
@@ -69,13 +75,13 @@ export interface IRenderWorkerData {
 }
 
 var JianRole =  [
-    Role.Dyf, Role.Yx, Role.Ly, Role.Lxy,
+    Role.Dyf, Role.Yx, Role.Ly, Role.Lxy, Role.Ljx
 ]
 var QiRole = [
-    Role.Tsy, Role.Yc, Role.Yl, Role.Jxm
+    Role.Tsy, Role.Yc, Role.Yl, Role.Jxm, Role.Wc
 ]
 var WuRole = [
-    Role.Wxz, Role.Dly, Role.Hqr, Role.Mh
+    Role.Wxz, Role.Dly, Role.Hqr, Role.Mh, Role.Ngs
 ]
 
 export function getMenByRole(role: Role): Men {
