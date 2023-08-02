@@ -6,6 +6,7 @@ import { MiriWorker } from "./Miri";
 import PossibleCardSet from "./PossibleCardSet";
 import { Sumamry } from "./Sumamry";
 import WorkerMsg from "./WorkerMsg";
+import path from "path";
 import { IHumanData } from "./_share_code_";
 
 const {
@@ -55,6 +56,6 @@ function buildFightTurn(miri: MiriWorker) {
 sum.cur = Fight.BuildRun2(meManArg, CardListFactory.me.SplitCode(me.cardKey), heManArg, heCardInfos);
 
 for (var i = 0; i < threadNum; i++) {
-  buildFightTurn(new MiriWorker("./Main/FightWorker.js"))(null);
+  buildFightTurn(new MiriWorker(path.join(__dirname, './FightWorker.js')))(null);
 }
 

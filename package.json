@@ -1,5 +1,5 @@
 {
-    "name": "YXP",
+    "name": "YXPCalculater",
     "version": "1.0.0",
     "description": "YXPCalculater for yixianpai to calculate the fight detail and recommend the best cardorder.",
     "main": "./Main/main.js",
@@ -34,6 +34,7 @@
     },
     "dependencies": {
         "ali-oss": "^6.17.1",
+        "electron-log": "^5.0.0-beta.25",
         "electron-store": "^8.1.0",
         "esm": "^3.2.25",
         "fuzzy-search": "^3.2.1",
@@ -46,7 +47,6 @@
             "packagerConfig": {
                 "icon": "Icon",
                 "ignore": [
-                    "src/.*.ts",
                     "less/.*.less",
                     "README.md"
                 ]

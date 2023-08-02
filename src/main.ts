@@ -1,4 +1,13 @@
 // Modules to control application life and create native browser window
+import log from 'electron-log/main';
+// Optional, initialize the logger for any renderer process
+log.transports.file.resolvePathFn = () => path.join(__dirname, '../tmp/app.log');
+log.initialize({ preload: true, spyRendererConsole: true });
+console.log = log.log;
+console.warn = log.warn;
+console.info = log.info;
+console.error = log.error;
+console.debug = log.debug;
 const {
   Worker, isMainThread, parentPort, workerData
 } = require('node:worker_threads');
@@ -13,7 +22,18 @@ import WorkerMsg from "./WorkerMsg";
 import path from 'path'
 import { IHumanData, IRenderWorkerData, Role } from "./_share_code_";
 const isMac = process.platform === 'darwin'
- 
+
+// // 返回运行文件所在的目录
+// console.log('__dirname : ' + __dirname)
+// // __dirname : /Desktop
+// // 当前命令所在的目录
+// console.log('resolve   : ' + path.resolve('./'))
+// // resolve   : /workspace
+// // 当前命令所在的目录
+// console.log('cwd       : ' + process.cwd())
+// // cwd       : /workspace
+
+
 const icon = path.join(__dirname, '../Icon.png')
 
 const template = [
@@ -94,6 +114,7 @@ function createWindow() {
 }
 
 function CreateReport(_, me: IHumanData, he: IHumanData, threadNum: number) {
+  console.log("CreateReport", me, he, threadNum);
   // Create the browser window.
   const reportWindow = new BrowserWindow({
     width: 800,
@@ -109,10 +130,11 @@ function CreateReport(_, me: IHumanData, he: IHumanData, threadNum: number) {
     he,
     threadNum,
   }
-  const reportWorker = new Worker("./Main/ReportWorker.js", { workerData });
+  const reportWorker = new Worker(path.join(__dirname, './ReportWorker.js'), { workerData });
   reportWorker.on('message', (workerMsg: WorkerMsg) => {
     switch (workerMsg.type) {
       case "process-over":
+        console.log("process-over", workerMsg.data);
         reportWindow.webContents.send('Miri.ProcessOver', workerMsg.data);
         break;
     }
@@ -121,10 +143,10 @@ function CreateReport(_, me: IHumanData, he: IHumanData, threadNum: number) {
     console.error(err);
   });
   reportWorker.on('exit', (code) => {
+    console.log(`Worker stopped with exit code ${code}`);
     if (code !== 0)
       new Error(`Worker stopped with exit code ${code}`)
   });
-
 
   // and load the index.html of the app.
   reportWindow.loadFile('report.html')

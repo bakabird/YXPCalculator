@@ -4,3 +4,4 @@ fight*.log
 !gulpfile.js
 privatekey.json
 out
+tmp
