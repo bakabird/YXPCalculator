@@ -155,6 +155,7 @@ const Const = {
     MaxFileSize: 1024 * 2,
     CFFDotSize: 4,
     CFFMarginTop: 150,
+    HideTipKey: "_HideTipKey_",
 }
 /**
  *
@@ -220,6 +221,27 @@ class Eventer {
             this._listDict[event] = [];
         }
         this._listDict[event].push(listen);
+    }
+    public rm(event: string, listen: (...arg: any) => void) {
+        if (this._listDict[event]) {
+            let pos = this._listDict[event].indexOf(listen);
+            while(pos > -1) {
+                this._listDict[event].splice(pos, 1);
+                pos = this._listDict[event].indexOf(listen);
+            }
+        }
+    }
+}
+const DetailMode = {
+    event: new Eventer(),
+    get cur() {
+        return readKey("DetailMode", "true") == "true"
+    },
+    set cur(v: boolean) {
+        if(v != this.cur) {
+            saveKey("DetailMode", v ? "true" : "false");
+            this.event.event("change");
+        }
     }
 }
 
@@ -420,6 +442,14 @@ class CardListWrap {
     public each(walk: (card: CardWrap) => void) {
         this._list.forEach(walk);
     }
+    public clickNextCard() {
+        if (this._curTargetIndex < 0) return;
+        if (this._curTargetIndex + 1 < this._list.length) {
+            this.onClickFace(this._curTargetIndex + 1);
+        } else {
+            this.onClickFace(0);
+        }
+    }
     public modCard(name: string) {
         if (this._curTargetIndex < 0) return;
         this._list[this._curTargetIndex].cardname = name;
@@ -475,22 +505,36 @@ class CardListWrap {
 }
 
 class CardChooseWrap {
+    private _index: number;
     private _cardName: string;
     public eventer: Eventer = new Eventer();
     public get node(): JQuery<HTMLButtonElement> {
         return this._node;
     }
-    constructor(private _node: JQuery<HTMLButtonElement>, cardName: string) {
+    constructor(private _node: JQuery<HTMLButtonElement>, cardName: string, index: number) {
+        this._index = index;
         this._cardName = cardName;
-        _node.text(cardName);
+        this._sync();
         _node.on("click", () => {
             this.choose();
         });
+        DetailMode.event.add("change", this._onDetailModeChange.bind(this))
+    }
+    private _onDetailModeChange() {
+        this._sync();
+    }
+    private _sync() {
+        const shortcut = this._index + 1;
+        this._node.text(this._cardName +  (DetailMode.cur && shortcut < 10 ? `[${shortcut}]` : ""));
     }
     public choose() {
         this.eventer.event("chooseDown", this._cardName);
     }
-}
+    public destroy() {
+        this._node.remove();
+        DetailMode.event.rm("change", this._onDetailModeChange.bind(this))
+    }
+ }
 
 class AvatarSelector {
     private _choosen: string;
@@ -568,6 +612,11 @@ class CardSearchWrap {
     public eventer: Eventer = new Eventer();
     private _selectionBox: JQuery<HTMLElement>;
     private _chooseCopy: JQuery<HTMLButtonElement>;
+    private _detailModeBtn: JQuery<HTMLButtonElement>;
+    private _hideTipBtn: JQuery<HTMLButtonElement>;
+    private _moveLeftBtn: JQuery<HTMLButtonElement>;
+    private _moveRightBtn: JQuery<HTMLButtonElement>;
+    private _moveArchorBtn: JQuery<HTMLButtonElement>;
     private _input: JQuery<HTMLInputElement>;
     private _chooseList: Array<CardChooseWrap>;
     private _lastInputStr: string;
@@ -585,8 +634,24 @@ class CardSearchWrap {
         this._lastInputStr = "";
         this._key = "";
         this._input.on("input", this._onInput.bind(this))
-        _node.find(".moveLeft").on("click", this._onMoveLeft.bind(this));
-        _node.find(".moveRight").on("click", this._onMoveRight.bind(this));
+        this._moveArchorBtn = _node.find(".moveArchor") as JQuery<HTMLButtonElement>;
+        this._detailModeBtn = _node.find(".detailMode") as JQuery<HTMLButtonElement>;
+        this._hideTipBtn = _node.find(".hideTip") as JQuery<HTMLButtonElement>;
+        this._moveLeftBtn = _node.find(".moveLeft") as JQuery<HTMLButtonElement>;
+        this._moveRightBtn = _node.find(".moveRight") as JQuery<HTMLButtonElement>;
+        this._moveArchorBtn.on("click", this._onMoveArchor.bind(this));
+        this._detailModeBtn.on("click", this._onDetailMode.bind(this));
+        this._hideTipBtn.on("click", this._onHideTip.bind(this))
+        this._moveLeftBtn.on("click", this._onMoveLeft.bind(this));
+        this._moveRightBtn.on("click", this._onMoveRight.bind(this));
+        this._syncDetailMode();
+        this._node.find(".tip").addClass(Date.now() > parseInt(readKey(Const.HideTipKey, "0")) ? "" : "hide");
+    }
+    private _syncDetailMode() {
+        this._detailModeBtn.text(DetailMode.cur ? "隐藏快捷键" : "显示快捷键")
+        this._moveArchorBtn.text(DetailMode.cur ? "移标 [0]" : "移标")
+        this._moveLeftBtn.text(DetailMode.cur ? "← [-]" : "←")
+        this._moveRightBtn.text(DetailMode.cur ? "→ [=]" : "→")
     }
     private _onInput() {
         const val = this._input.val().toString();
@@ -598,9 +663,15 @@ class CardSearchWrap {
                     this.search();
                 } else {
                     this._input.val(val.slice(0, val.length - 1));
-                    if (this._numRegxp.test(lastInput)) {
+                    if(lastInput == "0") {
+                        this._onMoveArchor();
+                    } else if (this._numRegxp.test(lastInput)) {
                         const num = parseInt(lastInput) - 1;
                         this._chooseList[num]?.choose();
+                    } else if(lastInput == "-") {
+                        this._onMoveLeft();
+                    } else if(lastInput == "=") {
+                        this._onMoveRight();
                     }
                 }
             } else {
@@ -616,6 +687,35 @@ class CardSearchWrap {
     private _onMoveRight() {
         this.eventer.event("move", 1);
     }
+    private _onMoveArchor() {
+        this.eventer.event("nextcard");
+    }
+    private _onDetailMode() {
+        DetailMode.cur = !DetailMode.cur;
+        this._syncDetailMode();
+    }
+    private _onHideTip() {
+        ConfirmWrap.pop({
+            text: "确认隐藏提示？",
+            onYes: () => {
+                setTimeout(()=>{
+                    ConfirmWrap.pop({
+                        text: "隐藏多久提示？",
+                        onYes: () => {
+                            saveKey(Const.HideTipKey, "" + (Date.now() + 30 * 24 * 60 * 60 * 1000))
+                            this._node.find(".tip").addClass("hide")
+                        },
+                        onNo: () => {
+                            saveKey(Const.HideTipKey, "" + (Date.now() + 7 * 24 * 60 * 60 * 1000))
+                            this._node.find(".tip").addClass("hide")
+                        },
+                        yesTxt: "隐藏30天",
+                        noTxt: "隐藏7天",
+                    })
+                }, 100)
+            }
+        })
+    }
     public search() {
         const key = this._key
         if (key == "") return;
@@ -625,9 +725,9 @@ class CardSearchWrap {
             career: Global.activeWrap.roleInputWrap.career
         }).then(rlt => {
             this.clear();
-            rlt.forEach(name => {
+            rlt.forEach((name, idx) => {
                 var node = this._chooseCopy.clone();
-                var choose = new CardChooseWrap(node, name)
+                var choose = new CardChooseWrap(node, name, idx)
                 choose.eventer.add("chooseDown", (name) => {
                     this.eventer.event("chooseDown", name)
                     this._input.val("");
@@ -1335,6 +1435,9 @@ searchWrap.eventer.add("chooseDown", (name: string) => {
 });
 searchWrap.eventer.add("move", (step: number) => {
     Global.activeWrap.moveCard(step);
+});
+searchWrap.eventer.add("nextcard", () => {
+    Global.activeWrap.clickNextCard()
 });
 cardListWrap.read();
 eCardListWrap.read();

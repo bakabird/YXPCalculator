@@ -64,8 +64,17 @@
   </div>
   <div class="CardBox ECardBox"></div>
   <div class="CardSearch">
+    <div class="tip">
+      <Button class="detailMode">显示快捷键</Button>
+      <span>按钮的方括号即为按钮快捷键</span>
+      <span>在搜索框中输入快捷键即可使用对应快捷键按钮</span>
+      <Button class="hideTip">X</Button>
+    </div>
     <div class="cardHandle">
       <div class="bar00">
+        <div class="preInput">
+          <Button class="moveArchor">移标</Button>
+        </div>
         <input type="text" placeholder="输入卡牌拼英首字母搜索" alt="搜索框" value="" />
         <div class="cardPos">
           <Button class="moveLeft" alt="左移" title="左移">←</Button>
@@ -75,9 +84,9 @@
     </div>
     <div class="selection"></div>
   </div>
-  <p>搜索器+开关：切换详细/简略。详细描述下会附带快捷键</p>
   <p>打包后通过 gulp 清理无关信息</p>
   <p>图标瘦身</p>
+  <p>打包优化，打到同一个文件中去</p>
   <div class="hide">
     <p>----</p>
     <p>增加候牌区()</p>
